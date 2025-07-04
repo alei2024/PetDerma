@@ -1,0 +1,224 @@
+/**app.wxss**/
+/* 全局样式定义 */
+page {
+  --primary-blue: #A5D7E8;
+  --primary-pink: #FFC0CB;
+  --secondary-yellow: #FFFACD;
+  --secondary-green: #BDFCC9;
+  --bg-white: #FFFFFF;
+  --bg-gray: #F5F5F5;
+  --text-dark: #333333;
+  --text-gray: #666666;
+  --text-light: #999999;
+  
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, 
+               'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: var(--text-dark);
+  background-color: var(--bg-gray);
+}
+
+/* 容器通用样式 */
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 30rpx;
+} 
+
+/* 卡片通用样式 */
+.card {
+  width: 100%;
+  background-color: var(--bg-white);
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 按钮通用样式 */
+.btn {
+  border-radius: 40rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 40rpx;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.btn-secondary {
+  background-color: var(--primary-pink);
+  color: white;
+}
+
+.btn-outline {
+  border: 2rpx solid var(--primary-blue);
+  color: var(--primary-blue);
+  background-color: transparent;
+}
+
+/* 标题通用样式 */
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: var(--text-dark);
+}
+
+.subtitle {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+  color: var(--text-dark);
+}
+
+/* 辅助文本样式 */
+.text-small {
+  font-size: 24rpx;
+  color: var(--text-light);
+}
+
+/* 分割线 */
+.divider {
+  width: 100%;
+  height: 2rpx;
+  background-color: #EEEEEE;
+  margin: 20rpx 0;
+}
+
+/* 标签通用样式 */
+.tag {
+  display: inline-block;
+  padding: 6rpx 16rpx;
+  font-size: 24rpx;
+  border-radius: 24rpx;
+  margin-right: 10rpx;
+}
+
+.tag-blue {
+  background-color: rgba(165, 215, 232, 0.2);
+  color: var(--primary-blue);
+}
+
+.tag-pink {
+  background-color: rgba(255, 192, 203, 0.2);
+  color: var(--primary-pink);
+}
+
+/* 图标和插图样式 */
+.icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.icon-large {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+/* 圆角图片 */
+.img-round {
+  border-radius: 12rpx;
+}
+
+.img-circle {
+  border-radius: 50%;
+}
+
+/* 阴影效果 */
+.shadow {
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 浮动按钮 */
+.float-btn {
+  position: fixed;
+  bottom: 40rpx;
+  right: 40rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background-color: var(--primary-pink);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+/* 动画效果 */
+.animate-bounce {
+  animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10rpx); }
+}
+
+/* 渐变过渡 */
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 为宠物选择区域添加特殊样式 */
+.pet-select {
+  display: flex;
+  justify-content: center;
+  margin: 30rpx 0;
+}
+
+.pet-option {
+  width: 160rpx;
+  height: 200rpx;
+  margin: 0 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-white);
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.pet-option.active {
+  background-color: var(--secondary-yellow);
+  transform: scale(1.05);
+}
+
+/* 表单元素通用样式 */
+.input {
+  width: 100%;
+  height: 80rpx;
+  background-color: var(--bg-white);
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  margin-bottom: 20rpx;
+  border: 2rpx solid #EEEEEE;
+}
+
+.textarea {
+  width: 100%;
+  background-color: var(--bg-white);
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  border: 2rpx solid #EEEEEE;
+  min-height: 200rpx;
+} 

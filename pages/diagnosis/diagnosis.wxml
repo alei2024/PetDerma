@@ -1,0 +1,81 @@
+<!--pages/diagnosis/diagnosis.wxml-->
+<navigation-bar title="智能诊断" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <!-- 宠物类型选择区 -->
+  <view class="pet-type-section">
+    <view class="type-title">选择宠物类型</view>
+    <view class="type-tabs">
+      <view class="type-tab {{petType === 'cat' ? 'active' : ''}}" bindtap="switchPetType" data-type="cat">
+        <image class="tab-icon" src="/images/cat_icon.png" mode="aspectFit"></image>
+        <text>猫咪</text>
+      </view>
+      <view class="type-tab {{petType === 'dog' ? 'active' : ''}}" bindtap="switchPetType" data-type="dog">
+        <image class="tab-icon" src="/images/dog_icon.png" mode="aspectFit"></image>
+        <text>狗狗</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 图像上传区 -->
+  <view class="upload-section card">
+    <view class="upload-title">
+      <text class="title">上传宠物皮肤照片</text>
+      <text class="subtitle">请尽可能清晰地拍摄患处区域</text>
+    </view>
+    
+    <view class="upload-area" bindtap="chooseImage">
+      <block wx:if="{{!imagePath}}">
+        <view class="upload-placeholder">
+          <image class="upload-icon" src="/images/camera_icon.png" mode="aspectFit"></image>
+          <text class="upload-text">点击上传照片</text>
+          <text class="upload-tip">支持从相册选择或直接拍照</text>
+        </view>
+      </block>
+      <block wx:else>
+        <image class="uploaded-image" src="{{imagePath}}" mode="aspectFit"></image>
+        <view class="image-actions">
+          <view class="btn btn-outline" bindtap="chooseImage">重新上传</view>
+          <view class="btn btn-primary" bindtap="startDiagnosis">开始诊断</view>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 拍摄指南 -->
+  <view class="guide-section card">
+    <view class="guide-title">拍摄指南</view>
+    <view class="guide-tips">
+      <view class="guide-tip">
+        <image class="tip-icon" src="/images/light_icon.png" mode="aspectFit"></image>
+        <text class="tip-text">保持光线充足，避免阴影</text>
+      </view>
+      <view class="guide-tip">
+        <image class="tip-icon" src="/images/focus_icon.png" mode="aspectFit"></image>
+        <text class="tip-text">确保患处在照片中央且清晰</text>
+      </view>
+      <view class="guide-tip">
+        <image class="tip-icon" src="/images/multi_icon.png" mode="aspectFit"></image>
+        <text class="tip-text">可从多个角度拍摄以提高准确性</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 示例图片 -->
+  <view class="examples-section card">
+    <view class="examples-title">示例图片</view>
+    <view class="examples-grid">
+      <view class="example-item" wx:for="{{examples}}" wx:key="index">
+        <image class="example-image" src="{{item.image}}" mode="aspectFill"></image>
+        <text class="example-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载中弹窗 -->
+<view class="loading-modal" wx:if="{{isLoading}}">
+  <view class="loading-content">
+    <view class="loading-icon"></view>
+    <text class="loading-text">正在分析图像...</text>
+  </view>
+</view> 

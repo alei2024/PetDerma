@@ -1,0 +1,78 @@
+<!--pages/diagnosis/chat/chat.wxml-->
+<navigation-bar title="智能问诊" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <!-- 聊天消息区域 -->
+  <scroll-view class="chat-messages" scroll-y scroll-into-view="{{scrollToMessage}}" scroll-with-animation>
+    <!-- 欢迎消息 -->
+    <view class="message-date">{{currentDate}}</view>
+    
+    <view class="message system">
+      <view class="message-content">
+        <text>您好！我是PetDerma智能助手，请问有什么可以帮助您的吗？</text>
+      </view>
+    </view>
+    
+    <view class="message system">
+      <view class="message-content">
+        <text>我看到您的{{petType === 'cat' ? '猫咪' : '狗狗'}}被诊断为"{{diseaseName}}"，您可以向我咨询相关问题。</text>
+      </view>
+    </view>
+    
+    <!-- 消息列表 -->
+    <block wx:for="{{messages}}" wx:key="id">
+      <!-- 用户消息 -->
+      <view wx:if="{{item.type === 'user'}}" class="message user" id="msg-{{item.id}}">
+        <view class="user-avatar">
+          <image src="{{userAvatar || '/images/user_avatar.png'}}" mode="aspectFill"></image>
+        </view>
+        <view class="message-content">
+          <text>{{item.content}}</text>
+        </view>
+      </view>
+      
+      <!-- 系统消息 -->
+      <view wx:else class="message system" id="msg-{{item.id}}">
+        <view class="system-avatar">
+          <image src="/images/doctor_avatar.png" mode="aspectFill"></image>
+        </view>
+        <view class="message-content">
+          <text>{{item.content}}</text>
+        </view>
+      </view>
+    </block>
+    
+    <!-- 正在输入提示 -->
+    <view class="typing-indicator" wx:if="{{isTyping}}">
+      <view class="system-avatar">
+        <image src="/images/doctor_avatar.png" mode="aspectFill"></image>
+      </view>
+      <view class="typing-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+    </view>
+  </scroll-view>
+  
+  <!-- 快捷问题 -->
+  <scroll-view class="quick-questions" scroll-x wx:if="{{quickQuestions.length > 0}}">
+    <view class="question-tags">
+      <view class="question-tag" wx:for="{{quickQuestions}}" wx:key="index" bindtap="sendQuickQuestion" data-question="{{item}}">
+        {{item}}
+      </view>
+    </view>
+  </scroll-view>
+  
+  <!-- 输入区域 -->
+  <view class="input-area">
+    <view class="input-box">
+      <input class="message-input" placeholder="输入您的问题..." value="{{inputMessage}}" bindinput="onInput" confirm-type="send" bindconfirm="sendMessage"></input>
+      <view class="input-actions">
+        <view class="action-icon" bindtap="startVoiceInput">
+          <image src="/images/voice_icon.png" mode="aspectFit"></image>
+        </view>
+        <view class="send-btn {{inputMessage ? 'active' : ''}}" bindtap="sendMessage">发送</view>
+      </view>
+    </view>
+  </view>
+</view> 

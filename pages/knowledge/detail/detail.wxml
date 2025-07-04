@@ -1,0 +1,5 @@
+<!--pages/knowledge/detail/detail.wxml-->
+<navigation-bar title="文章详情" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <view class="page-title">文章详情页面开发中</view>
+</view> 

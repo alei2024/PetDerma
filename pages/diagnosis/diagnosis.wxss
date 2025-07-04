@@ -1,0 +1,238 @@
+/* pages/diagnosis/diagnosis.wxss */
+.container {
+  padding: 30rpx;
+  background-color: var(--bg-gray);
+}
+
+/* 宠物类型选择区样式 */
+.pet-type-section {
+  margin-bottom: 30rpx;
+}
+
+.type-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.type-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 40rpx;
+}
+
+.type-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 40rpx;
+  background-color: white;
+  border-radius: 40rpx;
+  transition: all 0.3s ease;
+}
+
+.type-tab.active {
+  background-color: var(--primary-blue);
+  color: white;
+  transform: scale(1.05);
+}
+
+.tab-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: 10rpx;
+}
+
+/* 上传区域样式 */
+.upload-section {
+  margin-bottom: 30rpx;
+  padding: 30rpx;
+}
+
+.upload-title {
+  margin-bottom: 20rpx;
+}
+
+.upload-title .title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.upload-title .subtitle {
+  font-size: 26rpx;
+  color: var(--text-gray);
+}
+
+.upload-area {
+  width: 100%;
+  height: 400rpx;
+  border: 2rpx dashed #CCCCCC;
+  border-radius: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx;
+}
+
+.upload-icon {
+  width: 100rpx;
+  height: 100rpx;
+  margin-bottom: 20rpx;
+}
+
+.upload-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  color: var(--text-dark);
+}
+
+.upload-tip {
+  font-size: 24rpx;
+  color: var(--text-light);
+}
+
+.uploaded-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.image-actions {
+  position: absolute;
+  bottom: 30rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+/* 拍摄指南样式 */
+.guide-section {
+  margin-bottom: 30rpx;
+  padding: 30rpx;
+}
+
+.guide-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.guide-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.guide-tip {
+  display: flex;
+  align-items: center;
+}
+
+.tip-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+}
+
+.tip-text {
+  font-size: 28rpx;
+  color: var(--text-gray);
+}
+
+/* 示例图片样式 */
+.examples-section {
+  margin-bottom: 30rpx;
+  padding: 30rpx;
+}
+
+.examples-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.example-item {
+  border-radius: 12rpx;
+  overflow: hidden;
+  position: relative;
+  height: 180rpx;
+}
+
+.example-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.example-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 24rpx;
+  padding: 10rpx;
+  text-align: center;
+}
+
+/* 加载中弹窗 */
+.loading-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-content {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+}
+
+.loading-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid var(--primary-blue);
+  border-top: 6rpx solid transparent;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 30rpx;
+  color: var(--text-dark);
+} 

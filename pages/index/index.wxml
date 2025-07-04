@@ -1,0 +1,81 @@
+<!--index.wxml-->
+<navigation-bar title="PetDerma" back="{{false}}" color="white" background="#A5D7E8"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 欢迎区域 -->
+    <view class="welcome-section">
+      <view class="welcome-text">
+        <text class="welcome-title">欢迎来到PetDerma</text>
+        <text class="welcome-subtitle">您的宠物皮肤健康助手</text>
+      </view>
+      <view class="welcome-image">
+        <image src="/images/welcome.png" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <!-- 宠物选择区 -->
+    <view class="pet-select-title">选择您的宠物类型</view>
+    <view class="pet-select">
+      <view class="pet-option {{selectedPet === 'cat' ? 'active' : ''}}" bindtap="selectPet" data-type="cat">
+        <image class="pet-icon" src="/images/cat_icon.png" mode="aspectFit"></image>
+        <text>猫咪</text>
+      </view>
+      <view class="pet-option {{selectedPet === 'dog' ? 'active' : ''}}" bindtap="selectPet" data-type="dog">
+        <image class="pet-icon" src="/images/dog_icon.png" mode="aspectFit"></image>
+        <text>狗狗</text>
+      </view>
+    </view>
+    
+    <!-- 功能区块 -->
+    <view class="features-grid">
+      <!-- 智能诊断入口 -->
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/diagnosis/diagnosis">
+        <view class="feature-icon-container primary">
+          <image class="feature-icon" src="/images/diagnosis_icon.png" mode="aspectFit"></image>
+        </view>
+        <text class="feature-title">智能诊断</text>
+        <text class="feature-desc">AI分析皮肤问题</text>
+      </view>
+      
+      <!-- 社区交流入口 -->
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/community/community">
+        <view class="feature-icon-container secondary">
+          <image class="feature-icon" src="/images/community_icon.png" mode="aspectFit"></image>
+          <view class="notification-dot" wx:if="{{hasNewPost}}"></view>
+        </view>
+        <text class="feature-title">社区交流</text>
+        <text class="feature-desc">分享经验和案例</text>
+      </view>
+      
+      <!-- 知识科普入口 -->
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/knowledge/knowledge">
+        <view class="feature-icon-container tertiary">
+          <image class="feature-icon" src="/images/knowledge_icon.png" mode="aspectFit"></image>
+          <view class="new-tag" wx:if="{{hasNewArticle}}">新</view>
+        </view>
+        <text class="feature-title">知识科普</text>
+        <text class="feature-desc">学习防治知识</text>
+      </view>
+      
+      <!-- 个人中心入口 -->
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/user/user">
+        <view class="feature-icon-container quaternary">
+          <image class="feature-icon" src="/images/user_icon.png" mode="aspectFit"></image>
+        </view>
+        <text class="feature-title">个人中心</text>
+        <text class="feature-desc">宠物健康管理</text>
+      </view>
+    </view>
+    
+    <!-- 温馨提示 -->
+    <view class="tips-section">
+      <view class="tips-icon">
+        <image src="/images/tips_icon.png" mode="aspectFit"></image>
+      </view>
+      <view class="tips-content">
+        <text class="tips-title">健康提示</text>
+        <text class="tips-text">{{healthTip}}</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>

@@ -1,0 +1,93 @@
+<!--pages/diagnosis/result/result.wxml-->
+<navigation-bar title="诊断结果" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <!-- 图片展示区域 -->
+  <view class="image-section card">
+    <image class="diagnosis-image" src="{{imagePath}}" mode="aspectFit"></image>
+    <view class="image-overlay" wx:if="{{markedArea}}">
+      <!-- 这里可以添加标记区域的高亮显示 -->
+    </view>
+  </view>
+  
+  <!-- 诊断结果区域 -->
+  <view class="result-section card">
+    <view class="result-header">
+      <text class="result-title">诊断结果</text>
+      <text class="pet-type">{{petType === 'cat' ? '猫咪' : '狗狗'}}</text>
+    </view>
+    
+    <view class="disease-info">
+      <view class="disease-name">{{diagnosisResult.diseaseName}}</view>
+      
+      <view class="confidence">
+        <text class="confidence-label">可信度：</text>
+        <view class="confidence-bar-bg">
+          <view class="confidence-bar" style="width: {{diagnosisResult.confidence}}%;"></view>
+        </view>
+        <text class="confidence-value">{{diagnosisResult.confidence}}%</text>
+      </view>
+      
+      <view class="severity">
+        <text class="severity-label">严重程度：</text>
+        <view class="severity-indicators">
+          <view class="severity-indicator {{diagnosisResult.severity >= 1 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{diagnosisResult.severity >= 2 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{diagnosisResult.severity >= 3 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{diagnosisResult.severity >= 4 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{diagnosisResult.severity >= 5 ? 'active' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="disease-description">
+      <text class="description-title">疾病描述</text>
+      <text class="description-content">{{diagnosisResult.description}}</text>
+    </view>
+  </view>
+  
+  <!-- 诊疗建议区域 -->
+  <view class="advice-section card">
+    <text class="advice-title">诊疗建议</text>
+    
+    <view class="advice-tabs">
+      <view class="advice-tab {{currentTab === 'home' ? 'active' : ''}}" bindtap="switchTab" data-tab="home">居家护理</view>
+      <view class="advice-tab {{currentTab === 'medical' ? 'active' : ''}}" bindtap="switchTab" data-tab="medical">就医建议</view>
+      <view class="advice-tab {{currentTab === 'prevent' ? 'active' : ''}}" bindtap="switchTab" data-tab="prevent">预防措施</view>
+    </view>
+    
+    <view class="advice-content">
+      <block wx:if="{{currentTab === 'home'}}">
+        <view class="advice-item" wx:for="{{diagnosisResult.homeAdvice}}" wx:key="index">
+          <view class="advice-item-dot"></view>
+          <text class="advice-item-text">{{item}}</text>
+        </view>
+      </block>
+      
+      <block wx:elif="{{currentTab === 'medical'}}">
+        <view class="advice-item" wx:for="{{diagnosisResult.medicalAdvice}}" wx:key="index">
+          <view class="advice-item-dot"></view>
+          <text class="advice-item-text">{{item}}</text>
+        </view>
+      </block>
+      
+      <block wx:else>
+        <view class="advice-item" wx:for="{{diagnosisResult.preventAdvice}}" wx:key="index">
+          <view class="advice-item-dot"></view>
+          <text class="advice-item-text">{{item}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 操作按钮区域 -->
+  <view class="actions-section">
+    <view class="btn btn-outline" bindtap="saveResult">
+      <image class="btn-icon" src="/images/save_icon.png" mode="aspectFit"></image>
+      <text>收藏结果</text>
+    </view>
+    <view class="btn btn-primary" bindtap="startChat">
+      <image class="btn-icon" src="/images/chat_icon.png" mode="aspectFit"></image>
+      <text>智能问诊</text>
+    </view>
+  </view>
+</view> 

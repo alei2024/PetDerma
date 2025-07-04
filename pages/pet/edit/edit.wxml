@@ -1,0 +1,5 @@
+<!--pages/pet/edit/edit.wxml-->
+<navigation-bar title="编辑宠物信息" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <view class="page-title">编辑宠物信息页面开发中</view>
+</view> 

@@ -1,0 +1,5 @@
+<!--pages/pet/history/history.wxml-->
+<navigation-bar title="病历记录" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <view class="page-title">病历记录页面开发中</view>
+</view> 

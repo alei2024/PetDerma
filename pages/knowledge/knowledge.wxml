@@ -1,0 +1,5 @@
+<!--pages/knowledge/knowledge.wxml-->
+<navigation-bar title="知识科普" back="{{false}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <view class="page-title">知识科普页面开发中</view>
+</view> 

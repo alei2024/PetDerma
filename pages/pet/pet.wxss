@@ -1,0 +1,15 @@
+/* pages/pet/pet.wxss */
+.container {
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+}
+
+.page-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--text-dark);
+} 

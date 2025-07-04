@@ -1,0 +1,5 @@
+<!--pages/community/community.wxml-->
+<navigation-bar title="社区" back="{{false}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <view class="page-title">社区页面开发中</view>
+</view> 

@@ -1,0 +1,5 @@
+<!--pages/pet/health/health.wxml-->
+<navigation-bar title="健康档案" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="container">
+  <view class="page-title">健康档案页面开发中</view>
+</view> 
