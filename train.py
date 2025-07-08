@@ -42,8 +42,8 @@ class SkinDataset(Dataset):
 
 def train():
     # Paths
-    train_dir = "./数据集/train/Dogs"
-    valid_dir = "./数据集/valid/Dogs"
+    train_dir = "./data/train/demodicosis"
+    valid_dir = "./data/valid/demodicosis"
     
     # Feature extractor and model
     model_name = "google/vit-base-patch16-224-in21k"
