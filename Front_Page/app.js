@@ -9,14 +9,30 @@ App({
   },
   
   onLaunch: function() {
-    // 获取系统信息
-    const systemInfo = wx.getSystemInfoSync();
+    const safeCall = (fn) => {
+      try {
+        return typeof fn === 'function' ? fn() : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    };
+
+    const systemInfo = {
+      appBaseInfo: safeCall(wx.getAppBaseInfo),
+      deviceInfo: safeCall(wx.getDeviceInfo),
+      windowInfo: safeCall(wx.getWindowInfo),
+      systemSetting: safeCall(wx.getSystemSetting)
+    };
+
+    if (!systemInfo.appBaseInfo && typeof wx.getSystemInfoSync === 'function') {
+      try {
+        systemInfo.compat = wx.getSystemInfoSync();
+      } catch (e) {}
+    }
+
     this.globalData.systemInfo = systemInfo;
-    
-    // 检查登录状态
+
     this.checkLoginStatus();
-    
-    // 加载宠物信息
     this.loadPetInfo();
   },
   
