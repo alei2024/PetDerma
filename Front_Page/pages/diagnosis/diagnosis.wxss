@@ -109,21 +109,31 @@
   object-fit: contain;
 }
 
+
+/* 上传后的按钮整体居中 */
 .image-actions {
-  position: absolute;
-  bottom: 30rpx;
+  margin-top: 20rpx;
   display: flex;
+  justify-content: center; /* 水平居中 */
   gap: 20rpx;
+}
+.image-actions button {
+  width: 220rpx; /* 按钮宽度 */
 }
 
 /* 拍摄指南样式 */
 .guide-section {
-  margin-bottom: 30rpx;
+  margin-top: 30rpx;
+  border: 2rpx dashed #CCCCCC; /* 虚线边框 */
+  border-radius: 20rpx;
   padding: 30rpx;
+  width: 100%; /* 和 upload-area 一样 */
+  box-sizing: border-box; /* 内边距不影响宽度 */
 }
 
+
 .guide-title {
-  font-size: 34rpx;
+  font-size: 30rpx;
   font-weight: bold;
   margin-bottom: 20rpx;
 }
