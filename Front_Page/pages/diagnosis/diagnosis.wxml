@@ -1,49 +1,84 @@
 <!--pages/diagnosis/diagnosis.wxml-->
-<navigation-bar title="智能诊断" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
-<view class="container">
-  <!-- 宠物类型选择区 -->
-  <view class="pet-type-section">
-    <view class="type-title">选择宠物类型</view>
-    <view class="type-tabs">
-      <view class="type-tab {{petType === 'cat' ? 'active' : ''}}" bindtap="switchPetType" data-type="cat">
-        <image class="tab-icon" src="/images/cat_icon.png" mode="aspectFit"></image>
-        <text>猫咪</text>
-      </view>
-      <view class="type-tab {{petType === 'dog' ? 'active' : ''}}" bindtap="switchPetType" data-type="dog">
-        <image class="tab-icon" src="/images/dog_icon.png" mode="aspectFit"></image>
-        <text>狗狗</text>
-      </view>
+<!-- 
+  诊断页面模板文件
+  注意：本页面的宠物数据和样式完全独立于首页
+  - 宠物数据使用独立的 petList（ID前缀为 diagnosis_）
+  - 样式使用独立的 .diagnosis- 前缀类名
+  - 避免与首页产生任何数据或样式冲突
+-->
+<navigation-bar title="智能诊断" back="{{false}}" color="white" background="#A5D7E8"></navigation-bar>
+<scroll-view class="container" scroll-y>
+  <!-- 宠物头像选择区 -->
+  <view class="pet-select-section">
+    <view class="diagnosis-pet-avatars">
+      <block wx:for="{{petList}}" wx:key="id" wx:for-index="index" wx:for-item="item">
+        <view class="diagnosis-pet-avatar {{selectedPetId === item.id ? 'active' : ''}}" bindtap="selectPet" data-id="{{item.id}}">
+          <image class="diagnosis-avatar-img" src="{{item.avatar}}" mode="aspectFill"></image>
+          <text class="diagnosis-avatar-name">{{item.name}}</text>
+        </view>
+      </block>
     </view>
   </view>
   
   <!-- 图像上传区 -->
   <view class="upload-section card">
     <view class="upload-title">
-      <text class="title">上传宠物皮肤照片</text>
+      <view class="title-row">
+        <text class="title">上传宠物皮肤照片</text>
+        <view class="guide-btn" bindtap="showGuide">拍摄指南</view>
+      </view>
       <text class="subtitle">请尽可能清晰地拍摄患处区域</text>
     </view>
     
-    <view class="upload-area" bindtap="chooseImage">
-      <block wx:if="{{!imagePath}}">
-        <view class="upload-placeholder">
+    <view class="upload-area">
+      <block wx:if="{{imageList.length === 0}}">
+        <view class="upload-placeholder" bindtap="chooseImage">
           <image class="upload-icon" src="/images/camera_icon.png" mode="aspectFit"></image>
           <text class="upload-text">点击上传照片</text>
           <text class="upload-tip">支持从相册选择或直接拍照</text>
         </view>
       </block>
-      <block wx:else>
-        <image class="uploaded-image" src="{{imagePath}}" mode="aspectFit"></image>
-        <view class="image-actions">
-          <view class="btn btn-outline" bindtap="chooseImage">重新上传</view>
-          <view class="btn btn-primary" bindtap="startDiagnosis">开始诊断</view>
+      <view class="image-grid">
+        <block wx:for="{{imageList}}" wx:key="index">
+          <view class="image-item">
+            <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+            <view class="delete-btn" bindtap="deleteImage" data-index="{{index}}">×</view>
+          </view>
+        </block>
+        <view wx:if="{{imageList.length > 0 && imageList.length < 9}}" class="add-image-btn" bindtap="chooseImage">
+          <text>+</text>
         </view>
-      </block>
+      </view>
     </view>
   </view>
   
-  <!-- 拍摄指南 -->
-  <view class="guide-section card">
-    <view class="guide-title">拍摄指南</view>
+  <!-- 症状描述输入区 -->
+  <view class="description-section card">
+    <view class="desc-title">描述宠物病症</view>
+    <textarea class="desc-input" placeholder="请详细描述宠物的症状表现，如：脱毛范围、红肿程度、是否瘙痒等..." 
+              value="{{symptomDescription}}" bindinput="onDescInput" maxlength="500" auto-height></textarea>
+    <view class="char-count">{{symptomDescription.length}}/500</view>
+  </view>
+  
+  <!-- 智能诊断按钮 -->
+  <view class="analysis-section">
+    <view class="btn btn-primary analysis-btn" bindtap="startAnalysis">智能诊断</view>
+  </view>
+</scroll-view>
+
+<!-- 右下角悬浮智能问诊按钮 -->
+<view class="circle-btn ai-float-btn" bindtap="goToAIConsult">
+  <text>问诊</text>
+</view>
+
+<!-- 拍摄指南弹窗 -->
+<view wx:if="{{showGuideModal}}" class="modal-mask" bindtap="hideGuide"></view>
+<view wx:if="{{showGuideModal}}" class="guide-modal">
+  <view class="modal-header">
+    <text class="modal-title" style="margin-top: 10rpx; display: block;">拍摄指南</text>
+    <view class="modal-close" bindtap="hideGuide">×</view>
+  </view>
+  <scroll-view class="modal-body" scroll-y>
     <view class="guide-tips">
       <view class="guide-tip">
         <image class="tip-icon" src="/images/light_icon.png" mode="aspectFit"></image>
@@ -58,24 +93,17 @@
         <text class="tip-text">可从多个角度拍摄以提高准确性</text>
       </view>
     </view>
-  </view>
-  
-  <!-- 示例图片 -->
-  <view class="examples-section card">
-    <view class="examples-title">示例图片</view>
-    <view class="examples-grid">
-      <view class="example-item" wx:for="{{examples}}" wx:key="index">
-        <image class="example-image" src="{{item.image}}" mode="aspectFill"></image>
-        <text class="example-label">{{item.label}}</text>
-      </view>
+    <view class="example-section guide-tip-divider">
+      <view class="example-title">示例图片</view>
+      <image class="example-image" src="/images/示例.png" mode="aspectFit"></image>
     </view>
-  </view>
+  </scroll-view>
 </view>
 
 <!-- 加载中弹窗 -->
 <view class="loading-modal" wx:if="{{isLoading}}">
   <view class="loading-content">
     <view class="loading-icon"></view>
-    <text class="loading-text">正在分析图像...</text>
+    <text class="loading-text">正在分析...</text>
   </view>
 </view> 

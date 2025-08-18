@@ -12,18 +12,19 @@
       "outputPath": ""
     },
     "useCompilerPlugins": false,
-    "minifyWXML": true
+    "minifyWXML": true,
+    "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
-  "packOptions": {
-    "ignore": [],
-    "include": []
-  },
   "appid": "wxaf8803105a23dc33",
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "condition": {}
+  "condition": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  }
 }

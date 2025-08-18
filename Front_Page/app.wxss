@@ -27,6 +27,14 @@ page {
   align-items: center;
   box-sizing: border-box;
   padding: 0 30rpx;
+}
+
+/* 全局圆形图片样式 */
+.img-circle {
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block !important;
+  flex-shrink: 0 !important;
 } 
 
 /* 卡片通用样式 */

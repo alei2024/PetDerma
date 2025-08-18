@@ -6,6 +6,8 @@ Page({
     diseaseName: '', // 疾病名称
     currentDate: '', // 当前日期
     messages: [], // 聊天消息列表
+    showWelcomeMessage2: true, // 是否显示第二句欢迎消息
+    showQuickQuestions: true, // 是否显示快捷问题
     inputMessage: '', // 输入框内容
     isTyping: false, // 是否显示正在输入
     scrollToMessage: '', // 滚动到指定消息
@@ -28,6 +30,14 @@ Page({
       });
     }
     
+    // 根据跳转来源控制显示（from='diagnose'为智能诊断页跳转，from='result'为诊断结果页跳转）
+    const from = (options.from || '').trim().toLowerCase(); // 处理空格和大小写问题
+    console.log('跳转来源from:', from); // 添加日志便于调试
+    this.setData({
+      showWelcomeMessage2: from === 'result' || from === 'diagnose_result', // 兼容可能的参数值
+      showQuickQuestions: from === 'result' // 修正后严格匹配小写无空格的'result'
+    });
+    
     // 设置当前日期
     const now = new Date();
     const year = now.getFullYear();
@@ -38,9 +48,9 @@ Page({
     });
     
     // 获取用户头像
-    if (app.globalData.userInfo && app.globalData.userInfo.avatarUrl) {
+    if (app.globalData.userInfo && app.globalData.userInfo.avatar) {
       this.setData({
-        userAvatar: app.globalData.userInfo.avatarUrl
+        userAvatar: app.globalData.userInfo.avatar
       });
     }
     
@@ -48,8 +58,20 @@ Page({
     this.setQuickQuestions();
   },
   
+  // 页面显示时更新用户头像
+  onShow: function() {
+    // 每次页面显示时重新获取用户头像，确保头像信息是最新的
+    if (app.globalData.userInfo && app.globalData.userInfo.avatar) {
+      this.setData({
+        userAvatar: app.globalData.userInfo.avatar
+      });
+    }
+  },
+  
   // 设置快捷问题
   setQuickQuestions: function() {
+    console.log('当前疾病名称:', this.data.diseaseName); // 调试疾病名称是否正确
+    console.log('当前宠物类型:', this.data.petType); // 调试宠物类型是否正确
     // 根据疾病类型设置不同的快捷问题
     let questions = [
       "这种病会传染吗？",
@@ -214,4 +236,4 @@ Page({
       icon: 'none'
     });
   }
-}) 
+})

@@ -1,15 +1,655 @@
-/* pages/user/user.wxss */
+/**pages/user/user.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
 .container {
+  padding: 20rpx 30rpx;
+}
+
+/* 导航左侧按钮 */
+.nav-left-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.nav-left-icon {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+/* 用户信息区域 */
+.user-section {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 20rpx 30rpx;
+  margin-top: 10rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.avatar-container {
+  position: relative;
+  margin-right: 30rpx;
+}
+
+.user-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  padding: 0rpx;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+}
+
+.avatar-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: #a5d7e8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid white;
+}
+
+.edit-icon {
+  font-size: 20rpx;
+}
+
+.avatar-edit image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.user-phone {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.login-type {
+  font-size: 24rpx;
+  color: #a5d7e8;
+  background-color: rgba(165, 215, 232, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  width: fit-content;
+}
+
+.login-btn {
+  background-color: #a5d7e8;
+  color: white;
+  padding: 16rpx 32rpx;
+  border-radius: 50rpx;
+  font-size: 28rpx;
+  text-align: center;
+  max-width: 180rpx;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  min-height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  margin: 0;
+  box-shadow: 0 4rpx 12rpx rgba(165, 215, 232, 0.3);
+  transition: all 0.3s ease;
+}
+
+.login-btn:active {
+  background-color: #8bc7d8;
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(165, 215, 232, 0.4);
+}
+
+/* 功能区块样式 */
+.features-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.feature-item {
+  background-color: white;
+  border-radius: 20rpx;
   padding: 30rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 80vh;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
-.page-title {
+.feature-item:active {
+  transform: scale(0.98);
+}
+
+.feature-icon-container {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.primary {
+  background-color: rgba(165, 215, 232, 0.2);
+}
+
+.secondary {
+  background-color: rgba(255, 192, 203, 0.2);
+}
+
+.feature-icon {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.feature-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  color: #333;
+}
+
+.feature-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 菜单列表样式 */
+.menu-list {
+  background-color: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background-color: #f8f8f8;
+}
+
+.menu-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-icon image {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.menu-title {
+  flex: 1;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.menu-arrow {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-arrow image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+/* 手机号登录弹窗样式 */
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.phone-login-panel {
+  width: 680rpx;
+  margin: 200rpx auto 0;
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.popup-header text:first-child {
   font-size: 36rpx;
   font-weight: bold;
-  color: var(--text-dark);
-} 
+  color: #333;
+  padding: 20rpx 30rpx;
+  padding-bottom:10rpx;
+}
+
+.popup-close {
+  font-size: 48rpx;
+  color: #666;
+  padding: 10rpx;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.popup-close:active {
+  background-color: #f0f0f0;
+}
+
+/* 头像上传区域 */
+.avatar-upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+  margin-top: -30rpx;
+  margin-left: 40rpx;
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 15rpx;
+}
+
+.upload-avatar-container {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 15rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3rpx dashed #a5d7e8;
+}
+
+.upload-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2rpx solid #e5e5e5;
+}
+
+.upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(165, 215, 232, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.upload-avatar-container:active .upload-overlay {
+  opacity: 1;
+}
+
+.upload-text {
+  color: white;
+  font-size: 20rpx;
+  text-align: center;
+  font-weight: bold;
+}
+
+.upload-tip {
+  font-size: 24rpx;
+  color: #666;
+  text-align: center;
+}
+
+.login-input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+  background-color: #fafafa;
+  transition: border-color 0.3s ease;
+}
+
+.login-input:focus {
+  border-color: #a5d7e8;
+  background-color: white;
+}
+
+.code-container {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 0rpx;
+}
+
+.code-input {
+  flex: 1;
+}
+
+.get-code-btn {
+  flex-shrink: 0;
+  max-width: 210rpx;
+  background-color: #a5d7e8;
+  color: white;
+  border-radius: 10rpx;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: none;
+  height: 84rpx;
+  transition: background-color 0.3s ease;
+}
+
+.get-code-btn:active {
+  background-color: #8bc7d8;
+}
+
+.get-code-btn[disabled] {
+  background-color: #ccc;
+  color: #999;
+}
+
+.submit-btn {
+  max-width: 160rpx;
+  height: 80rpx;
+  background-color: #a5d7e8;
+  color: white;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-top: 20rpx;
+  border: none;
+  padding-top: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(165, 215, 232, 0.3);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:active {
+  background-color: #8bc7d8;
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(165, 215, 232, 0.4);
+}
+
+/* 弹窗样式 */
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.popup-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 20rpx 20rpx 0 0;
+  z-index: 1001;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.popup-close {
+  font-size: 40rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.popup-body {
+  padding-top: 10rpx;
+  margin-left: 10rpx;
+  margin-right: 60rpx;
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.settings-item:active {
+  background-color: #f8f8f8;
+}
+
+.settings-item image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.logout-text {
+  color: #ff4757;
+}
+
+/* 微信授权弹窗样式 */
+.wechat-auth-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600rpx;
+  background-color: white;
+  border-radius: 20rpx;
+  z-index: 1002;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.wechat-auth-header {
+  background-color: #07c160;
+  padding: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wechat-logo {
+  font-size: 60rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wechat-title {
+  color: white;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.wechat-auth-content {
+  padding: 40rpx;
+}
+
+.auth-app-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 15rpx;
+}
+
+.app-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 15rpx;
+  margin-right: 20rpx;
+}
+
+.app-details {
+  flex: 1;
+}
+
+.app-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.app-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.auth-permissions {
+  margin-bottom: 30rpx;
+}
+
+.permission-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.permission-item {
+  display: flex;
+  align-items: center;
+  padding: 15rpx 0;
+}
+
+.permission-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+}
+
+.permission-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.auth-tips {
+  background-color: #f0f9ff;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  border-left: 4rpx solid #07c160;
+}
+
+.tips-text {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+.wechat-auth-footer {
+  display: flex;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.auth-cancel-btn {
+  flex: 1;
+  height: 100rpx;
+  background-color: white;
+  color: #666;
+  border: none;
+  font-size: 32rpx;
+  border-radius: 0;
+  padding-top:30rpx;
+}
+
+.auth-cancel-btn:active {
+  background-color: #f8f8f8;
+}
+
+.auth-confirm-btn {
+  flex: 1;
+  height: 100rpx;
+  background-color: #07c160;
+  color: white;
+  border: none;
+  font-size: 32rpx;
+  border-radius: 0;
+  padding-top:30rpx;
+}
+
+.auth-confirm-btn:active {
+  background-color: #06ad56;
+}

@@ -1,19 +1,24 @@
 <!--pages/diagnosis/result/result.wxml-->
 <navigation-bar title="诊断结果" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
-<view class="container">
-  <!-- 图片展示区域 -->
+<scroll-view class="container" scroll-y enhanced="{{true}}">
+  <!-- 图片展示区域（优化图片布局） -->
   <view class="image-section card">
-    <image class="diagnosis-image" src="{{imagePath}}" mode="aspectFit"></image>
-    <view class="image-overlay" wx:if="{{markedArea}}">
-      <!-- 这里可以添加标记区域的高亮显示 -->
+    <view class="result-image-grid">
+      <block wx:for="{{allImages}}" wx:key="index">
+        <image class="result-image-item" src="{{item}}" mode="aspectFill" lazy-load></image>
+      </block>
+    </view>
+    <!-- 新增图片标记提示 -->
+    <view class="image-mark-tip" wx:if="{{markedArea}}">
+      <text>⚠️ 已标记异常区域</text>
     </view>
   </view>
   
-  <!-- 诊断结果区域 -->
+  <!-- 诊断结果区域（优化信息层级） -->
   <view class="result-section card">
     <view class="result-header">
       <text class="result-title">诊断结果</text>
-      <text class="pet-type">{{petType === 'cat' ? '猫咪' : '狗狗'}}</text>
+      <text class="pet-type">{{petName}}</text>
     </view>
     
     <view class="disease-info">
@@ -21,21 +26,27 @@
       
       <view class="confidence">
         <text class="confidence-label">可信度：</text>
-        <view class="confidence-bar-bg">
-          <view class="confidence-bar" style="width: {{diagnosisResult.confidence}}%;"></view>
+        <view class="confidence-bar-container">
+          <view class="confidence-bar-bg">
+            <view class="confidence-bar" style="width: {{diagnosisResult.confidence}}%;"></view>
+          </view>
+          <text class="confidence-value">{{diagnosisResult.confidence}}%</text>
         </view>
-        <text class="confidence-value">{{diagnosisResult.confidence}}%</text>
       </view>
       
+      <!-- 严重程度显示部分 -->
       <view class="severity">
         <text class="severity-label">严重程度：</text>
         <view class="severity-indicators">
-          <view class="severity-indicator {{diagnosisResult.severity >= 1 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 2 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 3 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 4 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 5 ? 'active' : ''}}"></view>
+      <!-- 固定显示5个指示器，根据严重程度激活前3个 -->
+          <view class="severity-indicator {{3 >= 1 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{3 >= 2 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{3 >= 3 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{3 >= 4 ? 'active' : ''}}"></view>
+          <view class="severity-indicator {{3 >= 5 ? 'active' : ''}}"></view>
         </view>
+      <!-- 直接显示中度文字，无需依赖动态数据 -->
+        <text class="severity-text">中度</text>
       </view>
     </view>
     
@@ -45,7 +56,7 @@
     </view>
   </view>
   
-  <!-- 诊疗建议区域 -->
+  <!-- 诊疗建议区域（优化标签交互） -->
   <view class="advice-section card">
     <text class="advice-title">诊疗建议</text>
     
@@ -79,15 +90,16 @@
     </view>
   </view>
   
-  <!-- 操作按钮区域 -->
+  <!-- 操作按钮区域（优化按钮样式） -->
   <view class="actions-section">
     <view class="btn btn-outline" bindtap="saveResult">
-      <image class="btn-icon" src="/images/save_icon.png" mode="aspectFit"></image>
+      <image class="btn-icon" src="/images/res_save.png" mode="aspectFit"></image>
       <text>收藏结果</text>
+
     </view>
     <view class="btn btn-primary" bindtap="startChat">
-      <image class="btn-icon" src="/images/chat_icon.png" mode="aspectFit"></image>
+      <image class="btn-icon" src="/images/res_chat.png" mode="aspectFit"></image>
       <text>智能问诊</text>
     </view>
   </view>
-</view> 
+</scroll-view>

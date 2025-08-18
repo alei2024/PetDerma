@@ -22,6 +22,10 @@ Component({
       type: String,
       value: ''
     },
+    backColor: {
+      type: String,
+      value: ''
+    },
     back: {
       type: Boolean,
       value: true
@@ -49,6 +53,11 @@ Component({
     delta: {
       type: Number,
       value: 1
+    },
+    // 允许外部自定义标题样式（如字体大小）
+    titleStyle: {
+      type: String,
+      value: ''
     },
   },
   /**

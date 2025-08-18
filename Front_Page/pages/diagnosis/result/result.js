@@ -1,7 +1,10 @@
 Page({
   data: {
     petType: 'cat', // 默认为猫咪
+    petName: '宠物', // 宠物名称
     imagePath: '', // 上传的图片路径
+    allImages: [], // 所有上传的图片
+    symptomDescription: '', // 症状描述
     currentTab: 'home', // 当前选中的建议标签
     markedArea: null, // 标记区域
     diagnosisResult: {
@@ -26,26 +29,93 @@ Page({
         '保持生活环境干净卫生',
         '避免与患病动物接触',
         '增强猫咪免疫力，提供均衡饮食'
-      ]
+      ],
+      warning: '此结果仅供参考，请以专业兽医诊断为准。'
     }
   },
 
   onLoad: function(options) {
-    // 获取传递的参数
-    if (options.petType) {
-      this.setData({
-        petType: options.petType
-      });
-    }
+    console.log('结果页面接收到的参数:', options);
     
-    if (options.imagePath) {
-      this.setData({
-        imagePath: options.imagePath
-      });
+    // 如果有完整的诊断数据，使用传递的数据
+    if (options.data) {
+      try {
+        const diagnosisData = JSON.parse(decodeURIComponent(options.data));
+        console.log('解析的诊断数据:', diagnosisData);
+        
+        // 设置宠物信息
+        if (diagnosisData.petInfo) {
+          this.setData({
+            petType: diagnosisData.petInfo.type || 'cat',
+            petName: diagnosisData.petInfo.name || '宠物'
+          });
+        }
+        
+        // 设置图片（使用第一张图片作为主要展示图片）
+        if (diagnosisData.imageList && diagnosisData.imageList.length > 0) {
+          this.setData({
+            imagePath: diagnosisData.imageList[0],
+            allImages: diagnosisData.imageList
+          });
+        }
+        
+        // 设置症状描述
+        if (diagnosisData.symptomDescription) {
+          this.setData({
+            symptomDescription: diagnosisData.symptomDescription
+          });
+        }
+        
+        // 设置AI分析结果
+        if (diagnosisData.analysisResult) {
+          this.setData({
+            diagnosisResult: {
+              diseaseName: diagnosisData.analysisResult.diseaseName,
+              confidence: diagnosisData.analysisResult.confidence,
+              severity: diagnosisData.analysisResult.severity,
+              description: diagnosisData.analysisResult.description,
+              homeAdvice: diagnosisData.analysisResult.suggestions || [],
+              medicalAdvice: [
+                '建议尽快前往宠物医院进行确诊',
+                '可能需要进行详细的皮肤检查',
+                '遵医嘱使用相关药物',
+                '定期复诊观察恢复情况'
+              ],
+              preventAdvice: [
+                '定期给宠物洗澡并梳理毛发',
+                '保持生活环境干净卫生',
+                '避免与患病动物接触',
+                '增强宠物免疫力，提供均衡饮食'
+              ],
+              warning: diagnosisData.analysisResult.warning
+            }
+          });
+        }
+        
+      } catch (e) {
+        console.error('解析诊断数据失败:', e);
+        wx.showToast({
+          title: '数据解析失败',
+          icon: 'none'
+        });
+      }
+    } else {
+      // 兼容旧的参数传递方式
+      if (options.petType) {
+        this.setData({
+          petType: options.petType
+        });
+      }
+      
+      if (options.imagePath) {
+        this.setData({
+          imagePath: options.imagePath
+        });
+      }
+      
+      // 根据宠物类型更新诊断结果（实际应用中应该是从AI分析结果获取）
+      this.updateDiagnosisResult();
     }
-    
-    // 根据宠物类型更新诊断结果（实际应用中应该是从AI分析结果获取）
-    this.updateDiagnosisResult();
   },
   
   // 更新诊断结果（模拟数据）
@@ -131,7 +201,7 @@ Page({
   startChat: function() {
     // 跳转到智能问诊页面，并传递相关参数
     wx.navigateTo({
-      url: `/pages/diagnosis/chat/chat?petType=${this.data.petType}&diseaseName=${this.data.diagnosisResult.diseaseName}`
+      url: `/pages/diagnosis/chat/chat?petType=${this.data.petType}&diseaseName=${this.data.diagnosisResult.diseaseName}&from=result` // 添加from参数标识结果页跳转
     });
   }
-}) 
+})

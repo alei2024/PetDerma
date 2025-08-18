@@ -1,5 +1,9 @@
 <!--index.wxml-->
-<navigation-bar title="PetDerma" back="{{false}}" color="white" background="#A5D7E8"></navigation-bar>
+<navigation-bar title="PetDerma" back="{{false}}" color="white" background="#A5D7E8" titleStyle="font-size: 20px;">
+	<view slot="left" class="nav-left-btn" bindtap="openMessages">
+		<image class="nav-left-icon" src="/images/message_icon.svg" mode="aspectFit"></image>
+	</view>
+</navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
     <!-- 欢迎区域 -->
@@ -13,23 +17,20 @@
       </view>
     </view>
     
-    <!-- 宠物选择区 -->
-    <view class="pet-select-title">选择您的宠物类型</view>
-    <view class="pet-select">
-      <view class="pet-option {{selectedPet === 'cat' ? 'active' : ''}}" bindtap="selectPet" data-type="cat">
-        <image class="pet-icon" src="/images/cat_icon.png" mode="aspectFit"></image>
-        <text>猫咪</text>
+		<!-- 宠物头像列表（从其他页面输入的数据，这里仅预留展示） -->
+		<view class="pet-avatars">
+			<block wx:for="{{petList}}" wx:key="id" wx:for-index="index" wx:for-item="item">
+				<view class="pet-avatar" bindtap="onTapPet" data-id="{{item.id}}">
+					<image class="avatar-img img-circle" src="{{item.avatar}}" mode="aspectFill"></image>
+					<text class="avatar-name">{{item.name}}</text>
       </view>
-      <view class="pet-option {{selectedPet === 'dog' ? 'active' : ''}}" bindtap="selectPet" data-type="dog">
-        <image class="pet-icon" src="/images/dog_icon.png" mode="aspectFit"></image>
-        <text>狗狗</text>
-      </view>
+			</block>
     </view>
     
     <!-- 功能区块 -->
     <view class="features-grid">
-      <!-- 智能诊断入口 -->
-      <view class="feature-item" bindtap="navigateTo" data-url="/pages/diagnosis/diagnosis">
+			<!-- 智能诊断入口（切换到底部导航页） -->
+			<view class="feature-item" bindtap="navigateTo" data-url="/pages/diagnosis/diagnosis" data-tab="true">
         <view class="feature-icon-container primary">
           <image class="feature-icon" src="/images/diagnosis_icon.png" mode="aspectFit"></image>
         </view>
@@ -37,28 +38,26 @@
         <text class="feature-desc">AI分析皮肤问题</text>
       </view>
       
-      <!-- 社区交流入口 -->
-      <view class="feature-item" bindtap="navigateTo" data-url="/pages/community/community">
+			<!-- 社区交流入口（切换到底部导航页） -->
+			<view class="feature-item" bindtap="navigateTo" data-url="/pages/community/community" data-tab="true">
         <view class="feature-icon-container secondary">
           <image class="feature-icon" src="/images/community_icon.png" mode="aspectFit"></image>
-          <view class="notification-dot" wx:if="{{hasNewPost}}"></view>
         </view>
         <text class="feature-title">社区交流</text>
         <text class="feature-desc">分享经验和案例</text>
       </view>
       
-      <!-- 知识科普入口 -->
-      <view class="feature-item" bindtap="navigateTo" data-url="/pages/knowledge/knowledge">
+			<!-- 知识科普入口（普通页面） -->
+			<view class="feature-item" bindtap="navigateTo" data-url="/pages/knowledge/knowledge" data-tab="false">
         <view class="feature-icon-container tertiary">
           <image class="feature-icon" src="/images/knowledge_icon.png" mode="aspectFit"></image>
-          <view class="new-tag" wx:if="{{hasNewArticle}}">新</view>
         </view>
         <text class="feature-title">知识科普</text>
         <text class="feature-desc">学习防治知识</text>
       </view>
       
-      <!-- 个人中心入口 -->
-      <view class="feature-item" bindtap="navigateTo" data-url="/pages/user/user">
+			<!-- 个人中心入口（切换到底部导航页） -->
+			<view class="feature-item" bindtap="navigateTo" data-url="/pages/user/user" data-tab="true">
         <view class="feature-icon-container quaternary">
           <image class="feature-icon" src="/images/user_icon.png" mode="aspectFit"></image>
         </view>
@@ -66,6 +65,7 @@
         <text class="feature-desc">宠物健康管理</text>
       </view>
     </view>
+		
     
     <!-- 温馨提示 -->
     <view class="tips-section">
@@ -73,9 +73,35 @@
         <image src="/images/tips_icon.png" mode="aspectFit"></image>
       </view>
       <view class="tips-content">
+				<view class="tips-row">
         <text class="tips-title">健康提示</text>
         <text class="tips-text">{{healthTip}}</text>
+				</view>
       </view>
     </view>
+
+    <!-- 每日科普 -->
+		<view class="daily-knowledge">
+			<text class="daily-title">每日科普 </text>
+			<text class="daily-content">每天从知识科普中随机选择一个进行展示</text>
+		</view>
   </view>
 </scroll-view>
+
+<!-- 消息弹窗 -->
+<view wx:if="{{showMessagePopup}}" class="popup-mask" bindtap="closeMessages"></view>
+<view wx:if="{{showMessagePopup}}" class="popup-panel">
+	<view class="popup-header">
+		<text>消息中心</text>
+		<text class="popup-close" bindtap="closeMessages">×</text>
+	</view>
+	<scroll-view scroll-y class="popup-body">
+		<block wx:for="{{messages}}" wx:key="id">
+			<view class="msg-item">
+				<view class="msg-title">{{item.title}}</view>
+				<view class="msg-time">{{item.time}}</view>
+				<view class="msg-content">{{item.content}}</view>
+			</view>
+		</block>
+	</scroll-view>
+</view>

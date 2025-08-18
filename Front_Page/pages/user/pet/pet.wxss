@@ -1,0 +1,437 @@
+/* pages/user/pet/pet.wxss */
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 20rpx 30rpx;
+}
+
+/* 导航右侧按钮 */
+.nav-right-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.nav-right-icon {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+/* 宠物列表 */
+.pet-list {
+  margin-top: 20rpx;
+}
+
+.pet-item {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  width: 650rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.pet-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  margin-right: 30rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.pet-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.pet-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pet-name-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.pet-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 15rpx;
+}
+
+.pet-gender {
+  font-size: 24rpx;
+  margin-top: -60rpx;
+  margin-left: 20rpx;
+  border-radius: 12rpx;
+  width: fit-content;
+  font-size: 40rpx;
+}
+
+.pet-gender.male {
+  color: #409eff;
+}
+
+.pet-gender.female {
+  color: #f56cb8;
+}
+
+.pet-breed {
+  font-size: 28rpx;
+  color: #999;
+  margin-left: 12rpx;
+}
+
+.pet-age {
+  font-size: 28rpx;
+  color: #999;
+  margin-left: 12rpx;
+}
+
+.pet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.action-btn {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background-color: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.action-btn:active {
+  background-color: #e8e8e8;
+}
+
+.action-btn image {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #666;
+  text-align: center;
+  margin-bottom: 60rpx;
+  line-height: 1.5;
+}
+
+.add-pet-btn {
+  background-color: #a5d7e8;
+  color: white;
+  padding: 20rpx 60rpx;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  transition: background-color 0.3s ease;
+}
+
+.add-pet-btn:active {
+  background-color: #8bc4d4;
+}
+
+.float-add-btn {
+  position: fixed;
+  bottom: 50rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 50%;
+  background-color: #a5d7e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+}
+
+.float-add-icon {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+/* 弹窗样式 */
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.popup-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 20rpx 20rpx 0 0;
+  z-index: 1001;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  width: 100vw;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10rpx;
+  padding-top: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.popup-header text:first-child {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  padding-left: 30rpx;
+}
+
+.popup-close {
+  font-size: 48rpx;
+  color: #666;
+  padding: 10rpx;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  margin-right: 30rpx;
+}
+
+.popup-close:active {
+  background-color: #f0f0f0;
+}
+
+.popup-body {
+  flex: 1;
+  padding: 30rpx;
+  max-height: 60vh;
+  width: 90%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  width: 96vw;
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: 30rpx;
+  margin-left: 15rpx;
+  margin-right: 40rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 15rpx;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #a5d7e8;
+}
+
+.form-picker {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.form-picker text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.form-picker image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  background-color: white;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.form-textarea:focus {
+  border-color: #a5d7e8;
+}
+
+/* 头像上传 */
+.avatar-upload {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3rpx dashed #a5d7e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+}
+
+.avatar-upload image {
+  width: 100%;
+  height: 100%;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-placeholder image {
+  width: 40rpx;
+  height: 40rpx;
+  margin-bottom: 10rpx;
+  opacity: 0.6;
+}
+
+.upload-placeholder text {
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 性别选择器 */
+.gender-selector {
+  display: flex;
+  gap: 20rpx;
+}
+
+.gender-option {
+  flex: 1;
+  height: 80rpx;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.gender-option.selected {
+  border-color: #a5d7e8;
+  background-color: rgba(165, 215, 232, 0.1);
+  color: #a5d7e8;
+}
+
+/* 表单操作按钮 */
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+  width: 50%;
+  margin-left: 150rpx;
+}
+
+.cancel-btn,
+.save-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.cancel-btn:active {
+  background-color: #e8e8e8;
+}
+
+.save-btn {
+  background-color: #a5d7e8;
+  color: white;
+}
+
+.save-btn:active {
+  background-color: #8bc4d4;
+}
