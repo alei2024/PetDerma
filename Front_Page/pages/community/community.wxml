@@ -1,0 +1,109 @@
+<!--pages/community/community.wxml-->
+<navigation-bar title="社区" back="{{false}}" color="white" background="#A5D7E8">
+  <view slot="left" class="nav-left-btn" bindtap="showUserMenu">
+    <image class="nav-left-icon" src="/images/community_star.png" mode="aspectFit"></image>
+  </view>
+</navigation-bar>
+
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-section" style="display: flex; align-items: center; gap: 8rpx;">
+    <input class="search-input" placeholder="搜索帖子内容..." value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearch" style="flex: 1;" />
+    <button class="search-btn" bindtap="doSearch">搜索</button>
+    <view wx:if="{{searchKeyword}}" class="clear-btn" bindtap="clearSearch" style="position: absolute; right: 120rpx;">×</view>
+  </view>
+  
+  <!-- 帖子列表 -->
+  <scroll-view class="post-list" scroll-y refresher-enabled="{{true}}" bindrefresherrefresh="onRefresh" 
+               refresher-triggered="{{isRefreshing}}" bindscrolltolower="loadMore" enhanced="{{true}}">
+    <block wx:for="{{postList}}" wx:key="id">
+      <view class="post-item" bindtap="viewPostDetail" data-id="{{item.id}}">
+        <!-- 用户信息 -->
+        <view class="post-header">
+          <view class="user-info">
+            <image class="user-avatar" src="{{item.userAvatar}}" mode="aspectFill"></image>
+            <view class="user-details">
+              <text class="username">{{item.username}}</text>
+              <text class="post-time">{{item.postTime}}</text>
+            </view>
+          </view>
+          <view class="post-menu" bindtap="showPostMenu" data-id="{{item.id}}" catchtap="true">⋯</view>
+        </view>
+        
+        <!-- 帖子内容 -->
+        <view class="post-content">
+          <text class="post-text">{{item.content}}</text>
+          <view wx:if="{{item.images && item.images.length > 0}}" class="post-images">
+            <block wx:for="{{item.images}}" wx:key="index" wx:for-item="imgUrl">
+              <image class="post-image" src="{{imgUrl}}" mode="aspectFill" bindtap="previewImage" 
+                     data-urls="{{item.images}}" data-current="{{imgUrl}}" catchtap="true"></image>
+            </block>
+          </view>
+        </view>
+        
+        <!-- 标签 -->
+        <view wx:if="{{item.tags && item.tags.length > 0}}" class="post-tags">
+          <text wx:for="{{item.tags}}" wx:key="index" class="tag">{{item}}</text>
+        </view>
+        
+        <!-- 互动区域 -->
+        <view class="post-actions">
+          <view class="action-item" bindtap="toggleLike" data-id="{{item.id}}" catchtap="true">
+            <image class="action-icon {{item.isLiked ? 'liked' : ''}}" src="/images/like_icon.png" mode="aspectFit"></image>
+            <text class="action-text {{item.isLiked ? 'liked' : ''}}">{{item.likeCount || 0}}</text>
+          </view>
+          <view class="action-item" bindtap="showComments" data-id="{{item.id}}" catchtap="true">
+            <image class="action-icon" src="/images/comment_icon.png" mode="aspectFit"></image>
+            <text class="action-text">{{item.commentCount || 0}}</text>
+          </view>
+          <view class="action-item" bindtap="toggleCollect" data-id="{{item.id}}" catchtap="true">
+            <image class="action-icon {{item.isCollected ? 'collected' : ''}}" src="/images/collect_icon.png" mode="aspectFit"></image>
+            <text class="action-text {{item.isCollected ? 'collected' : ''}}">{{item.collectCount || 0}}</text>
+          </view>
+          <view class="action-item" bindtap="sharePost" data-id="{{item.id}}" catchtap="true">
+            <image class="action-icon" src="/images/share_icon.png" mode="aspectFit"></image>
+            <text class="action-text">分享</text>
+          </view>
+        </view>
+      </view>
+    </block>
+    
+    <!-- 加载更多提示 -->
+    <view wx:if="{{hasMore}}" class="load-more">
+      <text>{{isLoadingMore ? '加载中...' : '上拉加载更多'}}</text>
+    </view>
+    <view wx:else class="no-more">
+      <text>没有更多内容了</text>
+    </view>
+  </scroll-view>
+  
+  <!-- 发布按钮 -->
+  <view class="fab-button" bindtap="createPost">
+    <text class="fab-icon">+</text>
+  </view>
+</view>
+
+<!-- 用户菜单弹窗 -->
+<view wx:if="{{showUserMenuModal}}" class="modal-mask" bindtap="hideUserMenu"></view>
+<view wx:if="{{showUserMenuModal}}" class="user-menu-modal">
+  <view class="menu-item" bindtap="goToMyCollections">
+    <text>我的收藏</text>
+  </view>
+  <view class="menu-item" bindtap="goToMyComments">
+    <text>我的评论</text>
+  </view>
+  <view class="menu-item" bindtap="goToMyPosts">
+    <text>我的发布</text>
+  </view>
+</view>
+
+<!-- 帖子操作菜单 -->
+<view wx:if="{{showPostMenuModal}}" class="modal-mask" bindtap="hidePostMenu"></view>
+<view wx:if="{{showPostMenuModal}}" class="post-menu-modal">
+  <view class="menu-item" bindtap="reportPost">
+    <text>举报</text>
+  </view>
+  <view class="menu-item" bindtap="hidePost">
+    <text>不感兴趣</text>
+  </view>
+</view>

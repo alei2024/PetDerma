@@ -1,0 +1,6 @@
+<view class="page-container">
+  <navigation-bar title="我的收藏" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
+  <view class="content">
+    <!-- 我的收藏内容区域 -->
+  </view>
+</view>

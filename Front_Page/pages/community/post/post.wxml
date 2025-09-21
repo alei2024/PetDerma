@@ -1,0 +1,134 @@
+<!--pages/community/post/post.wxml-->
+<navigation-bar title="发布帖子" back="{{true}}" color="white" background="#A5D7E8">
+</navigation-bar>
+
+<scroll-view class="container" scroll-y>
+  <!-- 内容输入区 -->
+  <view class="content-section">
+    <textarea class="content-input" 
+              placeholder="分享你的宠物护理经验、求助问题或日常生活..." 
+              value="{{postContent}}" 
+              bindinput="onContentInput" 
+              maxlength="2000" 
+              auto-height
+              show-confirm-bar="{{false}}"></textarea>
+    <view class="char-count">{{postContent.length}}/2000</view>
+  </view>
+  
+  <!-- 图片上传区 -->
+  <view class="image-section">
+    <view class="section-title">添加图片</view>
+    <view class="image-grid">
+      <block wx:for="{{imageList}}" wx:key="index">
+        <view class="image-item">
+          <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+          <view class="delete-btn" bindtap="deleteImage" data-index="{{index}}">×</view>
+        </view>
+      </block>
+      <view wx:if="{{imageList.length < 9}}" class="add-image-btn" bindtap="chooseImage">
+        <view class="add-icon">
+          <text class="icon-camera">📷</text>
+          <text class="add-text">添加图片</text>
+        </view>
+      </view>
+    </view>
+    <view class="image-tip">最多可上传9张图片</view>
+  </view>
+  
+  <!-- 标签选择区 -->
+  <view class="tags-section">
+    <view class="section-title">添加标签</view>
+    <view class="selected-tags">
+      <block wx:for="{{selectedTags}}" wx:key="index">
+        <view class="selected-tag" bindtap="removeTag" data-tag="{{item}}">
+          {{item}} ×
+        </view>
+      </block>
+    </view>
+    <view class="tag-categories">
+      <view class="tag-category">
+        <text class="category-title">宠物类型</text>
+        <view class="tag-list">
+          <text wx:for="{{petTypeTags}}" wx:key="index" 
+                class="tag-item {{selectedTags.indexOf(item) >= 0 ? 'selected' : ''}}" 
+                bindtap="toggleTag" data-tag="{{item}}">{{item}}</text>
+        </view>
+      </view>
+      
+      <view class="tag-category">
+        <text class="category-title">问题类型</text>
+        <view class="tag-list">
+          <text wx:for="{{problemTags}}" wx:key="index" 
+                class="tag-item {{selectedTags.indexOf(item) >= 0 ? 'selected' : ''}}" 
+                bindtap="toggleTag" data-tag="{{item}}">{{item}}</text>
+        </view>
+      </view>
+      
+      <view class="tag-category">
+        <text class="category-title">内容类型</text>
+        <view class="tag-list">
+          <text wx:for="{{contentTags}}" wx:key="index" 
+                class="tag-item {{selectedTags.indexOf(item) >= 0 ? 'selected' : ''}}" 
+                bindtap="toggleTag" data-tag="{{item}}">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 自定义标签 -->
+    <view class="custom-tag-section">
+      <view class="custom-tag-input-wrapper">
+        <input class="custom-tag-input" 
+               placeholder="输入自定义标签" 
+               value="{{customTagInput}}" 
+               bindinput="onCustomTagInput" 
+               bindconfirm="addCustomTag" 
+               maxlength="10" />
+        <view class="add-custom-btn" bindtap="addCustomTag">添加</view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 发布设置 -->
+  <view class="settings-section">
+    <view class="section-title">发布设置</view>
+    <view class="setting-item">
+      <text class="setting-label">允许评论</text>
+      <switch class="setting-switch" checked="{{allowComments}}" bindchange="onAllowCommentsChange"></switch>
+    </view>
+    <view class="setting-item">
+      <text class="setting-label">匿名发布</text>
+      <switch class="setting-switch" checked="{{isAnonymous}}" bindchange="onAnonymousChange"></switch>
+    </view>
+  </view>
+  
+  <!-- 底部占位 -->
+  <view class="bottom-placeholder"></view>
+</scroll-view>
+
+<!-- 左下角发布按钮 -->
+<view class="bottom-publish-btn {{canPublish ? 'active' : ''}}" bindtap="publishPost">
+  <text class="publish-text">发布</text>
+</view>
+
+<!-- 发布确认弹窗 -->
+<view wx:if="{{showPublishConfirm}}" class="modal-mask" bindtap="hidePublishConfirm"></view>
+<view wx:if="{{showPublishConfirm}}" class="publish-confirm-modal">
+  <view class="modal-header">
+    <text class="modal-title">确认发布</text>
+  </view>
+  <view class="modal-content">
+    <text class="confirm-text">确认要发布这篇帖子吗？发布后将无法撤回。</text>
+  </view>
+  <view class="modal-actions">
+    <view class="modal-btn cancel-btn" bindtap="hidePublishConfirm">取消</view>
+    <view class="modal-btn confirm-btn" bindtap="confirmPublish">确认发布</view>
+  </view>
+</view>
+
+<!-- 加载弹窗 -->
+<view wx:if="{{isPublishing}}" class="loading-modal">
+  <view class="loading-content">
+    <view class="loading-icon"></view>
+    <text class="loading-text">正在发布...</text>
+  </view>
+</view> 

@@ -1,0 +1,151 @@
+<!--pages/user/pet/pet.wxml-->
+<navigation-bar title="宠物管理" back="{{true}}" color="white" background="#A5D7E8">
+  
+</navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 宠物列表 -->
+    <view class="pet-list" wx:if="{{petList.length > 0}}">
+      <view class="pet-item" wx:for="{{petList}}" wx:key="id" bindtap="editPet" data-id="{{item.id}}">
+        <view class="pet-avatar">
+          <image src="{{item.avatar || '/images/default_pet.png'}}" mode="aspectFill"></image>
+        </view>
+        <view class="pet-info">
+          <view class="pet-name-row">
+    <text class="pet-name">{{item.name}}</text>
+    <text class="pet-breed">{{item.breed}}</text>
+    <text class="pet-age">{{item.age}}岁</text>
+    <text class="pet-gender {{item.gender === 'male' ? 'male' : 'female'}}">
+      {{item.gender === 'male' ? '♂' : '♀'}}
+    </text>
+  </view>
+        </view>
+        <view class="pet-actions">
+          <view class="action-btn" catchtap="viewHealth" data-id="{{item.id}}">
+            <image src="/images/health_little.png" mode="aspectFit"></image>
+          </view>
+          <view class="action-btn" catchtap="deletePet" data-id="{{item.id}}">
+            <image src="/images/delete_icon.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:else>
+      <image class="empty-icon" src="/images/default_pet.png" mode="aspectFit"></image>
+      <text class="empty-title">无宠物档案</text>
+      <text class="empty-desc">添加您的第一个宠物，开始健康管理之旅</text>
+      <view class="add-pet-btn" bindtap="addPet">
+        <text>添加宠物</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 底部悬浮添加按钮 -->
+<view class="float-add-btn" bindtap="addPet">
+  <image class="float-add-icon" src="/images/add_icon.png" mode="aspectFit"></image>
+</view>
+
+<!-- 添加/编辑宠物弹窗 -->
+<view wx:if="{{showPetForm}}" class="popup-mask" bindtap="closePetForm"></view>
+<view wx:if="{{showPetForm}}" class="popup-panel">
+  <view class="popup-header">
+    <text>{{editingPet ? '编辑宠物' : '添加宠物'}}</text>
+    <text class="popup-close" bindtap="closePetForm">×</text>
+  </view>
+  <scroll-view scroll-y class="popup-body">
+    <view class="form-group">
+      <text class="form-label">头像</text>
+      <view class="avatar-upload" bindtap="choosePetAvatar">
+        <image wx:if="{{petForm.avatar}}" src="{{petForm.avatar}}" mode="aspectFill"></image>
+        <view wx:else class="upload-placeholder">
+          <image src="/images/camera_icon.png" mode="aspectFit"></image>
+          <text>上传头像</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">昵称</text>
+      <input class="form-input" placeholder="请输入宠物昵称" value="{{petForm.name}}" bindinput="onNameInput" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">类型</text>
+      <view class="gender-selector">
+        <view class="gender-option {{petForm.type === 'cat' ? 'selected' : ''}}" bindtap="selectPetType" data-type="cat">
+          <text>猫</text>
+        </view>
+        <view class="gender-option {{petForm.type === 'dog' ? 'selected' : ''}}" bindtap="selectPetType" data-type="dog">
+          <text>狗</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">品种</text>
+      <input class="form-input" placeholder="请输入品种" value="{{petForm.breed}}" bindinput="onBreedInput" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">性别</text>
+      <view class="gender-selector">
+        <view class="gender-option {{petForm.gender === 'male' ? 'selected' : ''}}" bindtap="selectGender" data-gender="male">
+          <text>♂ 公</text>
+        </view>
+        <view class="gender-option {{petForm.gender === 'female' ? 'selected' : ''}}" bindtap="selectGender" data-gender="female">
+          <text>♀ 母</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">出生日期</text>
+      <picker mode="date" value="{{petForm.birthDate}}" bindchange="onBirthDateChange">
+        <view class="form-picker">
+          <text>{{petForm.birthDate || '请选择出生日期'}}</text>
+          <image src="/images/arrow_down.png" mode="aspectFit"></image>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">体重 (kg)</text>
+      <input class="form-input" type="digit" placeholder="请输入体重" value="{{petForm.weight}}" bindinput="onWeightInput" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">绝育状态</text>
+      <view class="gender-selector">
+        <view class="gender-option {{petForm.sterilized === 'yes' ? 'selected' : ''}}" bindtap="selectSterilized" data-sterilized="yes">
+          <text>已绝育</text>
+        </view>
+        <view class="gender-option {{petForm.sterilized === 'no' ? 'selected' : ''}}" bindtap="selectSterilized" data-sterilized="no">
+          <text>未绝育</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">过敏史</text>
+      <textarea class="form-textarea" placeholder="请添加过敏史" value="{{petForm.notes}}" bindinput="onNotesInput"></textarea>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">既往病史</text>
+      <textarea class="form-textarea" placeholder="请添加既往病史" value="{{petForm.medicalHistory}}" bindinput="onMedicalHistoryInput"></textarea>
+    </view>
+
+    <view class="form-actions">
+      <view class="cancel-btn" bindtap="closePetForm">
+        <text>取消</text>
+      </view>
+      <view class="save-btn" bindtap="savePet">
+        <text>保存</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

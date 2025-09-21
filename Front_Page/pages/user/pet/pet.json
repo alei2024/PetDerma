@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "宠物管理",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "navigation-bar": "/components/navigation-bar/navigation-bar"
+  }
+}

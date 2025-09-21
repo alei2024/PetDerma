@@ -1,0 +1,215 @@
+/* pages/diagnosis/test/test.wxss */
+.container {
+  padding: 30rpx;
+  background-color: #f6f8fa;
+  min-height: 100vh;
+}
+
+.card {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+.test-item {
+  margin-bottom: 30rpx;
+  padding-bottom: 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.test-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.test-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.test-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.btn {
+  padding: 16rpx 32rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  border: none;
+  min-width: 120rpx;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2rpx solid #4a90b8;
+  color: #4a90b8;
+}
+
+.btn-primary {
+  background-color: #4a90b8;
+  color: white;
+}
+
+.btn-danger {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.btn-small {
+  padding: 8rpx 16rpx;
+  font-size: 24rpx;
+  min-width: 80rpx;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+.selected-image {
+  margin-top: 20rpx;
+}
+
+.preview-image {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.image-path {
+  font-size: 24rpx;
+  color: #666;
+  word-break: break-all;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.result-item {
+  background-color: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.result-type {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #4a90b8;
+}
+
+.result-time {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.result-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.disease-info {
+  flex: 1;
+}
+
+.disease-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.confidence, .severity {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.result-actions {
+  margin-left: 20rpx;
+}
+
+.image-preview {
+  display: flex;
+  gap: 10rpx;
+  flex-wrap: wrap;
+}
+
+.preview-image-small {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 8rpx;
+}
+
+/* 加载中弹窗 */
+.loading-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-content {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+}
+
+.loading-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid #4a90b8;
+  border-top: 6rpx solid transparent;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 30rpx;
+  color: #333;
+}

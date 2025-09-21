@@ -1,0 +1,303 @@
+/**index.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+/* 导航左侧按钮 */
+.nav-left-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+}
+.nav-left-icon {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+/* 欢迎区域样式 */
+.welcome-section {
+  width: calc(100% - 60rpx);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 28rpx 0 30rpx;
+  padding: 32rpx;
+  background-color: var(--primary-blue);
+  border-radius: 20rpx;
+  color: white;
+  align-self: center;
+}
+
+.welcome-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.welcome-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.welcome-subtitle {
+  font-size: 28rpx;
+  opacity: 0.9;
+}
+
+.welcome-image {
+  width: 160rpx;
+  height: 160rpx;
+}
+
+.welcome-image image {
+  width: 100%;
+  height: 100%;
+}
+
+/* 宠物头像列表 */
+.pet-avatars {
+  width: 100%;
+  display: flex;
+  gap: 24rpx;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10rpx 30rpx 0;
+  margin-bottom: 30rpx;
+}
+
+.pet-avatar {
+  min-width: 120rpx;
+  max-width: 120rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background-color: var(--bg-white);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  /* 确保图片为标准圆形，防止压扁 */
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+  display: block;
+  /* 强制保持尺寸比例 */
+  flex-shrink: 0;
+}
+
+.avatar-name {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: var(--text-dark);
+}
+
+/* 功能区块样式 */
+.features-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin: 20rpx 0 30rpx;
+}
+
+.feature-item {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.feature-item:active {
+  transform: scale(0.98);
+}
+
+.feature-icon-container {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.primary {
+  background-color: rgba(165, 215, 232, 0.2);
+}
+.secondary {
+  background-color: rgba(255, 192, 203, 0.2);
+}
+.tertiary {
+  background-color: rgba(255, 250, 205, 0.3);
+}
+.quaternary {
+  background-color: rgba(189, 252, 201, 0.2);
+}
+
+.feature-icon {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.feature-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  color: var(--text-dark);
+}
+.feature-desc {
+  font-size: 24rpx;
+  color: var(--text-light);
+}
+
+/* 每日科普 */
+.daily-knowledge {
+  width: calc(100% - 60rpx);
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  min-height: 200rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  margin: 0 auto 30rpx;
+}
+
+.daily-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text-dark);
+  margin-bottom: 10rpx;
+}
+.daily-content {
+  font-size: 24rpx;
+  color: var(--text-gray);
+  line-height: 1.8;
+}
+
+/* 温馨提示样式 */
+.tips-section {
+  width: calc(100% - 60rpx);
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  margin: 0 auto 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.tips-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-right: 20rpx;
+}
+.tips-icon image {
+  width: 100%;
+  height: 100%;
+}
+
+.tips-content {
+  flex: 1;
+}
+
+.tips-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tips-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text-dark);
+  margin-right: 10rpx;
+  margin-bottom: 0;
+}
+.tips-text {
+  font-size: 24rpx;
+  color: var(--text-gray);
+  line-height: 1.5;
+}
+
+/* 弹窗样式 */
+.popup-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+.popup-panel {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 620rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  border-bottom: 2rpx solid #eee;
+}
+.popup-close {
+  font-size: 40rpx;
+  color: var(--text-light);
+}
+.popup-body {
+  padding: 5rpx 28rpx;
+  height: 60vh;
+  width: 105%;
+  box-sizing: border-box;
+}
+.msg-item {
+  padding: 20rpx 10rpx;
+  border-bottom: 2rpx solid #f3f3f3;
+}
+.msg-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text-dark);
+  white-space: normal;
+  word-break: break-all;
+  width: 94%;
+}
+.msg-time {
+  font-size: 22rpx;
+  color: var(--text-light);
+  margin: 6rpx 0 8rpx;
+}
+.msg-content {
+  font-size: 26rpx;
+  color: var(--text-gray);
+  line-height: 1.6;
+  white-space: normal;
+  word-break: break-all;
+  width: 95%;
+}

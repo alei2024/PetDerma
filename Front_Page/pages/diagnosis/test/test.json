@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "模型测试",
+  "usingComponents": {
+    "navigation-bar": "/components/navigation-bar/navigation-bar"
+  }
+}
