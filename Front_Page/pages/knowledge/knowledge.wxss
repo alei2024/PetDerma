@@ -56,10 +56,11 @@
   border-radius: 16rpx;
   padding: 24rpx;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  margin-left: -70rpx;
-  min-width: calc(100% + 90rpx);
+  margin: 0;
+  width: 100%;
   transition: all 0.3s ease;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .article-card:active {
@@ -180,17 +181,23 @@
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.3s ease;
+  padding: 40rpx 30rpx;
+  box-sizing: border-box;
 }
 
 .article-modal {
   width: 90%;
   max-width: 700rpx;
+  max-height: 85vh;
+  min-height: 600rpx;
   background-color: white;
   border-radius: 20rpx;
   display: flex;
   flex-direction: column;
   animation: slideUp 0.3s ease;
   overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .modal-header {
@@ -205,12 +212,11 @@
 .article-content {
   flex: 1;
   padding: 32rpx;
-  max-height: 60vh;
-  overflow-y: auto;
-  word-wrap: break-word;
-  word-break: break-all;
   box-sizing: border-box;
   width: 100%;
+  min-height: 500rpx;
+  max-height: 700rpx;
+  position: relative;
 }
 .modal-title {
   font-size: 36rpx;
@@ -278,15 +284,6 @@
   max-width: fit-content;
 }
 
-.article-content {
-  flex: 1;
-  padding: 32rpx;
-  max-height: 50vh;
-  overflow-y: auto;
-  word-wrap: break-word;
-  word-break: break-all;
-  box-sizing: border-box;
-}
 
 .article-content rich-text {
   line-height: 1.8;
@@ -296,6 +293,9 @@
   word-wrap: break-word;
   word-break: break-all;
   overflow-wrap: break-word;
+  display: block;
+  padding-bottom: 20rpx;
+  min-height: 100rpx;
 }
 
 .modal-actions {
@@ -304,6 +304,9 @@
   gap: 24rpx;
   border-top: 1rpx solid #f0f0f0;
   background-color: #fafafa;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .action-btn {
@@ -349,5 +352,54 @@
   to { 
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 375px) {
+  .article-modal {
+    width: 95%;
+    max-height: 90vh;
+    min-height: 500rpx;
+  }
+  
+  .article-content {
+    padding: 24rpx;
+    min-height: 250rpx;
+    max-height: 400rpx;
+  }
+  
+  .modal-header {
+    padding: 20rpx 24rpx;
+  }
+  
+  .article-info {
+    padding: 20rpx 24rpx;
+  }
+  
+  .modal-actions {
+    padding: 20rpx 24rpx;
+  }
+  
+  .article-content rich-text {
+    font-size: 26rpx;
+  }
+}
+
+/* 确保按钮始终可见 */
+.modal-actions {
+  background-color: white;
+  border-top: 2rpx solid #e0e0e0;
+}
+
+@media screen and (min-width: 414px) {
+  .article-modal {
+    max-height: 80vh;
+    min-height: 650rpx;
+  }
+  
+  .article-content {
+    min-height: 350rpx;
+    max-height: 600rpx;
   }
 }

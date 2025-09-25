@@ -294,6 +294,8 @@ Page({
 	showArticleDetail(e) {
 		const articleId = e.currentTarget.dataset.id;
 		const article = this.data.articles.find(item => item.id === articleId);
+		console.log('点击文章ID:', articleId);
+		console.log('找到的文章:', article);
 		if (article) {
 			// 增加阅读数
 			article.readCount = (article.readCount || 0) + 1;
@@ -302,6 +304,7 @@ Page({
 				selectedArticle: article,
 				showArticleModal: true
 			});
+			console.log('设置selectedArticle:', article);
 		}
 	},
 

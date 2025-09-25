@@ -82,26 +82,22 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-org/PetDerma.git
+git clone https://github.com/alei2024/PetDerma.git
 cd PetDerma
+cd Front_Page\pages\diagnosis\model
 
 # 安装依赖
 pip install -r requirements.txt
 
-# 运行后端服务
-python app.py
-
-# 前端开发运行（例如 React）
-cd frontend
-npm install
-npm run dev
+# 运行后端服务,确保Flask服务器正在运行(进行皮肤病分类诊断)
+python server_example.py
 ```
 
 
 
 ## 八、项目预期成果
 
-- ✅ 原型系统（Web 或小程序）
+- ✅ 原型系统（小程序）
 - 📚 宠物医学知识图谱与健康数据库
 - 🧾 用户手册与操作指南
 - 📝 项目研究报告

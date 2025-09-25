@@ -88,9 +88,9 @@
 		</view>
 		
 		<!-- 文章内容 -->
-		<view class="article-content">
+		<scroll-view class="article-content" scroll-y="true" enhanced="true" show-scrollbar="false">
 			<rich-text nodes="{{selectedArticle.content}}"></rich-text>
-		</view>
+		</scroll-view>
 		
 		<!-- 操作按钮 -->
 		<view class="modal-actions">

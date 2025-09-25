@@ -81,9 +81,18 @@
     </view>
 
     <!-- 每日科普 -->
-		<view class="daily-knowledge">
-			<text class="daily-title">每日科普 </text>
-			<text class="daily-content">每天从知识科普中随机选择一个进行展示</text>
+		<view class="daily-knowledge" bindtap="navigateToKnowledge">
+			<view class="daily-header">
+				<text class="daily-title">每日科普</text>
+				<text class="daily-subtitle">根据本季易发疾病推荐</text>
+			</view>
+			<view class="daily-content">
+				<text class="daily-topic">{{dailyKnowledge.title}}</text>
+				<text class="daily-summary">{{dailyKnowledge.summary}}</text>
+			</view>
+			<view class="daily-footer">
+				<text class="daily-more">点击查看详情 ></text>
+			</view>
 		</view>
   </view>
 </scroll-view>

@@ -41,8 +41,9 @@ page {
   margin-bottom: 20rpx;
   display: flex;
   align-items: center;
-  width: 650rpx;
+  width: 100%;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
 .pet-avatar {
@@ -216,21 +217,22 @@ page {
   background-color: white;
   border-radius: 20rpx 20rpx 0 0;
   z-index: 1001;
-  max-height: 80vh;
+  max-height: 85vh;
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  width: 100vw;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .popup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10rpx;
-  padding-top: 20rpx;
+  padding: 30rpx;
   border-bottom: 2rpx solid #f0f0f0;
+  flex-shrink: 0;
+  background-color: white;
 }
 
 .popup-header text:first-child {
@@ -256,18 +258,17 @@ page {
 .popup-body {
   flex: 1;
   padding: 30rpx;
-  max-height: 60vh;
-  width: 90%;
-  overflow-y: scroll;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  width: 96vw;
+  box-sizing: border-box;
+  min-height: 0;
 }
 
 /* 表单样式 */
 .form-group {
   margin-bottom: 30rpx;
-  margin-left: 15rpx;
-  margin-right: 40rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-label {
@@ -402,8 +403,8 @@ page {
   gap: 20rpx;
   margin-top: 30rpx;
   margin-bottom: 30rpx;
-  width: 50%;
-  margin-left: 150rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .cancel-btn,
@@ -434,4 +435,38 @@ page {
 
 .save-btn:active {
   background-color: #8bc4d4;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 375px) {
+  .popup-panel {
+    max-height: 90vh;
+    min-height: 70vh;
+  }
+  
+  .popup-body {
+    padding: 20rpx;
+  }
+  
+  .form-group {
+    margin-bottom: 25rpx;
+  }
+  
+  .form-input,
+  .form-picker {
+    height: 70rpx;
+    font-size: 26rpx;
+  }
+  
+  .form-textarea {
+    min-height: 100rpx;
+    font-size: 26rpx;
+  }
+}
+
+@media screen and (min-width: 414px) {
+  .popup-panel {
+    max-height: 80vh;
+    min-height: 50vh;
+  }
 }

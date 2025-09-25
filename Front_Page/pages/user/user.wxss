@@ -3,7 +3,7 @@ page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f5f5f5;
+  background: linear-gradient(180deg, #A5D7E8 0%, #FFFFFF 40%);
 }
 
 .scrollarea {
@@ -12,7 +12,9 @@ page {
 }
 
 .container {
-  padding: 20rpx 30rpx;
+  padding: 0 30rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 导航左侧按钮 */
@@ -31,14 +33,17 @@ page {
 
 /* 用户信息区域 */
 .user-section {
-  background-color: white;
-  border-radius: 20rpx;
-  padding: 20rpx 30rpx;
-  margin-top: 10rpx;
-  margin-bottom: 30rpx;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 30rpx 0;
+  margin: 0;
   display: flex;
   align-items: center;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  box-shadow: none;
+  position: relative;
+  min-height: 120rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .avatar-container {
@@ -81,28 +86,41 @@ page {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-right: 30rpx;
 }
 
 .user-name {
   font-size: 32rpx;
   font-weight: bold;
-  color: #333;
+  color: #2C5F7C;
   margin-bottom: 10rpx;
+  line-height: 1.2;
 }
 
-.user-phone {
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 10rpx;
+.user-id {
+  font-size: 26rpx;
+  color: #5A8BA8;
+  margin-bottom: 0;
+  line-height: 1.2;
 }
 
-.login-type {
-  font-size: 24rpx;
-  color: #a5d7e8;
+
+.switch-account {
+  position: absolute;
+  top: 30rpx;
+  right: 0;
+  padding: 8rpx 16rpx;
   background-color: rgba(165, 215, 232, 0.1);
-  padding: 4rpx 12rpx;
-  border-radius: 12rpx;
-  width: fit-content;
+  border-radius: 16rpx;
+  min-width: 100rpx;
+  text-align: center;
+  z-index: 10;
+}
+
+.switch-text {
+  font-size: 24rpx;
+  color: #5A8BA8;
+  font-weight: 500;
 }
 
 .login-btn {
@@ -130,6 +148,160 @@ page {
   background-color: #8bc7d8;
   transform: scale(0.98);
   box-shadow: 0 2rpx 8rpx rgba(165, 215, 232, 0.4);
+}
+
+/* 统计数据区域 */
+.statistics-section {
+  display: flex;
+  justify-content: space-between;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 30rpx 0;
+  margin: 0;
+  box-shadow: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 10rpx;
+  box-sizing: border-box;
+}
+
+.stat-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2C5F7C;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #5A8BA8;
+}
+
+/* 爪爪健康计划区域 */
+.health-plan-section {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 20rpx 0;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.plan-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #2C5F7C;
+  position: relative;
+}
+
+.plan-title::before {
+  content: "🐾";
+  margin-right: 8rpx;
+  font-size: 32rpx;
+}
+
+.plan-stars {
+  display: flex;
+  gap: 8rpx;
+}
+
+.star {
+  font-size: 32rpx;
+  color: #FFB84D;
+  text-shadow: 0 1rpx 2rpx rgba(255, 184, 77, 0.3);
+}
+
+.plan-arrow {
+  width: 60rpx;
+  height: 60rpx;
+  background-color: #A5D7E8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-text {
+  font-size: 32rpx;
+  color: white;
+  font-weight: bold;
+}
+
+.plan-functions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.plan-function-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #FFF8E1;
+  border-radius: 15rpx;
+  transition: all 0.3s ease;
+  border: 1rpx solid #FFE0B2;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.plan-function-item:active {
+  background-color: #FFF3E0;
+  transform: scale(0.98);
+}
+
+.function-icon {
+  width: 80rpx;
+  height: 80rpx;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border: 2rpx solid #FFB84D;
+}
+
+.icon-text {
+  font-size: 36rpx;
+}
+
+.function-content {
+  flex: 1;
+}
+
+.function-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #2C5F7C;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.function-desc {
+  font-size: 24rpx;
+  color: #5A8BA8;
+  display: block;
 }
 
 /* 功能区块样式 */
@@ -190,6 +362,81 @@ page {
 .feature-desc {
   font-size: 24rpx;
   color: #666;
+}
+
+/* 常用功能区域 */
+.common-functions-section {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 20rpx 0 30rpx 0;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2C5F7C;
+  margin-bottom: 30rpx;
+  display: block;
+}
+
+.functions-grid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 15rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.function-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 10rpx;
+  transition: all 0.3s ease;
+  background-color: #FFF8E1;
+  border-radius: 15rpx;
+  border: 1rpx solid #FFE0B2;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  min-height: 160rpx;
+  max-width: calc(25% - 11rpx);
+}
+
+.function-item:active {
+  transform: scale(0.95);
+  background-color: #FFF3E0;
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.function-icon-container {
+  width: 80rpx;
+  height: 80rpx;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15rpx;
+  border: 2rpx solid #FFB84D;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.function-emoji {
+  font-size: 36rpx;
+}
+
+.function-name {
+  font-size: 26rpx;
+  color: #2C5F7C;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 /* 菜单列表样式 */
@@ -652,4 +899,42 @@ page {
 
 .auth-confirm-btn:active {
   background-color: #06ad56;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 375px) {
+  .functions-grid {
+    flex-wrap: wrap;
+    gap: 10rpx;
+  }
+  
+  .function-item {
+    flex: 0 0 calc(50% - 5rpx);
+    max-width: calc(50% - 5rpx);
+    min-height: 140rpx;
+    padding: 15rpx 8rpx;
+  }
+  
+  .function-name {
+    font-size: 24rpx;
+  }
+  
+  .stat-number {
+    font-size: 40rpx;
+  }
+  
+  .stat-label {
+    font-size: 22rpx;
+  }
+}
+
+@media screen and (min-width: 414px) {
+  .function-item {
+    min-height: 180rpx;
+    padding: 25rpx 15rpx;
+  }
+  
+  .stat-number {
+    font-size: 52rpx;
+  }
 }

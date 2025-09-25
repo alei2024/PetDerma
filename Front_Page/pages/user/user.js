@@ -5,7 +5,14 @@ Page({
       avatar: '',
       nickname: '',
       phone: '',
-      loginType: '' // 'wechat' 或 'phone'
+      loginType: '', // 'wechat' 或 'phone'
+      userId: '' // 用户ID
+    },
+    // 统计数据
+    statistics: {
+      petCount: 0,    // 宠物数量
+      recordCount: 0, // 记录数量
+      reminderCount: 0 // 提醒数量
     },
     showSettingsPopup: false,
     notificationEnabled: true,
@@ -22,10 +29,12 @@ Page({
 
   onLoad: function() {
     this.checkLoginStatus();
+    this.loadStatistics();
   },
 
   onShow: function() {
     this.checkLoginStatus();
+    this.loadStatistics();
   },
 
   // 检查登录状态
@@ -42,6 +51,29 @@ Page({
         userInfo: {}
       });
     }
+  },
+
+  // 加载统计数据
+  loadStatistics: function() {
+    // 获取宠物数量
+    const petList = wx.getStorageSync('petList') || [];
+    const petCount = petList.length;
+    
+    // 获取健康记录数量（模拟数据）
+    const healthRecords = wx.getStorageSync('healthRecords') || [];
+    const recordCount = healthRecords.length;
+    
+    // 获取提醒数量（模拟数据）
+    const reminders = wx.getStorageSync('reminders') || [];
+    const reminderCount = reminders.length;
+    
+    this.setData({
+      statistics: {
+        petCount: petCount,
+        recordCount: recordCount,
+        reminderCount: reminderCount
+      }
+    });
   },
 
   // 登录功能
@@ -130,7 +162,8 @@ Page({
         avatar: randomAvatar,
         nickname: randomName,
         phone: '',
-        loginType: 'wechat'
+        loginType: 'wechat',
+        userId: 'wx' + Math.floor(Math.random() * 100000)
       };
       
       wx.setStorageSync('userInfo', userInfo);
@@ -301,7 +334,8 @@ Page({
       avatar: tempAvatar,
       nickname: nickname,
       phone: phone,
-      loginType: 'phone'
+      loginType: 'phone',
+      userId: 'ph' + Math.floor(Math.random() * 100000)
     };
     
     wx.setStorageSync('userInfo', userInfo);
@@ -495,6 +529,62 @@ Page({
       content: 'PetDerma是一款专业的宠物皮肤健康管理应用，致力于为宠物主人提供智能诊断、健康管理和知识科普服务。\n\n版本：1.0.0\n开发者：PetDerma团队',
       showCancel: false,
       confirmText: '确定'
+    });
+  },
+
+  // 切换账号
+  switchAccount: function() {
+    if (!this.data.isLoggedIn) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    wx.showModal({
+      title: '切换账号',
+      content: '确定要退出当前账号并重新登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.logout();
+          // 延迟一下再显示登录选项
+          setTimeout(() => {
+            this.login();
+          }, 500);
+        }
+      }
+    });
+  },
+
+
+  // 跳转到诊断页面
+  navigateToDiagnosis: function() {
+    wx.navigateTo({
+      url: '/pages/diagnosis/diagnosis'
+    });
+  },
+
+  // 跳转到家庭页面
+  navigateToFamily: function() {
+    wx.showToast({
+      title: '家庭功能开发中',
+      icon: 'none'
+    });
+  },
+
+  // 跳转到消息页面
+  navigateToMessages: function() {
+    wx.showToast({
+      title: '消息功能开发中',
+      icon: 'none'
+    });
+  },
+
+  // 跳转到知识页面
+  navigateToKnowledge: function() {
+    wx.navigateTo({
+      url: '/pages/knowledge/knowledge'
     });
   }
 })
