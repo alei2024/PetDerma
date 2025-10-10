@@ -33,7 +33,7 @@
       <!-- 系统消息 -->
       <view wx:else class="message system" id="msg-{{item.id}}">
         <view class="system-avatar">
-          <image src="/images/doctor.png" mode="aspectFill" style="background-color:white;"></image>
+          <image src="/images/doctor_avatar.png" mode="aspectFill"></image>
         </view>
         <view class="message-content">
           <text>{{item.content}}</text>
@@ -43,6 +43,9 @@
     
     <!-- 正在输入提示 -->
     <view class="typing-indicator" wx:if="{{isTyping}}">
+      <view class="system-avatar">
+        <image src="/images/doctor_avatar.png" mode="aspectFill"></image>
+      </view>
       <view class="typing-dots">
         <view class="dot"></view>
         <view class="dot"></view>
@@ -65,6 +68,9 @@
     <view class="input-box">
       <input class="message-input" placeholder="输入您的问题..." value="{{inputMessage}}" bindinput="onInput" confirm-type="send" bindconfirm="sendMessage"></input>
       <view class="input-actions">
+        <view class="action-icon" bindtap="startVoiceInput">
+          <image src="/images/voice_icon.png" mode="aspectFit"></image>
+        </view>
         <view class="send-btn {{inputMessage ? 'active' : ''}}" bindtap="sendMessage">发送</view>
       </view>
     </view>

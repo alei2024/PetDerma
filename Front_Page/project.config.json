@@ -5,6 +5,8 @@
     "minified": true,
     "uglifyFileName": false,
     "enhance": true,
+    "useNpm": true,
+    "packNpmManually": false,
     "packNpmRelationList": [],
     "babelSetting": {
       "ignore": [],
@@ -15,6 +17,7 @@
     "minifyWXML": true,
     "ignoreUploadUnusedFiles": true
   },
+  "miniprogramRoot": "",
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "appid": "wxaf8803105a23dc33",
@@ -26,5 +29,7 @@
   "packOptions": {
     "ignore": [],
     "include": []
-  }
+  },
+  "projectname": "Front_Page",
+  "libVersion": "3.8.10"
 }

@@ -17,6 +17,7 @@ page {
   width: 80rpx;
   height: 80rpx;
 }
+
 .nav-left-icon {
   width: 56rpx;
   height: 56rpx;

@@ -9,9 +9,9 @@
       <!-- 用户信息 -->
       <view class="post-header">
         <view class="user-info">
-          <image class="user-avatar" src="{{postDetail.userAvatar}}" mode="aspectFill"></image>
+          <image class="user-avatar" src="{{postDetail.authorId.avatar.url}}" mode="aspectFill"></image>
           <view class="user-details">
-            <text class="username">{{postDetail.username}}</text>
+            <text class="username">{{postDetail.authorId.nickName}}</text>
             <text class="post-time">{{postDetail.postTime}}</text>
           </view>
         </view>
@@ -23,7 +23,7 @@
       <!-- 帖子内容 -->
       <view class="post-content">
         <text class="post-text">{{postDetail.content}}</text>
-        <view wx:if="{{postDetail.images && postDetail.images.length > 0}}" class="post-images {{postDetail.images.length === 1 ? 'single-image' : ''}}">
+        <view wx:if="{{postDetail.images && postDetail.images.length > 0}}" class="post-images" data-count="{{postDetail.images.length}}">
           <block wx:for="{{postDetail.images}}" wx:key="index" wx:for-item="imgUrl">
             <image class="post-image" src="{{imgUrl}}" mode="aspectFill" bindtap="previewImage" 
                    data-urls="{{postDetail.images}}" data-current="{{imgUrl}}"></image>
@@ -36,30 +36,23 @@
         <text wx:for="{{postDetail.tags}}" wx:key="index" class="tag">{{item}}</text>
       </view>
       
-      <!-- 互动数据 -->
-      <view class="post-stats">
-        <text class="stat-item">{{postDetail.likeCount}}人点赞</text>
-        <text class="stat-item">{{postDetail.commentCount}}条评论</text>
-        <text class="stat-item">{{postDetail.collectCount}}人收藏</text>
-      </view>
-      
       <!-- 互动按钮 -->
       <view class="post-actions">
         <view class="action-item" bindtap="toggleLike">
-          <image class="action-icon {{postDetail.isLiked ? 'liked' : ''}}" src="/images/like_icon.png" mode="aspectFit"></image>
-          <text class="action-text {{postDetail.isLiked ? 'liked' : ''}}">点赞</text>
+          <image class="action-icon" src="{{postDetail.isLiked ? '/images/like_click_icon.png' : '/images/like_icon.png'}}" mode="aspectFit"></image>
+          <text class="action-count">{{postDetail.likeCount || 0}}</text>
         </view>
         <view class="action-item" bindtap="showCommentInput">
           <image class="action-icon" src="/images/comment_icon.png" mode="aspectFit"></image>
-          <text class="action-text">评论</text>
+          <text class="action-count">{{postDetail.commentCount || 0}}</text>
         </view>
-        <view class="action-item" bindtap="toggleCollect">
-          <image class="action-icon {{postDetail.isCollected ? 'collected' : ''}}" src="/images/collect_icon.png" mode="aspectFit"></image>
-          <text class="action-text {{postDetail.isCollected ? 'collected' : ''}}">收藏</text>
+        <view class="action-item" bindtap="onFavoriteTap">
+          <image class="action-icon" src="{{postDetail.isFavorited ? '/images/collection_click_icon.png' : '/images/collect_icon.png'}}" mode="aspectFit"></image>
+          <text class="action-count">{{postDetail.favoriteCount || 0}}</text>
         </view>
         <view class="action-item" bindtap="sharePost">
           <image class="action-icon" src="/images/share_icon.png" mode="aspectFit"></image>
-          <text class="action-text">分享</text>
+          <text class="action-count">{{postDetail.shareCount || 0}}</text>
         </view>
       </view>
     </view>
@@ -67,7 +60,7 @@
     <!-- 评论区 -->
     <view class="comments-section">
       <view class="comments-header">
-        <text class="comments-title">评论 ({{commentList.length}})</text>
+        <text class="comments-title">评论 ({{postDetail.commentCount || 0}})</text>
         <view class="sort-options">
           <text class="sort-option {{sortType === 'time' ? 'active' : ''}}" bindtap="changeSortType" data-type="time">时间</text>
           <text class="sort-option {{sortType === 'hot' ? 'active' : ''}}" bindtap="changeSortType" data-type="hot">热度</text>
@@ -79,10 +72,10 @@
           <view class="comment-item">
             <!-- 评论头部 -->
             <view class="comment-header">
-              <image class="comment-avatar" src="{{item.userAvatar}}" mode="aspectFill"></image>
+              <image class="comment-avatar" src="{{item.authorId.avatar.url}}" mode="aspectFill"></image>
               <view class="comment-info">
                 <view class="comment-user">
-                  <text class="comment-username">{{item.username}}</text>
+                  <text class="comment-username">{{item.authorId.nickName}}</text>
                   <text class="comment-time">{{item.commentTime}}</text>
                 </view>
                 <text class="comment-content">{{item.content}}</text>
@@ -96,11 +89,13 @@
                 <!-- 评论操作 -->
                 <view class="comment-actions">
                   <view class="comment-action" bindtap="toggleCommentLike" data-id="{{item.id}}">
-                    <image class="comment-action-icon {{item.isLiked ? 'liked' : ''}}" src="/images/like_icon.png" mode="aspectFit"></image>
+                    <image class="comment-action-icon {{item.isLiked ? 'liked' : ''}}" 
+                           src="{{item.isLiked ? '/images/like_click_icon.png' : '/images/like_icon.png'}}" 
+                           mode="aspectFit"></image>
                     <text class="comment-action-text {{item.isLiked ? 'liked' : ''}}">{{item.likeCount || 0}}</text>
                   </view>
-                  <view class="comment-action" bindtap="replyComment" data-id="{{item.id}}" data-username="{{item.username}}">
-                    <image class="comment-action-icon" src="/images/reply_icon.png" mode="aspectFit"></image>
+                  <view class="comment-action" bindtap="replyComment" data-id="{{item.id}}" data-username="{{item.authorId.nickName}}">
+                    <image class="comment-action-icon" src="/images/comment_icon.png" mode="aspectFit"></image>
                     <text class="comment-action-text">回复</text>
                   </view>
                 </view>
@@ -140,6 +135,9 @@
   </view>
 </scroll-view>
 
+<!-- 评论输入框蒙层 -->
+<view wx:if="{{showCommentInput}}" class="comment-mask" bindtap="hideCommentInput"></view>
+
 <!-- 评论输入框 -->
 <view wx:if="{{showCommentInput}}" class="comment-input-panel">
   <view class="comment-input-wrapper">
@@ -150,21 +148,9 @@
               auto-focus="{{showCommentInput}}"
               maxlength="500"></textarea>
     <view class="comment-tools">
-      <view class="tool-item" bindtap="chooseCommentImage">
-        <image class="tool-icon" src="/images/image_icon.png" mode="aspectFit"></image>
-      </view>
       <view class="comment-send-btn {{commentContent.trim() ? 'active' : ''}}" bindtap="sendComment">发送</view>
     </view>
   </view>
-  <view class="comment-mask" bindtap="hideCommentInput"></view>
 </view>
 
-<!-- 评论图片预览 -->
-<view wx:if="{{commentImageList.length > 0}}" class="comment-image-preview">
-  <block wx:for="{{commentImageList}}" wx:key="index">
-    <view class="preview-image-item">
-      <image class="preview-image" src="{{item}}" mode="aspectFill"></image>
-      <view class="delete-preview-btn" bindtap="deleteCommentImage" data-index="{{index}}">×</view>
-    </view>
-  </block>
-</view> 
+<!-- 评论图片功能已移除 --> 

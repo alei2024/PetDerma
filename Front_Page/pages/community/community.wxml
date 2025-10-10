@@ -33,11 +33,15 @@
         <!-- 帖子内容 -->
         <view class="post-content">
           <text class="post-text">{{item.content}}</text>
-          <view wx:if="{{item.images && item.images.length > 0}}" class="post-images">
+          <view wx:if="{{item.images && item.images.length > 0}}" class="post-images" data-count="{{item.images.length}}">
             <block wx:for="{{item.images}}" wx:key="index" wx:for-item="imgUrl">
               <image class="post-image" src="{{imgUrl}}" mode="aspectFill" bindtap="previewImage" 
-                     data-urls="{{item.images}}" data-current="{{imgUrl}}" catchtap="true"></image>
+                     data-urls="{{item.allImages}}" data-current="{{imgUrl}}" catchtap="true"></image>
             </block>
+            <!-- 显示更多图片提示 -->
+            <view wx:if="{{item.totalImageCount > 3}}" class="more-images-tip">
+              <text class="more-text">+{{item.totalImageCount - 3}}</text>
+            </view>
           </view>
         </view>
         
@@ -62,7 +66,7 @@
           </view>
           <view class="action-item" bindtap="sharePost" data-id="{{item.id}}" catchtap="true">
             <image class="action-icon" src="/images/share_icon.png" mode="aspectFit"></image>
-            <text class="action-text">分享</text>
+            <text class="action-text">{{item.shareCount || 0}}</text>
           </view>
         </view>
       </view>
@@ -106,4 +110,9 @@
   <view class="menu-item" bindtap="hidePost">
     <text>不感兴趣</text>
   </view>
+</view>
+
+<!-- 悬浮测试按钮 -->
+<view class="floating-test-btn" bindtap="goToTest">
+  <text class="test-icon">🧪</text>
 </view>

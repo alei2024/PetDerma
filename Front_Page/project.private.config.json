@@ -1,8 +1,9 @@
 {
   "libVersion": "3.8.10",
   "projectname": "Front_Page",
+  "miniprogramRoot": "",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "coverView": true,
     "lazyloadPlaceholderEnable": false,
     "skylineRenderEnable": false,

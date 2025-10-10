@@ -17,8 +17,11 @@
     "pages/user/health/health",
     "pages/pet/pet",
     "pages/pet/edit/edit",
-    "pages/pet/health/health"
+    "pages/pet/health/health",
+    "pages/debug/network-test",
+    "pages/debug/community-test"
   ],
+
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#A5D7E8",
@@ -59,17 +62,6 @@
     ]
   },
   "style": "v2",
-  "renderer": "skyline",
-  "rendererOptions": {
-    "skyline": {
-      "defaultDisplayBlock": true,
-      "defaultContentBox": true,
-      "disableABTest": true,
-      "sdkVersionBegin": "3.0.0",
-      "sdkVersionEnd": "15.255.255"
-    }
-  },
-  "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "usingComponents": {

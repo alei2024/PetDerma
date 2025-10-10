@@ -1,0 +1,194 @@
+/* pages/debug/community-test.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding: 20rpx;
+  background-color: white;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.retry-btn {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  padding: 10rpx 20rpx;
+  font-size: 28rpx;
+}
+
+.retry-btn[disabled] {
+  background-color: #ccc;
+}
+
+.section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.test-results {
+  background-color: white;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.empty-state {
+  text-align: center;
+  color: #999;
+  padding: 40rpx;
+}
+
+.test-item {
+  border-left: 4rpx solid #ddd;
+  padding: 15rpx;
+  margin-bottom: 15rpx;
+  background-color: #f9f9f9;
+  border-radius: 0 8rpx 8rpx 0;
+}
+
+.test-item.success {
+  border-left-color: #4caf50;
+  background-color: #f1f8e9;
+}
+
+.test-item.error {
+  border-left-color: #f44336;
+  background-color: #ffebee;
+}
+
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.test-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.test-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.test-message {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+.posts-section {
+  background-color: white;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.post-item {
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+  background-color: #fafafa;
+}
+
+.post-item:active {
+  background-color: #f0f0f0;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.post-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+.post-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.post-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.4;
+  margin-bottom: 15rpx;
+}
+
+.post-stats {
+  display: flex;
+  gap: 20rpx;
+}
+
+.stat {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 测试按钮区域 */
+.test-buttons {
+  background-color: white;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15rpx;
+  margin-top: 20rpx;
+}
+
+.test-single-btn {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 2rpx solid #e9ecef;
+  border-radius: 8rpx;
+  padding: 20rpx 15rpx;
+  font-size: 26rpx;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.test-single-btn:not([disabled]):active {
+  background-color: #007aff;
+  color: white;
+  border-color: #007aff;
+}
+
+.test-single-btn[disabled] {
+  background-color: #f5f5f5;
+  color: #999;
+  border-color: #ddd;
+}

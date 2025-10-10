@@ -1,0 +1,47 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 数据库文件
+*.db
+*.sqlite
+
+# 上传的文件（可选，根据需要）
+Community_backend/uploads/avatars/*
+Community_backend/uploads/images/*
+!Community_backend/uploads/user_default.png
+
+# 日志文件
+logs/
+*.log
+
+# 临时文件
+tmp/
+temp/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 微信小程序
+Front_Page/project.private.config.json
+
+# 测试文件（可选）
+Community_backend/test-*.js
+Community_backend/debug-*.js
+Community_backend/verify-*.js

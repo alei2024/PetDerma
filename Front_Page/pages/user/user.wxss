@@ -77,6 +77,22 @@ page {
   height: 24rpx;
 }
 
+/* 微信头像提示样式 */
+.avatar-tip {
+  position: absolute;
+  bottom: -8rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10rpx;
+  padding: 4rpx 12rpx;
+}
+
+.tip-text {
+  font-size: 20rpx;
+  color: white;
+}
+
 .user-info {
   flex: 1;
   display: flex;
@@ -275,6 +291,7 @@ page {
   align-items: center;
   margin-bottom: 30rpx;
   padding-bottom: 20rpx;
+  margin-top: 0rpx;
   border-bottom: 2rpx solid #f0f0f0;
 }
 
@@ -282,8 +299,8 @@ page {
   font-size: 36rpx;
   font-weight: bold;
   color: #333;
-  padding: 20rpx 30rpx;
-  padding-bottom:10rpx;
+  padding: 20rpx 50rpx;
+  padding-bottom: 5rpx;
 }
 
 .popup-close {
@@ -471,12 +488,14 @@ page {
   font-size: 40rpx;
   color: #999;
   padding: 10rpx;
+  padding-bottom: 0rpx;
+  margin-right: 40rpx;
 }
 
 .popup-body {
   padding-top: 10rpx;
-  margin-left: 10rpx;
-  margin-right: 60rpx;
+  margin-left: 30rpx;
+  margin-right: 40rpx;
 }
 
 .settings-item {
@@ -500,6 +519,32 @@ page {
 .settings-item image {
   width: 24rpx;
   height: 24rpx;
+}
+
+/* 消息通知项特殊样式 - 高度较小 */
+.notification-item {
+  margin-top: -30rpx;
+  padding: 20rpx 30rpx; /* 减少上下padding从30rpx到20rpx */
+}
+
+/* 消息通知信息图标 */
+.notification-info-icon {
+  min-width: 40rpx;
+  min-height: 40rpx;
+  margin-right: 360rpx;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.notification-info-icon:active {
+  opacity: 1;
+}
+
+/* 消息通知开关样式 - 缩小尺寸 */
+.notification-item switch {
+  transform: scale(0.8);
+  transform-origin: center;
+  margin-right: -20rpx;
 }
 
 .logout-text {
@@ -632,7 +677,7 @@ page {
   border: none;
   font-size: 32rpx;
   border-radius: 0;
-  padding-top:30rpx;
+  padding-top: 30rpx;
 }
 
 .auth-cancel-btn:active {
@@ -647,9 +692,213 @@ page {
   border: none;
   font-size: 32rpx;
   border-radius: 0;
-  padding-top:30rpx;
+  padding-top: 30rpx;
 }
 
 .auth-confirm-btn:active {
   background-color: #06ad56;
+}
+
+/* 隐私设置弹窗样式 */
+.privacy-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  margin-left: 0rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.privacy-item:last-of-type {
+  border-bottom: none;
+}
+
+.privacy-item:active {
+  background-color: #f8f8f8;
+}
+
+.privacy-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.privacy-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.privacy-desc {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.privacy-status {
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  min-width: 80rpx;
+  text-align: center;
+}
+
+.privacy-status.authorized {
+  background-color: rgba(165, 215, 232, 0.2);
+  color: #a5d7e8;
+}
+
+.privacy-status.unauthorized {
+  background-color: rgba(255, 71, 87, 0.1);
+  color: #ff4757;
+}
+
+.privacy-tips {
+  margin-top: 20rpx;
+  margin-bottom: 10rpx;
+  margin-left: 10rpx;
+  padding: 20rpx;
+  background-color: #f8f9fa;
+  border-radius: 10rpx;
+}
+
+.tips-title {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 15rpx;
+}
+
+.tips-content {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.tips-content:last-child {
+  margin-bottom: 0;
+}
+
+/* 快速切换用户样式 */
+.quick-switch-btn {
+  background-color: #f0f8ff;
+  border: 2rpx solid #a5d7e8;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-top: 20rpx;
+  text-align: center;
+}
+
+.switch-text {
+  color: #a5d7e8;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.quick-switch-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 30rpx 30rpx 0 0;
+  z-index: 1001;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 40rpx 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-close {
+  font-size: 40rpx;
+  color: #999;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  padding: 20rpx 40rpx 40rpx;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f8f9fa;
+  border-radius: 15rpx;
+  transition: background-color 0.2s;
+}
+
+.user-item:active {
+  background-color: #e9ecef;
+}
+
+.user-avatar-small {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 20rpx;
+}
+
+.user-avatar-small image {
+  width: 100%;
+  height: 100%;
+}
+
+.user-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5rpx;
+}
+
+.user-name-small {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.user-phone-small {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.switch-arrow {
+  font-size: 32rpx;
+  color: #a5d7e8;
+  font-weight: bold;
 }

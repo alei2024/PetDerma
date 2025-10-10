@@ -10,9 +10,13 @@
     <!-- 用户信息区域 -->
     <view class="user-section">
       <view class="avatar-container">
-        <image class="user-avatar" src="{{isLoggedIn ? userInfo.avatar : '/images/user_default.png'}}" mode="aspectFill" bindtap="{{isLoggedIn ? 'changeAvatar' : ''}}"></image>
-        <view class="avatar-edit" wx:if="{{isLoggedIn}}" bindtap="changeAvatar">
+        <image class="user-avatar" src="{{isLoggedIn ? (userInfo.avatar.displayUrl || userInfo.avatar.url || userInfo.avatar || '/images/user_default.png') : '/images/user_default.png'}}" mode="aspectFill" bindtap="{{isLoggedIn && userInfo.loginType === 'phone' ? 'changeAvatar' : ''}}"></image>
+        <view class="avatar-edit" wx:if="{{isLoggedIn && userInfo.loginType === 'phone'}}" bindtap="changeAvatar">
           <text class="edit-icon">✏️</text>
+        </view>
+        <!-- 微信登录提示 -->
+        <view class="avatar-tip" wx:if="{{isLoggedIn && userInfo.loginType === 'wechat'}}">
+          <text class="tip-text">头像</text>
         </view>
       </view>
       
@@ -28,6 +32,11 @@
             点击登录
           </button>
         </block>
+      </view>
+      
+      <!-- 开发环境：快速切换用户按钮 -->
+      <view class="quick-switch-btn" wx:if="{{isLoggedIn}}" bindtap="showQuickSwitchUsers">
+        <text class="switch-text">🔄 快速切换用户 (测试)</text>
       </view>
     </view>
 
@@ -116,8 +125,9 @@
 		<text class="popup-close" bindtap="closeSettings">×</text>
 	</view>
 	<view class="popup-body">
-		<view class="settings-item" bindtap="openNotificationSettings">
-			<text>消息通知</text>
+		<view class="settings-item notification-item">
+			<text bindtap="openNotificationSettings" style="flex: 1;">消息通知</text>
+			<image src="/images/res_chat.png" mode="aspectFit" class="notification-info-icon" bindtap="showNotificationInfo"></image>
 			<switch checked="{{notificationEnabled}}" bindchange="toggleNotification"></switch>
 		</view>
 		<view class="settings-item" bindtap="openPrivacySettings">
@@ -169,3 +179,76 @@
 		<button class="auth-confirm-btn" bindtap="confirmWechatAuth">确认授权</button>
 	</view>
 </view>
+
+<!-- 隐私设置弹窗 -->
+<view wx:if="{{showPrivacyPopup}}" class="popup-mask" bindtap="closePrivacySettings"></view>
+<view wx:if="{{showPrivacyPopup}}" class="popup-panel">
+	<view class="popup-header">
+		<text>隐私设置</text>
+		<text class="popup-close" bindtap="closePrivacySettings">×</text>
+	</view>
+	<view class="popup-body">
+		<view class="privacy-item" bindtap="handleUserInfoAuth">
+			<view class="privacy-info">
+				<text class="privacy-title">用户信息</text>
+				<text class="privacy-desc">获取您的微信头像和昵称</text>
+			</view>
+			<view class="privacy-status {{privacySettings.userInfoAuthorized ? 'authorized' : 'unauthorized'}}">
+				<text>{{privacySettings.userInfoAuthorized ? '已授权' : '未授权'}}</text>
+			</view>
+		</view>
+		
+		<view class="privacy-item" bindtap="handleCameraAuth">
+			<view class="privacy-info">
+				<text class="privacy-title">摄像头</text>
+				<text class="privacy-desc">拍摄宠物照片用于诊断</text>
+			</view>
+			<view class="privacy-status {{privacySettings.cameraAuthorized ? 'authorized' : 'unauthorized'}}">
+				<text>{{privacySettings.cameraAuthorized ? '已授权' : '未授权'}}</text>
+			</view>
+		</view>
+		
+		<view class="privacy-item" bindtap="handleLocationAuth">
+			<view class="privacy-info">
+				<text class="privacy-title">地理位置</text>
+				<text class="privacy-desc">推荐附近的宠物医院</text>
+			</view>
+			<view class="privacy-status {{privacySettings.locationAuthorized ? 'authorized' : 'unauthorized'}}">
+				<text>{{privacySettings.locationAuthorized ? '已授权' : '未授权'}}</text>
+			</view>
+		</view>
+		
+		<view class="privacy-tips">
+			<text class="tips-title">隐私说明</text>
+			<text class="tips-content">• 您可以随时在微信设置中管理这些授权</text>
+			<text class="tips-content">• 取消授权可能影响部分功能的正常使用</text>
+			<text class="tips-content">• 我们承诺不会滥用您的隐私信息</text>
+		</view>
+	</view>
+</view>
+
+<!-- 快速切换用户弹窗 -->
+<view wx:if="{{showQuickSwitch}}" class="modal-mask" bindtap="hideQuickSwitch"></view>
+<view wx:if="{{showQuickSwitch}}" class="quick-switch-modal">
+  <view class="modal-header">
+    <text class="modal-title">快速切换用户</text>
+    <text class="modal-close" bindtap="hideQuickSwitch">×</text>
+  </view>
+  <view class="modal-content">
+    <view class="user-list">
+      <view class="user-item" wx:for="{{quickSwitchUsers}}" wx:key="phone" bindtap="quickSwitchToUser" data-index="{{index}}">
+        <view class="user-avatar-small">
+          <image src="/images/user_default.png" mode="aspectFill"></image>
+        </view>
+        <view class="user-details">
+          <text class="user-name-small">{{item.nickname}}</text>
+          <text class="user-phone-small">{{item.phone}}</text>
+        </view>
+        <view class="switch-arrow">→</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 隐藏的Canvas用于图片压缩 -->
+<canvas canvas-id="compressCanvas" style="position: fixed; top: -1000px; left: -1000px; width: 800px; height: 800px;"></canvas>

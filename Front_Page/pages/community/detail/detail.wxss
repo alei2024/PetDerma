@@ -3,7 +3,7 @@ page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 .page-container {
@@ -22,6 +22,7 @@ page {
   border-radius: 20rpx;
   padding: 30rpx;
   margin-bottom: 20rpx;
+  min-width: 90%;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
@@ -64,10 +65,10 @@ page {
 
 .follow-btn {
   padding: 12rpx 24rpx;
-  border: 2rpx solid #A5D7E8;
+  border: 2rpx solid #a5d7e8;
   border-radius: 32rpx;
   font-size: 24rpx;
-  color: #A5D7E8;
+  color: #a5d7e8;
   background-color: transparent;
   transition: all 0.3s ease;
 }
@@ -90,29 +91,44 @@ page {
   word-wrap: break-word;
 }
 
+/* 详情页面图片布局 - 统一为一行三张，多行显示所有图片 */
 .post-images {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10rpx;
   margin-top: 20rpx;
+  margin-bottom: 20rpx;
 }
 
-.post-image {
-  width: 100%;
+/* 1张图片 - 居中显示 */
+.post-images[data-count="1"] {
+  grid-template-columns: 1fr;
+  max-width: 400rpx;
+  margin: 20rpx auto;
+}
+
+.post-images[data-count="1"] .post-image {
+  height: 400rpx;
+  border-radius: 15rpx;
+}
+
+/* 2张图片及以上 - 统一样式 */
+.post-images .post-image {
   height: 200rpx;
   border-radius: 12rpx;
+}
+
+/* 通用图片样式 */
+.post-image {
+  width: 100%;
+  object-fit: cover;
   background-color: #f0f0f0;
+  transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
-/* 单张图片时的样式 - 需要通过 JS 动态添加 class */
-.post-images.single-image {
-  grid-template-columns: 1fr;
-}
-
-.post-images.single-image .post-image {
-  height: 400rpx;
-  max-width: 500rpx;
-  justify-self: start;
+.post-image:active {
+  transform: scale(0.95);
 }
 
 /* 标签 */
@@ -128,7 +144,7 @@ page {
   background: rgba(165, 215, 232, 0.1);
   border-radius: 20rpx;
   font-size: 24rpx;
-  color: #A5D7E8;
+  color: #a5d7e8;
   border: 1rpx solid rgba(165, 215, 232, 0.3);
 }
 
@@ -173,18 +189,16 @@ page {
   height: 44rpx;
 }
 
-.action-icon.liked,
-.action-icon.collected {
-  filter: hue-rotate(200deg) saturate(1.5);
-}
-
-.action-text.liked,
-.action-text.collected {
-  color: #A5D7E8;
+/* 计数文字样式 - 统一样式，不再根据状态改变颜色 */
+.action-count {
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 8rpx;
 }
 
 /* 评论区 */
 .comments-section {
+  min-width: 90%;
   background: white;
   border-radius: 20rpx;
   padding: 30rpx;
@@ -220,7 +234,7 @@ page {
 }
 
 .sort-option.active {
-  color: #A5D7E8;
+  color: #a5d7e8;
   background-color: rgba(165, 215, 232, 0.1);
   font-weight: bold;
 }
@@ -328,11 +342,15 @@ page {
 }
 
 .comment-action-icon.liked {
-  filter: hue-rotate(200deg) saturate(1.5);
+  /* 移除filter效果，直接使用切换的图标文件 */
+}
+
+.comment-action-text {
+  color: #333; /* 基础文字颜色为黑色 */
 }
 
 .comment-action-text.liked {
-  color: #A5D7E8;
+  color: #333; /* 点赞后也保持黑色，不变色 */
 }
 
 /* 回复列表 */
@@ -341,7 +359,7 @@ page {
   padding: 20rpx;
   background-color: #f8f9fa;
   border-radius: 12rpx;
-  border-left: 4rpx solid #A5D7E8;
+  border-left: 4rpx solid #a5d7e8;
 }
 
 .reply-item {
@@ -356,7 +374,7 @@ page {
 }
 
 .reply-username {
-  color: #A5D7E8;
+  color: #a5d7e8;
   font-weight: bold;
 }
 
@@ -375,7 +393,7 @@ page {
 }
 
 .load-more-replies {
-  color: #A5D7E8;
+  color: #a5d7e8;
   font-size: 24rpx;
   margin-top: 16rpx;
   padding: 8rpx 0;
@@ -405,70 +423,66 @@ page {
   left: 0;
   right: 0;
   background: white;
-  padding: 20rpx 30rpx;
-  padding-bottom: 60rpx; /* 增加底部安全区域 */
-  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  padding: 20rpx 30rpx 40rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  border-top: 1rpx solid #e8e8e8;
 }
 
 .comment-input-wrapper {
   display: flex;
   align-items: flex-end;
-  gap: 20rpx;
+  gap: 15rpx;
   background-color: white;
 }
 
 .comment-input {
   flex: 1;
-  min-height: 80rpx;
+  min-height: 100rpx;
   max-height: 200rpx;
-  padding: 20rpx;
-  background: #f8f8f8;
-  border-radius: 20rpx;
+  padding: 20rpx 25rpx;
+  background: #f8f9fa;
+  border-radius: 25rpx;
   font-size: 28rpx;
-  line-height: 1.4;
-  border: 1rpx solid #e8e8e8;
+  line-height: 1.5;
+  border: 1rpx solid #e0e0e0;
+  box-sizing: border-box;
+}
+
+.comment-input:focus {
+  border-color: #a5d7e8;
+  background: #ffffff;
 }
 
 .comment-tools {
   display: flex;
-  align-items: center;
-  gap: 20rpx;
+  align-items: flex-end;
+  gap: 10rpx;
 }
 
-.tool-item {
+/* 图片选择工具已移除 */
+
+.comment-send-btn {
+  padding: 15rpx 25rpx;
+  background-color: #a5d7e8; /* 蓝色背景 */
+  color: white; /* 白色文字 */
+  font-size: 26rpx;
+  font-weight: 500;
+  border-radius: 25rpx;
+  transition: all 0.2s ease;
+  min-width: 100rpx;
+  text-align: center;
+  height: 70rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80rpx;
-  height: 80rpx;
-  transition: all 0.3s ease;
-}
-
-.tool-item:active {
-  transform: scale(0.9);
-}
-
-.tool-icon {
-  width: 44rpx;
-  height: 44rpx;
-}
-
-.comment-send-btn {
-  padding: 12rpx 24rpx;
-  background-color: #e8e8e8;
-  color: #999;
-  font-size: 28rpx;
-  font-weight: bold;
-  border-radius: 20rpx;
-  transition: all 0.3s ease;
-  min-width: 80rpx;
-  text-align: center;
+  box-sizing: border-box;
 }
 
 .comment-send-btn.active {
-  background-color: #A5D7E8;
+  background-color: #0056cc; /* 深蓝色背景（激活状态） */
   color: white;
+  transform: scale(1.02);
 }
 
 .comment-mask {
@@ -476,8 +490,8 @@ page {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 200rpx;
-  background: rgba(0, 0, 0, 0.3);
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
   z-index: 999;
 }
 

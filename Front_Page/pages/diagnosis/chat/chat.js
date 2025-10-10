@@ -35,6 +35,7 @@ Page({
     console.log('跳转来源from:', from); // 添加日志便于调试
     this.setData({
       showWelcomeMessage2: from === 'result' || from === 'diagnose_result', // 兼容可能的参数值
+      showQuickQuestions: from === 'result' || from === 'diagnose_result' // 兼容可能的参数值
       showQuickQuestions: from === 'result' // 修正后严格匹配小写无空格的'result'
     });
     
@@ -48,24 +49,14 @@ Page({
     });
     
     // 获取用户头像
-    if (app.globalData.userInfo && app.globalData.userInfo.avatar) {
+    if (app.globalData.userInfo && app.globalData.userInfo.avatarUrl) {
       this.setData({
-        userAvatar: app.globalData.userInfo.avatar
+        userAvatar: app.globalData.userInfo.avatarUrl
       });
     }
     
     // 设置快捷问题
     this.setQuickQuestions();
-  },
-  
-  // 页面显示时更新用户头像
-  onShow: function() {
-    // 每次页面显示时重新获取用户头像，确保头像信息是最新的
-    if (app.globalData.userInfo && app.globalData.userInfo.avatar) {
-      this.setData({
-        userAvatar: app.globalData.userInfo.avatar
-      });
-    }
   },
   
   // 设置快捷问题
