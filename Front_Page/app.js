@@ -2,9 +2,6 @@
 const { connectSocket } = require("./utils/socket");
 const { connectNativeSocket } = require("./utils/native-websocket");
 const config = require("./config/environment");
-const { performConnectionTest } = require("./utils/simple-websocket-test");
-const { runFullTest } = require("./utils/simple-ws-test");
-const { testConnectionCapabilities } = require("./utils/basic-ws-test");
 const { ensureValidToken } = require("./utils/auth-helper");
 
 App({
@@ -20,6 +17,7 @@ App({
     token: null, // 用户登录token
     socket: null, // WebSocket实例
     needRefreshCommunity: false, // 社区页面刷新标记
+    currentUserId: null, // 当前用户ID
   },
 
   onLaunch: function () {
@@ -46,11 +44,29 @@ App({
 
     this.globalData.systemInfo = systemInfo;
 
+    // 清理旧的登录信息，确保默认为未登录状态
+    this.clearLoginInfo();
     this.checkLoginStatus();
     this.loadPetInfo();
+  },
 
-    const token = wx.getStorageSync("token") || "";
-    this.globalData.token = token;
+  // 清理登录信息
+  clearLoginInfo: function () {
+    try {
+      // 清理本地存储
+      wx.removeStorageSync("userInfo");
+      wx.removeStorageSync("token");
+
+      // 重置全局数据
+      this.globalData.userInfo = null;
+      this.globalData.token = null;
+      this.globalData.hasLogin = false;
+      this.globalData.currentUserId = null;
+
+      console.log("🧹 已清理登录信息，设置为未登录状态");
+    } catch (e) {
+      console.error("清理登录信息失败", e);
+    }
   },
 
   // 检查登录状态
@@ -63,11 +79,19 @@ App({
         this.globalData.userInfo = userInfo;
         this.globalData.token = token;
         this.globalData.hasLogin = true;
-        console.log("✅ 用户已登录:", userInfo.nickname || userInfo.nickName);
+        this.globalData.currentUserId =
+          userInfo.userId || userInfo._id || userInfo.id;
+        console.log(
+          "✅ 用户已登录:",
+          userInfo.nickname || userInfo.nickName,
+          "ID:",
+          this.globalData.currentUserId
+        );
       } else {
         this.globalData.userInfo = null;
         this.globalData.token = null;
         this.globalData.hasLogin = false;
+        this.globalData.currentUserId = null;
         console.log("❌ 用户未登录");
       }
     } catch (e) {
@@ -101,6 +125,8 @@ App({
   updateUserInfo: function (userInfo) {
     this.globalData.userInfo = userInfo;
     this.globalData.hasLogin = true;
+    this.globalData.currentUserId =
+      userInfo.userId || userInfo._id || userInfo.id;
     try {
       wx.setStorageSync("userInfo", userInfo);
     } catch (e) {
@@ -112,6 +138,7 @@ App({
   logout: function () {
     this.globalData.userInfo = null;
     this.globalData.hasLogin = false;
+    this.globalData.currentUserId = null;
     try {
       wx.removeStorageSync("userInfo");
     } catch (e) {
@@ -238,63 +265,60 @@ App({
   async onShow() {
     const { baseUrl } = this.globalData;
 
-    console.log("应用显示，开始初始化连接...");
-    console.log("使用后端地址:", baseUrl);
+    console.log("应用启动，连接服务器...");
+
+    // 检查是否需要进行网络诊断（避免频繁请求）
+    const now = Date.now();
+    const lastDiagnosis = this.globalData.lastNetworkDiagnosis || 0;
+    const diagnosisInterval = 5 * 60 * 1000; // 5分钟内不重复诊断
+
+    if (now - lastDiagnosis < diagnosisInterval) {
+      return;
+    }
+
+    // 记录本次诊断时间
+    this.globalData.lastNetworkDiagnosis = now;
 
     // 延迟进行网络诊断，避免启动时阻塞
     setTimeout(async () => {
       try {
-        // 先测试HTTP连接
-        console.log("1️⃣ 测试HTTP连接...");
+        // 测试HTTP连接
         const httpResult = await this.testHttpConnection(baseUrl);
-        console.log("✅ HTTP连接成功:", httpResult.data);
-
-        // HTTP成功后连接WebSocket
-        console.log("2️⃣ HTTP连接正常，准备连接WebSocket...");
+        console.log("✅ 服务器连接成功");
 
         // 获取并保存token用于API调用
         let validToken;
         if (this.globalData.hasLogin && this.globalData.token) {
           validToken = this.globalData.token;
-          console.log("使用已登录用户token");
         } else {
-          validToken = await ensureValidToken();
-          this.globalData.token = validToken || "test-token";
-          console.log(
-            "Token准备完成:",
-            validToken ? "已获取开发token" : "使用test-token"
-          );
+          // 不自动获取开发token，保持未登录状态
+          validToken = "test-token";
+          this.globalData.token = validToken;
         }
 
         // 连接WebSocket实现实时功能
-        console.log("3️⃣ 开始连接WebSocket...");
 
         try {
           // 优先尝试原生WebSocket
-          console.log("🔄 尝试原生WebSocket连接...");
           const nativeSocket = await connectNativeSocket({
             baseUrl,
             token: validToken || "test-token",
           });
-          console.log("✅ 原生WebSocket连接成功");
+          console.log("✅ WebSocket连接成功");
           // 存储到全局数据
           this.globalData.socket = nativeSocket;
         } catch (nativeError) {
-          console.warn(
-            "⚠️ 原生WebSocket连接失败，尝试Socket.IO:",
-            nativeError.message
-          );
+          console.warn("⚠️ WebSocket连接失败，尝试备用方案");
           try {
             const socketIOSocket = connectSocket({
               baseUrl,
               token: validToken || "test-token",
             });
-            console.log("✅ Socket.IO连接成功");
+            console.log("✅ 备用连接成功");
             // 存储到全局数据
             this.globalData.socket = socketIOSocket;
           } catch (socketIOError) {
-            console.error("❌ Socket.IO连接也失败:", socketIOError.message);
-            console.log("🔄 将使用HTTP轮询作为备用方案");
+            console.warn("⚠️ 实时连接失败，使用轮询模式");
           }
         }
       } catch (error) {
@@ -311,28 +335,16 @@ App({
   // 执行网络诊断
   async performNetworkDiagnosis(baseUrl, token) {
     try {
-      console.log("开始连接能力诊断...");
-
-      // 使用连接能力测试
-      const capabilityResult = await testConnectionCapabilities(baseUrl);
-
-      if (capabilityResult.success) {
-        console.log("✅ 连接能力测试完成，尝试Socket.IO连接");
-        try {
-          connectSocket({ baseUrl, token });
-        } catch (error) {
-          console.error("Socket.IO连接失败:", error);
-        }
-      } else {
-        console.error("❌ 连接能力测试失败");
-
-        // 显示详细的测试结果
-        console.log("详细测试结果:", capabilityResult.results);
+      // 直接尝试Socket.IO连接
+      try {
+        connectSocket({ baseUrl, token });
+      } catch (error) {
+        console.error("Socket.IO连接失败:", error);
       }
     } catch (error) {
-      console.error("网络诊断异常:", error);
+      console.error("网络连接异常:", error);
       wx.showToast({
-        title: "网络诊断异常",
+        title: "网络连接异常",
         icon: "none",
         duration: 2000,
       });
@@ -347,7 +359,6 @@ App({
         method: "GET",
         timeout: 10000,
         success: (res) => {
-          console.log("HTTP连接测试成功:", res.data);
           resolve(res);
         },
         fail: (error) => {

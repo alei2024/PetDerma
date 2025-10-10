@@ -3,8 +3,10 @@ const Comment = require("../models/Comment");
 const Like = require("../models/Like");
 const Favorite = require("../models/Favorite");
 const Share = require("../models/Share");
+const User = require("../models/User");
 const socketService = require("../services/socketService");
 const nativeWebSocketService = require("../services/nativeWebSocketService");
+const { createAndSendNotification } = require("./notificationController");
 
 // 点赞/取消点赞帖子
 const toggleLikePost = async (req, res) => {
@@ -23,8 +25,29 @@ const toggleLikePost = async (req, res) => {
     const result = await Like.toggleLike(userId, postId);
 
     // 重新获取帖子以获得最新的计数
-    const updatedPost = await Post.findById(postId);
+    const updatedPost = await Post.findById(postId).populate(
+      "authorId",
+      "nickName avatar"
+    );
     const newLikeCount = updatedPost.likeCount;
+
+    // 如果是点赞（不是取消点赞），创建通知
+    if (result.liked && updatedPost.authorId._id.toString() !== userId) {
+      const currentUser = await User.findById(userId);
+      await createAndSendNotification({
+        recipientId: updatedPost.authorId._id,
+        senderId: userId,
+        type: "like",
+        title: "收到新的赞",
+        content: `${currentUser.nickName} 赞了你的帖子《${
+          updatedPost.title || updatedPost.content.substring(0, 20)
+        }》`,
+        postId: postId,
+        metadata: {
+          postTitle: updatedPost.title || updatedPost.content.substring(0, 50),
+        },
+      });
+    }
 
     // 发送实时通知
     const eventData = {
@@ -79,8 +102,29 @@ const toggleFavoritePost = async (req, res) => {
     const result = await Favorite.toggleFavorite(userId, postId);
 
     // 重新获取帖子以获得最新的计数
-    const updatedPost = await Post.findById(postId);
+    const updatedPost = await Post.findById(postId).populate(
+      "authorId",
+      "nickName avatar"
+    );
     const newFavoriteCount = updatedPost.favoriteCount;
+
+    // 如果是收藏（不是取消收藏），创建通知
+    if (result.favorited && updatedPost.authorId._id.toString() !== userId) {
+      const currentUser = await User.findById(userId);
+      await createAndSendNotification({
+        recipientId: updatedPost.authorId._id,
+        senderId: userId,
+        type: "favorite",
+        title: "收到新的收藏",
+        content: `${currentUser.nickName} 收藏了你的帖子《${
+          updatedPost.title || updatedPost.content.substring(0, 20)
+        }》`,
+        postId: postId,
+        metadata: {
+          postTitle: updatedPost.title || updatedPost.content.substring(0, 50),
+        },
+      });
+    }
 
     // 发送实时通知到帖子房间
     const favoriteEventData = {
@@ -224,6 +268,32 @@ const createComment = async (req, res) => {
       await comment.populate("replyTo", "nickName");
     }
 
+    // 获取帖子作者信息并创建通知
+    const postWithAuthor = await Post.findById(postId).populate(
+      "authorId",
+      "nickName avatar"
+    );
+    if (postWithAuthor.authorId._id.toString() !== userId) {
+      const currentUser = await User.findById(userId);
+      await createAndSendNotification({
+        recipientId: postWithAuthor.authorId._id,
+        senderId: userId,
+        type: "comment",
+        title: "收到新的评论",
+        content: `${currentUser.nickName} 评论了你的帖子：${content.substring(
+          0,
+          30
+        )}${content.length > 30 ? "..." : ""}`,
+        postId: postId,
+        commentId: comment._id,
+        metadata: {
+          postTitle:
+            postWithAuthor.title || postWithAuthor.content.substring(0, 50),
+          commentContent: content,
+        },
+      });
+    }
+
     // 发送实时通知（评论广播）
     const commentEventData = {
       postId,
@@ -269,7 +339,6 @@ const getPostComments = async (req, res) => {
     // 获取用户ID（如果已认证）
     const userId = req.user?.userId;
 
-    console.log("🔍 开始获取帖子评论，postId:", postId);
     const comments = await Comment.getPostComments(
       postId,
       parseInt(limit),
@@ -559,6 +628,11 @@ const toggleLikeComment = async (req, res) => {
       targetType: "comment",
     });
     likeCount = totalLikes;
+
+    // 更新评论的点赞数统计
+    await Comment.findByIdAndUpdate(commentId, {
+      "stats.likes": likeCount,
+    });
 
     console.log(`📊 评论 ${commentId} 当前点赞数: ${likeCount}`);
 

@@ -17,9 +17,7 @@
     "pages/user/health/health",
     "pages/pet/pet",
     "pages/pet/edit/edit",
-    "pages/pet/health/health",
-    "pages/debug/network-test",
-    "pages/debug/community-test"
+    "pages/pet/health/health"
   ],
 
   "window": {

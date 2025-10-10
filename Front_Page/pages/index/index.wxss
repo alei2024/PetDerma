@@ -11,6 +11,7 @@ page {
 
 /* 导航左侧按钮 */
 .nav-left-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,6 +22,29 @@ page {
 .nav-left-icon {
   width: 56rpx;
   height: 56rpx;
+}
+
+/* 消息通知徽章 */
+.message-badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  background-color: #ff4757;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8rpx;
+  box-shadow: 0 2rpx 8rpx rgba(255, 71, 87, 0.3);
+}
+
+.badge-text {
+  color: white;
+  font-size: 20rpx;
+  font-weight: bold;
+  line-height: 1;
 }
 
 /* 欢迎区域样式 */
@@ -277,17 +301,39 @@ page {
   width: 105%;
   box-sizing: border-box;
 }
+/* 消息项样式 */
 .msg-item {
+  position: relative;
   padding: 20rpx 10rpx;
   border-bottom: 2rpx solid #f3f3f3;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
+
+.msg-item:hover {
+  background-color: #f8f9fa;
+}
+
+.msg-item.unread {
+  background-color: #f0f8ff;
+  border-left: 6rpx solid #1890ff;
+}
+
+.msg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
 .msg-title {
   font-size: 28rpx;
   font-weight: bold;
   color: var(--text-dark);
-  white-space: normal;
-  word-break: break-all;
-  width: 94%;
+}
+
+.msg-item.unread .msg-title {
+  color: #1890ff;
 }
 .msg-time {
   font-size: 22rpx;
@@ -301,4 +347,30 @@ page {
   white-space: normal;
   word-break: break-all;
   width: 95%;
+}
+
+/* 未读消息小圆点 */
+.unread-dot {
+  position: absolute;
+  top: 24rpx;
+  right: 16rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background-color: #ff4757;
+  border-radius: 50%;
+}
+
+/* 加载和空状态样式 */
+.loading-container,
+.empty-messages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 0;
+}
+
+.loading-text,
+.empty-text {
+  font-size: 28rpx;
+  color: var(--text-light);
 }

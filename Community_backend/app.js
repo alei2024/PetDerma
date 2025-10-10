@@ -73,21 +73,25 @@ app.use(
   express.static("uploads")
 );
 
-// 限流中间件
+// 限流中间件 - 开发环境放宽限制
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15分钟
-  max: 100, // 限制每个IP 15分钟内最多100个请求
+  max: process.env.NODE_ENV === "production" ? 100 : 1000, // 开发环境1000次，生产环境100次
   message: {
     success: false,
     message: "请求过于频繁，请稍后再试",
   },
+  skip: (req) => {
+    // 跳过健康检查和开发token请求的限制
+    return req.path === "/health" || req.path === "/api/auth/dev-token";
+  },
 });
 app.use(limiter);
 
-// 上传文件限流
+// 上传文件限流 - 开发环境放宽限制
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15分钟
-  max: 20, // 限制每个IP 15分钟内最多20次上传
+  max: process.env.NODE_ENV === "production" ? 20 : 100, // 开发环境100次，生产环境20次
   message: {
     success: false,
     message: "上传请求过于频繁，请稍后再试",
@@ -121,6 +125,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/interactions", interactionRoutes);
 app.use("/api/upload", uploadLimiter, uploadRoutes);
 app.use("/api/images", imageRoutes);
+app.use("/api/notifications", require("./routes/notifications"));
 
 // 404处理（Express v5 兼容：使用无路径兜底中间件）
 app.use((req, res) => {

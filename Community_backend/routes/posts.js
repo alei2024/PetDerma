@@ -7,6 +7,9 @@ const {
   updatePost,
   deletePost,
   getUserPosts,
+  getUserFavorites,
+  getUserComments,
+  getMyPosts,
   getPopularTags,
 } = require("../controllers/postController");
 const { authenticateToken, optionalAuth } = require("../middleware/auth");
@@ -34,5 +37,14 @@ router.put("/:id", updatePost);
 
 // 删除帖子
 router.delete("/:id", deletePost);
+
+// 获取当前用户的收藏帖子
+router.get("/my/favorites", getUserFavorites);
+
+// 获取当前用户的评论
+router.get("/my/comments", getUserComments);
+
+// 获取当前用户发布的帖子
+router.get("/my/posts", getMyPosts);
 
 module.exports = router;

@@ -15,19 +15,15 @@ class NativeWebSocketService {
       server,
       path: "/ws",
       verifyClient: (info) => {
-        console.log("🔍 WebSocket连接验证:", info.origin);
         return true; // 开发环境允许所有连接
       },
     });
 
     this.setupEventHandlers();
-    console.log("🔌 原生WebSocket服务已启动 (路径: /ws)");
   }
 
   setupEventHandlers() {
     this.wss.on("connection", (ws, req) => {
-      console.log("📱 新的WebSocket连接");
-
       // 解析URL参数获取token
       const url = new URL(req.url, `http://${req.headers.host}`);
       const token = url.searchParams.get("token");
@@ -55,8 +51,6 @@ class NativeWebSocketService {
         rooms: new Set(),
         lastSeen: new Date(),
       });
-
-      console.log(`✅ 用户 ${user.nickName} 已连接 (${clientId})`);
 
       // 发送连接成功消息
       this.sendMessage(ws, "connect", {
@@ -127,7 +121,6 @@ class NativeWebSocketService {
       const { type, event, data: eventData } = message;
 
       if (type === "event") {
-        console.log(`📨 收到事件: ${event}`, eventData);
         this.handleEvent(ws, event, eventData);
       }
     } catch (error) {
@@ -150,7 +143,6 @@ class NativeWebSocketService {
         this.sendMessage(ws, "pong", { timestamp: Date.now() });
         break;
       default:
-        console.log(`⚠️ 未知事件: ${event}`);
     }
   }
 
@@ -223,8 +215,6 @@ class NativeWebSocketService {
   handleDisconnect(ws) {
     const client = this.connectedClients.get(ws.clientId);
     if (!client) return;
-
-    console.log(`📱 用户 ${client.user.nickName} 断开连接`);
 
     // 从所有房间移除
     client.rooms.forEach((roomName) => {

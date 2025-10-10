@@ -1,15 +1,24 @@
 {
-  "name": "front_page",
+  "name": "petderma-frontend",
   "version": "1.0.0",
-  "main": ".eslintrc.js",
+  "description": "PetDerma微信小程序前端",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "wechat",
+    "miniprogram",
+    "pet",
+    "derma",
+    "frontend"
+  ],
+  "author": "PetDerma Team",
+  "license": "MIT",
   "dependencies": {
     "weapp.socket.io": "^2.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

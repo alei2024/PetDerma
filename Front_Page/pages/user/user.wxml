@@ -34,10 +34,6 @@
         </block>
       </view>
       
-      <!-- 开发环境：快速切换用户按钮 -->
-      <view class="quick-switch-btn" wx:if="{{isLoggedIn}}" bindtap="showQuickSwitchUsers">
-        <text class="switch-text">🔄 快速切换用户 (测试)</text>
-      </view>
     </view>
 
     <!-- 功能区块 -->
@@ -227,28 +223,6 @@
 	</view>
 </view>
 
-<!-- 快速切换用户弹窗 -->
-<view wx:if="{{showQuickSwitch}}" class="modal-mask" bindtap="hideQuickSwitch"></view>
-<view wx:if="{{showQuickSwitch}}" class="quick-switch-modal">
-  <view class="modal-header">
-    <text class="modal-title">快速切换用户</text>
-    <text class="modal-close" bindtap="hideQuickSwitch">×</text>
-  </view>
-  <view class="modal-content">
-    <view class="user-list">
-      <view class="user-item" wx:for="{{quickSwitchUsers}}" wx:key="phone" bindtap="quickSwitchToUser" data-index="{{index}}">
-        <view class="user-avatar-small">
-          <image src="/images/user_default.png" mode="aspectFill"></image>
-        </view>
-        <view class="user-details">
-          <text class="user-name-small">{{item.nickname}}</text>
-          <text class="user-phone-small">{{item.phone}}</text>
-        </view>
-        <view class="switch-arrow">→</view>
-      </view>
-    </view>
-  </view>
-</view>
 
 <!-- 隐藏的Canvas用于图片压缩 -->
 <canvas canvas-id="compressCanvas" style="position: fixed; top: -1000px; left: -1000px; width: 800px; height: 800px;"></canvas>

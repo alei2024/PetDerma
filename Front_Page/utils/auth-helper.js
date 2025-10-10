@@ -12,6 +12,22 @@ function getDevToken() {
       success: (res) => {
         if (res.statusCode === 200 && res.data.success) {
           console.log("✅ 获取开发token成功");
+
+          // 设置用户信息到全局数据
+          const app = getApp();
+          if (res.data.user) {
+            const userInfo = {
+              userId: res.data.user.id,
+              _id: res.data.user.id,
+              id: res.data.user.id,
+              nickName: res.data.user.nickName,
+              avatar: res.data.user.avatar,
+            };
+
+            app.updateUserInfo(userInfo);
+            console.log("✅ 开发环境用户信息已设置:", userInfo);
+          }
+
           resolve(res.data.token);
         } else {
           console.error("❌ 获取开发token失败:", res.data);

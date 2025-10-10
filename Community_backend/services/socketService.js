@@ -25,8 +25,6 @@ class SocketService {
 
     this.setupMiddleware();
     this.setupEventHandlers();
-
-    console.log("🔌 WebSocket服务已启动");
   }
 
   setupMiddleware() {

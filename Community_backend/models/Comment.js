@@ -148,8 +148,6 @@ commentSchema.statics.getPostComments = async function (
 
   // 为每个顶级评论获取回复
   for (let comment of topLevelComments) {
-    console.log(`🔍 查找评论 ${comment._id} 的回复...`);
-
     const replies = await this.find({
       parent: comment._id,
       isActive: true,
@@ -176,7 +174,6 @@ commentSchema.statics.getPostComments = async function (
     commentsWithReplies.push(commentObj);
   }
 
-  console.log("✅ 所有评论处理完成，返回数据");
   return commentsWithReplies;
 };
 
@@ -224,14 +221,11 @@ commentSchema.post("save", async function (doc) {
         $inc: { commentCount: 1 },
       });
 
-      console.log(`✅ 帖子 ${doc.postId} 评论数已增加`);
-
       // 如果是回复，更新父评论的回复数
       if (doc.parent) {
         await mongoose.model("Comment").findByIdAndUpdate(doc.parent, {
           $inc: { "stats.replies": 1 },
         });
-        console.log(`✅ 父评论 ${doc.parent} 回复数已增加`);
       }
     } catch (error) {
       console.error("更新评论数失败:", error);
@@ -239,10 +233,20 @@ commentSchema.post("save", async function (doc) {
   }
 });
 
-// 前置中间件：标记新文档
+// 前置中间件：标记新文档并初始化统计数据
 commentSchema.pre("save", function () {
   if (this.isNew) {
     this.wasNew = true;
+    // 确保统计数据正确初始化
+    if (!this.stats) {
+      this.stats = {};
+    }
+    if (typeof this.stats.likes !== "number") {
+      this.stats.likes = 0;
+    }
+    if (typeof this.stats.replies !== "number") {
+      this.stats.replies = 0;
+    }
   }
 });
 

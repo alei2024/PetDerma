@@ -8,10 +8,8 @@
     "dev": "nodemon server.js",
     "start:all": "node server.js",
     "dev:all": "npm run dev",
-    "init-test-user": "node scripts/init-test-user.js",
-    "clear-test-posts": "node scripts/clear-test-posts.js",
     "migrate-posts": "node scripts/migrate-old-posts.js",
-    "test-flow": "node scripts/test-complete-flow.js",
+    "cleanup-users": "node scripts/cleanup-keep-four-users.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

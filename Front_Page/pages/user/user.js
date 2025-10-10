@@ -7,13 +7,6 @@ Page({
       phone: "",
       loginType: "", // 'wechat' 或 'phone'
     },
-    // 开发环境快速切换用户
-    showQuickSwitch: false,
-    quickSwitchUsers: [
-      { phone: "13800138001", nickname: "测试用户A" },
-      { phone: "13800138002", nickname: "测试用户B" },
-      { phone: "13800138003", nickname: "测试用户C" },
-    ],
     showSettingsPopup: false,
     showPrivacyPopup: false, // 隐私设置弹窗状态
     notificationEnabled: true,
@@ -1493,113 +1486,5 @@ Page({
       showCancel: false,
       confirmText: "确定",
     });
-  },
-
-  // 开发环境：显示快速切换用户
-  showQuickSwitchUsers: function () {
-    this.setData({
-      showQuickSwitch: true,
-    });
-  },
-
-  // 隐藏快速切换用户
-  hideQuickSwitch: function () {
-    this.setData({
-      showQuickSwitch: false,
-    });
-  },
-
-  // 快速切换到指定用户
-  quickSwitchToUser: function (e) {
-    const userIndex = e.currentTarget.dataset.index;
-    const userData = this.data.quickSwitchUsers[userIndex];
-
-    if (!userData) return;
-
-    wx.showLoading({
-      title: "切换用户中...",
-      mask: true,
-    });
-
-    // 调用手机号登录API
-    const app = getApp();
-    app
-      .request({
-        url: "/api/auth/phone-login",
-        method: "POST",
-        data: {
-          phoneNumber: userData.phone,
-          nickName: userData.nickname,
-          avatar: {
-            url: "/images/user_default.png",
-            source: "upload",
-            key: "",
-          },
-        },
-      })
-      .then((res) => {
-        wx.hideLoading();
-        if (res.data && res.data.success) {
-          const { token, user } = res.data.data;
-
-          // 保存token和用户信息
-          wx.setStorageSync("token", token);
-          const userInfo = {
-            id: user.id,
-            avatar: user.avatar || {
-              url: "/images/user_default.png",
-              source: "default",
-            },
-            nickname: user.nickName || userData.nickname,
-            phone: user.phoneNumber || userData.phone,
-            loginType: "phone",
-          };
-
-          wx.setStorageSync("userInfo", userInfo);
-
-          // 更新全局用户信息和token
-          app.globalData.token = token;
-          app.globalData.hasLogin = true;
-          app.updateUserInfo(userInfo);
-
-          // 处理头像URL，确保立即可以显示
-          if (userInfo.avatar) {
-            if (typeof userInfo.avatar === "string") {
-              userInfo.avatar = {
-                url: userInfo.avatar,
-                displayUrl: this.processAvatarUrl({ url: userInfo.avatar }),
-              };
-            } else if (typeof userInfo.avatar === "object") {
-              userInfo.avatar.displayUrl = this.processAvatarUrl(
-                userInfo.avatar
-              );
-            }
-          }
-
-          this.setData({
-            isLoggedIn: true,
-            userInfo: userInfo,
-            showQuickSwitch: false,
-          });
-
-          wx.showToast({
-            title: `已切换到${userData.nickname}`,
-            icon: "success",
-          });
-        } else {
-          wx.showToast({
-            title: res.data?.message || "切换失败",
-            icon: "none",
-          });
-        }
-      })
-      .catch((error) => {
-        wx.hideLoading();
-        console.error("快速切换用户失败:", error);
-        wx.showToast({
-          title: "切换失败，请重试",
-          icon: "none",
-        });
-      });
   },
 });

@@ -12,11 +12,13 @@
           <image class="user-avatar" src="{{postDetail.authorId.avatar.url}}" mode="aspectFill"></image>
           <view class="user-details">
             <text class="username">{{postDetail.authorId.nickName}}</text>
-            <text class="post-time">{{postDetail.postTime}}</text>
           </view>
         </view>
-        <view class="follow-btn {{postDetail.isFollowed ? 'followed' : ''}}" bindtap="toggleFollow">
-          {{postDetail.isFollowed ? '已关注' : '关注'}}
+        <view class="header-right">
+          <text class="post-time">{{postDetail.postTime}}</text>
+          <view wx:if="{{postDetail.isOwner}}" class="delete-btn" bindtap="showDeleteConfirm">
+            <image class="delete-icon" src="/images/delete_icon.png" mode="aspectFit"></image>
+          </view>
         </view>
       </view>
       
@@ -153,4 +155,17 @@
   </view>
 </view>
 
-<!-- 评论图片功能已移除 --> 
+<!-- 评论图片功能已移除 -->
+
+<!-- 删除确认弹窗 -->
+<view wx:if="{{showDeleteConfirm}}" class="delete-modal-mask" bindtap="hideDeleteConfirm"></view>
+<view wx:if="{{showDeleteConfirm}}" class="delete-modal">
+  <view class="delete-modal-content">
+    <view class="delete-modal-title">确认删除</view>
+    <view class="delete-modal-text">删除后将无法恢复，确定要删除这条帖子吗？</view>
+    <view class="delete-modal-actions">
+      <button class="delete-cancel-btn" bindtap="hideDeleteConfirm">取消</button>
+      <button class="delete-confirm-btn" bindtap="confirmDelete">删除</button>
+    </view>
+  </view>
+</view>

@@ -41,7 +41,33 @@ Thumbs.db
 # 微信小程序
 Front_Page/project.private.config.json
 
-# 测试文件（可选）
+# 测试文件和脚本（已删除的文件）
 Community_backend/test-*.js
 Community_backend/debug-*.js
 Community_backend/verify-*.js
+Community_backend/scripts/test-*.js
+Community_backend/scripts/init-*.js
+Community_backend/scripts/clear-*.js
+Community_backend/scripts/final-*.js
+
+# 微信小程序构建文件
+Front_Page/miniprogram_npm/
+Front_Page/.tea/
+
+# 测试图片和临时文件
+Front_Page/images_test/
+Community_backend/uploads/avatars/*.png
+Community_backend/uploads/images/*.jpg
+Community_backend/uploads/images/*.png
+Community_backend/uploads/images/*.jpeg
+!Community_backend/uploads/user_default.png
+
+# 文档和指南文件（开发用）
+Community_backend/AVATAR_DEBUG_GUIDE.md
+Community_backend/COMMUNITY_GUIDE_COMBINED.md
+Community_backend/DEPLOYMENT.md
+Community_backend/SIMPLE_COMMUNITY_GUIDE.md
+Community_backend/WEBSOCKET_TROUBLESHOOTING.md
+Front_Page/NETWORK_CONFIG_GUIDE.md
+Front_Page/QUICK_FIX_GUIDE.md
+WEBSOCKET_TIMEOUT_SOLUTION.md

@@ -7,9 +7,6 @@ const PORT = process.env.PORT || 3000;
 // 启动服务器 - 监听所有网络接口（允许局域网访问）
 const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 服务器运行在端口 ${PORT}`);
-  console.log(`📱 环境: ${process.env.NODE_ENV || "development"}`);
-  console.log(`🌐 本地访问: http://localhost:${PORT}`);
-  console.log(`🌐 局域网访问: http://172.28.16.1:${PORT}`);
 });
 
 // 初始化WebSocket服务

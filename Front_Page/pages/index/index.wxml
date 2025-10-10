@@ -2,6 +2,9 @@
 <navigation-bar title="PetDerma" back="{{false}}" color="white" background="#A5D7E8" titleStyle="font-size: 20px;">
 	<view slot="left" class="nav-left-btn" bindtap="openMessages">
 		<image class="nav-left-icon" src="/images/message_icon.svg" mode="aspectFit"></image>
+		<view wx:if="{{unreadCount > 0}}" class="message-badge">
+			<text class="badge-text">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+		</view>
 	</view>
 </navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">
@@ -96,12 +99,23 @@
 		<text class="popup-close" bindtap="closeMessages">×</text>
 	</view>
 	<scroll-view scroll-y class="popup-body">
-		<block wx:for="{{messages}}" wx:key="id">
-			<view class="msg-item">
-				<view class="msg-title">{{item.title}}</view>
-				<view class="msg-time">{{item.time}}</view>
-				<view class="msg-content">{{item.content}}</view>
-			</view>
-		</block>
+		<view wx:if="{{isLoadingMessages}}" class="loading-container">
+			<text class="loading-text">加载中...</text>
+		</view>
+		<view wx:elif="{{messages.length === 0}}" class="empty-messages">
+			<text class="empty-text">暂无消息</text>
+		</view>
+		<view wx:else>
+			<block wx:for="{{messages}}" wx:key="id">
+				<view class="msg-item {{!item.isRead ? 'unread' : ''}}" bindtap="onMessageTap" data-id="{{item.id}}">
+					<view class="msg-header">
+						<view class="msg-title">{{item.title}}</view>
+						<view class="msg-time">{{item.time}}</view>
+					</view>
+					<view class="msg-content">{{item.content}}</view>
+					<view wx:if="{{!item.isRead}}" class="unread-dot"></view>
+				</view>
+			</block>
+		</view>
 	</scroll-view>
 </view>

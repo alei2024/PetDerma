@@ -27,57 +27,84 @@
 
 /* 搜索区域 */
 .search-section {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
   padding: 20rpx 30rpx;
   background-color: white;
   border-bottom: 2rpx solid #f0f0f0;
-  width: 100%;
+}
+
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: calc(100% - 120rpx); /* 为搜索按钮留出空间 */
+  display: flex;
+  align-items: center;
 }
 
 .search-input {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 76%;
+  width: 100%;
   height: 80rpx;
-  background-color: var(--bg-white);
+  background-color: #f8f9fa;
   border-radius: 40rpx;
-  margin-right: -20rpx;
-  padding: 0 30rpx;
+  padding: 0 50rpx 0 30rpx;
   font-size: 28rpx;
-  border: 2rpx solid #e0e0e0;
+  border: 2rpx solid #e9ecef;
   box-sizing: border-box;
+  color: #333;
+}
+
+.search-input:focus {
+  border-color: #a5d7e8;
+  background-color: white;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 15rpx;
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #bbb;
+  border-radius: 50%;
+  color: white;
+  font-size: 20rpx;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.clear-btn:active {
+  background-color: #999;
 }
 
 .search-btn {
   height: 80rpx;
-  background-color: var(--primary-blue);
+  background-color: #a5d7e8;
   color: white;
   border-radius: 40rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: bold;
   border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  flex-shrink: 0;
-  padding: 0 28rpx;
-  min-width: 80rpx;
-  max-width: 130rpx;
-  width: auto;
-  box-sizing: border-box;
-}
-
-.clear-btn {
-  width: 40rpx;
-  height: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #d0d0d0;
-  border-radius: 50%;
-  font-size: 24rpx;
-  margin-right: 80rpx;
-  color: white;
+  padding: 0 20rpx;
+  min-width: 100rpx;
+  max-width: 100rpx;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+
+.search-btn:disabled {
+  background-color: #ccc;
+  color: #999;
+}
+
+.search-btn:not(:disabled):active {
+  background-color: #8cc5d4;
 }
 
 /* 帖子列表 */
@@ -135,13 +162,10 @@
 .post-time {
   font-size: 24rpx;
   color: var(--text-gray);
+  flex-shrink: 0;
 }
 
-.post-menu {
-  font-size: 40rpx;
-  color: var(--text-gray);
-  padding: 10rpx;
-}
+/* 删除了 .post-menu 样式 */
 
 .post-list {
   margin-top: 20rpx;
@@ -401,55 +425,28 @@
   box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.2);
   z-index: 1001;
   overflow: hidden;
-}
-
-.post-menu-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border-radius: 15rpx;
-  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.2);
-  z-index: 1001;
-  overflow: hidden;
-  min-width: 300rpx;
+  min-width: 200rpx;
 }
 
 .menu-item {
-  display: flex;
-  align-items: center;
   padding: 30rpx 40rpx;
-  border-bottom: 2rpx solid #f0f0f0;
+  border-bottom: 1rpx solid #f0f0f0;
   font-size: 28rpx;
-  color: var(--text-dark);
+  color: #333;
+  transition: background-color 0.2s;
 }
 
 .menu-item:last-child {
   border-bottom: none;
 }
 
-/* 悬浮测试按钮 */
-.floating-test-btn {
-  position: fixed;
-  bottom: 120rpx;
-  left: 30rpx;
-  width: 100rpx;
-  height: 100rpx;
-  background-color: #007aff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4rpx 20rpx rgba(0, 122, 255, 0.3);
-  z-index: 100;
-  animation: float 2s ease-in-out infinite;
+.menu-item:active {
+  background-color: #f5f5f5;
 }
 
-.test-icon {
-  font-size: 40rpx;
-  color: white;
-}
+/* 删除了帖子菜单相关样式 */
+
+/* 悬浮测试按钮 */
 
 @keyframes float {
   0%,

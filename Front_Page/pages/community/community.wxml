@@ -7,16 +7,25 @@
 
 <view class="container">
   <!-- 搜索框 -->
-  <view class="search-section" style="display: flex; align-items: center; gap: 8rpx;">
-    <input class="search-input" placeholder="搜索帖子内容..." value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearch" style="flex: 1;" />
-    <button class="search-btn" bindtap="doSearch">搜索</button>
-    <view wx:if="{{searchKeyword}}" class="clear-btn" bindtap="clearSearch" style="position: absolute; right: 120rpx;">×</view>
+  <view class="search-section">
+    <view class="search-container">
+      <input 
+        class="search-input" 
+        placeholder="搜索帖子标签、内容..." 
+        value="{{searchKeyword}}" 
+        bindinput="onSearchInput" 
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <view wx:if="{{searchKeyword}}" class="clear-btn" bindtap="clearSearch">×</view>
+    </view>
+    <button class="search-btn" bindtap="doSearch" disabled="{{!searchKeyword}}">搜索</button>
   </view>
   
   <!-- 帖子列表 -->
   <scroll-view class="post-list" scroll-y refresher-enabled="{{true}}" bindrefresherrefresh="onRefresh" 
                refresher-triggered="{{isRefreshing}}" bindscrolltolower="loadMore" enhanced="{{true}}">
-    <block wx:for="{{postList}}" wx:key="id">
+    <block wx:for="{{postList}}" wx:key="_id">
       <view class="post-item" bindtap="viewPostDetail" data-id="{{item.id}}">
         <!-- 用户信息 -->
         <view class="post-header">
@@ -24,17 +33,16 @@
             <image class="user-avatar" src="{{item.userAvatar}}" mode="aspectFill"></image>
             <view class="user-details">
               <text class="username">{{item.username}}</text>
-              <text class="post-time">{{item.postTime}}</text>
             </view>
           </view>
-          <view class="post-menu" bindtap="showPostMenu" data-id="{{item.id}}" catchtap="true">⋯</view>
+          <text class="post-time">{{item.postTime}}</text>
         </view>
         
         <!-- 帖子内容 -->
         <view class="post-content">
           <text class="post-text">{{item.content}}</text>
           <view wx:if="{{item.images && item.images.length > 0}}" class="post-images" data-count="{{item.images.length}}">
-            <block wx:for="{{item.images}}" wx:key="index" wx:for-item="imgUrl">
+            <block wx:for="{{item.images}}" wx:key="*this" wx:for-item="imgUrl">
               <image class="post-image" src="{{imgUrl}}" mode="aspectFill" bindtap="previewImage" 
                      data-urls="{{item.allImages}}" data-current="{{imgUrl}}" catchtap="true"></image>
             </block>
@@ -47,7 +55,7 @@
         
         <!-- 标签 -->
         <view wx:if="{{item.tags && item.tags.length > 0}}" class="post-tags">
-          <text wx:for="{{item.tags}}" wx:key="index" class="tag">{{item}}</text>
+          <text wx:for="{{item.tags}}" wx:key="*this" class="tag">{{item}}</text>
         </view>
         
         <!-- 互动区域 -->
@@ -101,18 +109,4 @@
   </view>
 </view>
 
-<!-- 帖子操作菜单 -->
-<view wx:if="{{showPostMenuModal}}" class="modal-mask" bindtap="hidePostMenu"></view>
-<view wx:if="{{showPostMenuModal}}" class="post-menu-modal">
-  <view class="menu-item" bindtap="reportPost">
-    <text>举报</text>
-  </view>
-  <view class="menu-item" bindtap="hidePost">
-    <text>不感兴趣</text>
-  </view>
-</view>
-
-<!-- 悬浮测试按钮 -->
-<view class="floating-test-btn" bindtap="goToTest">
-  <text class="test-icon">🧪</text>
-</view>
+<!-- 删除了帖子操作菜单 -->

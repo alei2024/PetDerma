@@ -49,7 +49,6 @@ likeSchema.index({ userId: 1, target: 1, targetType: 1 }, { unique: true });
 // 静态方法：清理旧索引
 likeSchema.statics.cleanupOldIndexes = async function () {
   try {
-    console.log("🔧 检查并清理Like集合的旧索引...");
     const collection = this.collection;
     const indexes = await collection.indexes();
 
@@ -58,11 +57,7 @@ likeSchema.statics.cleanupOldIndexes = async function () {
       (index) => index.name === "userId_1_postId_1"
     );
     if (oldIndex) {
-      console.log("🗑️ 删除旧的 userId_1_postId_1 索引...");
       await collection.dropIndex("userId_1_postId_1");
-      console.log("✅ 旧索引删除成功");
-    } else {
-      console.log("✅ 未找到旧索引，无需删除");
     }
   } catch (error) {
     console.error("❌ 清理旧索引失败:", error.message);

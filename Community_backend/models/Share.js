@@ -127,7 +127,6 @@ shareSchema.post("findOneAndDelete", async function (doc) {
 // 静态方法：清理旧的唯一索引
 shareSchema.statics.cleanupOldIndexes = async function () {
   try {
-    console.log("🔧 检查并清理Share集合的旧唯一索引...");
     const collection = this.collection;
     const indexes = await collection.indexes();
 
@@ -136,16 +135,9 @@ shareSchema.statics.cleanupOldIndexes = async function () {
       (index) => index.name === "userId_1_postId_1" && index.unique === true
     );
     if (oldUniqueIndex) {
-      console.log("🗑️ 删除旧的唯一索引 userId_1_postId_1...");
       await collection.dropIndex("userId_1_postId_1");
-      console.log("✅ 旧唯一索引删除成功");
-
       // 重新创建非唯一索引
-      console.log("🔧 重新创建非唯一索引...");
       await collection.createIndex({ userId: 1, postId: 1 });
-      console.log("✅ 非唯一索引创建成功");
-    } else {
-      console.log("✅ 没有找到需要清理的唯一索引");
     }
   } catch (error) {
     console.error("❌ 清理Share索引失败:", error);

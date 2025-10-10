@@ -9,37 +9,53 @@ const {
 function processAvatarUrl(avatarObj) {
   if (!avatarObj) return "/images/user_default.png";
 
-  console.log("🔍 社区页面处理头像对象:", avatarObj);
-
   // 使用成功的图片处理工具
   const processedUrl = processImageUrl(avatarObj);
 
   if (processedUrl) {
-    console.log("✅ 社区页面头像URL处理成功:", processedUrl);
     return processedUrl;
   }
-
-  console.log("⚠️ 社区页面头像处理失败，使用默认头像");
   return "/images/user_default.png";
 }
 Page({
   data: {
     searchKeyword: "",
     postList: [],
+    originalPostList: [], // 存储原始帖子数据，用于本地搜索
     isRefreshing: false,
     isLoadingMore: false,
     hasMore: true,
     currentPage: 1,
     pageSize: 10,
     showUserMenuModal: false,
-    showPostMenuModal: false,
-    currentPostId: null,
+    // 删除了帖子菜单相关数据
+    isSearching: false, // 是否在搜索状态
   },
 
-  // 跳转到测试页面
-  goToTest: function () {
-    wx.navigateTo({
-      url: "/pages/debug/community-test",
+  // 检查用户是否已登录
+  checkLoginStatus: function () {
+    const app = getApp();
+    return (
+      app.globalData.hasLogin &&
+      app.globalData.token &&
+      app.globalData.token !== "test-token"
+    );
+  },
+
+  // 显示登录提示
+  showLoginPrompt: function (action = "进行此操作") {
+    wx.showModal({
+      title: "需要登录",
+      content: `请先登录后再${action}`,
+      confirmText: "去登录",
+      cancelText: "取消",
+      success: (res) => {
+        if (res.confirm) {
+          wx.switchTab({
+            url: "/pages/user/user",
+          });
+        }
+      },
     });
   },
 
@@ -51,7 +67,6 @@ Page({
     // 检查是否需要刷新社区数据
     const app = getApp();
     if (app.globalData.needRefreshCommunity) {
-      console.log("🔄 检测到需要刷新社区数据");
       app.globalData.needRefreshCommunity = false;
       this.refreshPostList();
     } else {
@@ -72,139 +87,50 @@ Page({
         const posts = res.data.data.posts || [];
         const pagination = res.data.data.pagination || {};
 
-        // 处理帖子数据，确保图片路径和用户信息正确
-        const processedPosts = posts.map((post) => ({
-          ...post,
-          // 使用新的图片处理工具 - 社区页面只显示前3张
-          images: processImageList((post.images || []).slice(0, 3)),
-          // 保存所有图片用于预览
-          allImages: processImageList(post.images || []),
-          // 保存原始图片数量用于显示
-          totalImageCount: (post.images || []).length,
-          // 处理用户信息显示
-          username: post.authorId?.nickName || "匿名用户",
-          userAvatar: processAvatarUrl(post.authorId?.avatar),
-          // 格式化时间
-          postTime: app.formatTime(new Date(post.createdAt || Date.now())),
-          // 确保ID字段
-          id: post._id || post.id,
-        }));
+        // 处理帖子数据
+        const processedPosts = this.processPostsData(posts);
 
         if (this.data.currentPage === 1) {
           this.setData({
             postList: processedPosts,
+            originalPostList: processedPosts, // 存储原始数据用于本地搜索
             hasMore:
               posts.length === this.data.pageSize ||
               (pagination.total || 0) > posts.length,
+            isSearching: false, // 重置搜索状态
           });
         } else {
+          const newPostList = [...this.data.postList, ...processedPosts];
           this.setData({
-            postList: [...this.data.postList, ...processedPosts],
+            postList: newPostList,
+            originalPostList:
+              this.data.currentPage === 1
+                ? processedPosts
+                : [...this.data.originalPostList, ...processedPosts],
             hasMore:
               posts.length === this.data.pageSize ||
-              (pagination.total || 0) >
-                this.data.postList.length + posts.length,
+              (pagination.total || 0) > newPostList.length,
           });
         }
       } else {
         wx.showToast({ title: "获取帖子失败", icon: "none" });
-        // 如果API请求失败，使用备用的mock数据
-        this.useMockData();
+        // 显示空状态
+        this.setData({
+          postList: [],
+          hasMore: false,
+        });
       }
     } catch (e) {
       console.error("加载帖子失败:", e);
       wx.showToast({ title: "网络异常", icon: "none" });
-      // 网络异常时使用备用的mock数据
-      this.useMockData();
+      // 显示空状态
+      this.setData({
+        postList: [],
+        hasMore: false,
+      });
     } finally {
       wx.hideLoading();
     }
-  },
-
-  // 当API请求失败时使用的备用mock数据
-  useMockData() {
-    const mockPosts = [
-      {
-        id: "p001",
-        username: "宠物达人小李",
-        userAvatar: "/images_dogcat/三花猫.png",
-        postTime: "2小时前",
-        content:
-          "我家猫咪最近出现了一些皮肤问题，有经验的朋友可以帮忙看看吗？主要是脖子和腋下有红斑，还有一些脱毛的情况。已经用了医生开的药膏，但效果不是很明显。",
-        images: ["/images_dogcat/三花猫.png", "/images_dogcat/布偶猫.png"],
-        tags: ["皮肤病", "求助", "猫咪"],
-        likeCount: 12,
-        commentCount: 8,
-        collectCount: 5,
-        isLiked: false,
-        isCollected: false,
-      },
-      {
-        id: "p002",
-        username: "汪星人家长",
-        userAvatar: "/images_dogcat/法斗.png",
-        postTime: "5小时前",
-        content:
-          "分享一下我家狗狗治疗真菌感染的经验！经过两个月的治疗，终于完全康复了。主要用的是酮康唑洗液和口服药，配合营养补充。",
-        images: ["/images_dogcat/法斗.png"],
-        tags: ["真菌感染", "治疗经验", "狗狗"],
-        likeCount: 28,
-        commentCount: 15,
-        collectCount: 12,
-        isLiked: false,
-        isCollected: true,
-      },
-      {
-        id: "p003",
-        username: "宠物医生王",
-        userAvatar: "/images_dogcat/金毛.png",
-        postTime: "昨天",
-        content:
-          "最近接诊了很多皮肤病案例，提醒各位宠物主人一定要注意宠物的日常卫生，保持环境干燥，定期检查宠物皮肤状况。",
-        images: ["/images_dogcat/金毛.png"],
-        tags: ["医生建议", "预防", "皮肤病"],
-        likeCount: 45,
-        commentCount: 22,
-        collectCount: 30,
-        isLiked: true,
-        isCollected: true,
-      },
-      {
-        id: "p004",
-        username: "猫咪爱好者",
-        userAvatar: "/images_dogcat/英短.png",
-        postTime: "3天前",
-        content:
-          "英短猫常见的皮肤问题及护理方法分享。英短猫因为毛发浓密，容易出现毛囊炎等问题，日常梳理和适当的饮食调节非常重要。",
-        images: ["/images_dogcat/英短.png", "/images_dogcat/美短.png"],
-        tags: ["英短", "护理", "皮肤问题"],
-        likeCount: 68,
-        commentCount: 35,
-        collectCount: 42,
-        isLiked: false,
-        isCollected: false,
-      },
-      {
-        id: "p005",
-        username: "狗狗训练师",
-        userAvatar: "/images_dogcat/萨摩耶.png",
-        postTime: "1周前",
-        content:
-          "记录一下我家边牧的康复过程。从发现皮肤问题到完全治愈用了3个月时间，期间换了2家医院，最终在专业的宠物皮肤科治好了。",
-        images: ["/images_dogcat/边牧.png", "/images_dogcat/哈士奇.png"],
-        tags: ["康复记录", "皮肤科", "边牧"],
-        likeCount: 35,
-        commentCount: 18,
-        collectCount: 25,
-        isLiked: true,
-        isCollected: false,
-      },
-    ];
-
-    this.setData({
-      postList: mockPosts,
-      hasMore: false,
-    });
   },
 
   // 搜索输入
@@ -216,22 +142,55 @@ Page({
 
   // 执行搜索
   onSearch: function () {
+    this.doSearch();
+  },
+
+  // 搜索按钮点击
+  doSearch: function () {
     const keyword = this.data.searchKeyword.trim();
-    if (!keyword) return;
+    if (!keyword) {
+      wx.showToast({ title: "请输入搜索关键词", icon: "none" });
+      return;
+    }
 
     wx.showLoading({ title: "搜索中..." });
 
+    // 重置分页和设置搜索状态
+    this.setData({
+      currentPage: 1,
+      hasMore: true,
+      isSearching: true,
+    });
+
     app
       .request({
-        url: `/api/posts?search=${encodeURIComponent(keyword)}`,
+        url: `/api/posts?search=${encodeURIComponent(keyword)}&page=1&limit=${
+          this.data.pageSize
+        }`,
       })
       .then((res) => {
         if (res.data && res.data.success) {
-          const filteredPosts = res.data.data.posts || [];
+          const posts = res.data.data.posts || [];
+          const pagination = res.data.data.pagination || {};
+
+          // 处理搜索结果
+          const processedPosts = this.processPostsData(posts);
+
           this.setData({
-            postList: filteredPosts,
-            hasMore: false,
+            postList: processedPosts,
+            hasMore:
+              posts.length === this.data.pageSize ||
+              (pagination.total || 0) > posts.length,
           });
+
+          if (posts.length === 0) {
+            wx.showToast({ title: "未找到相关帖子", icon: "none" });
+          } else {
+            wx.showToast({
+              title: `找到 ${pagination.count || posts.length} 个结果`,
+              icon: "none",
+            });
+          }
         } else {
           wx.showToast({ title: "搜索失败", icon: "none" });
           // 搜索失败时使用本地过滤
@@ -249,19 +208,80 @@ Page({
       });
   },
 
+  // 处理帖子数据的通用方法
+  processPostsData(posts) {
+    return posts.map((post) => ({
+      ...post,
+      // 确保唯一ID字段 - 优先使用MongoDB的_id
+      _id:
+        post._id ||
+        post.id ||
+        `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id:
+        post._id ||
+        post.id ||
+        `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      // 使用新的图片处理工具 - 社区页面只显示前3张
+      images: processImageList((post.images || []).slice(0, 3)),
+      // 保存所有图片用于预览
+      allImages: processImageList(post.images || []),
+      // 保存原始图片数量用于显示
+      totalImageCount: (post.images || []).length,
+      // 处理用户信息显示
+      username: post.authorId?.nickName || "匿名用户",
+      userAvatar: processAvatarUrl(post.authorId?.avatar),
+      // 格式化时间
+      postTime: app.formatTime(new Date(post.createdAt || Date.now())),
+      // 统一字段名称
+      collectCount: post.favoriteCount || 0,
+    }));
+  },
+
   // 本地搜索（备用方案）
   localSearch(keyword) {
-    const filteredPosts = this.data.postList.filter(
-      (post) =>
-        post.content.includes(keyword) ||
-        post.tags.some((tag) => tag.includes(keyword)) ||
-        post.username.includes(keyword)
-    );
+    // 如果没有原始数据，重新加载
+    if (!this.originalPostList || this.originalPostList.length === 0) {
+      console.log("⚠️ 没有原始数据，重新加载帖子");
+      this.loadPosts();
+      return;
+    }
+
+    const filteredPosts = this.originalPostList.filter((post) => {
+      const keywordLower = keyword.toLowerCase();
+
+      // 搜索帖子内容
+      const contentMatch =
+        post.content && post.content.toLowerCase().includes(keywordLower);
+
+      // 搜索标签
+      const tagMatch =
+        post.tags &&
+        post.tags.some((tag) => tag.toLowerCase().includes(keywordLower));
+
+      // 搜索用户名
+      const usernameMatch =
+        post.username && post.username.toLowerCase().includes(keywordLower);
+
+      // 搜索标题
+      const titleMatch =
+        post.title && post.title.toLowerCase().includes(keywordLower);
+
+      return contentMatch || tagMatch || usernameMatch || titleMatch;
+    });
 
     this.setData({
       postList: filteredPosts,
       hasMore: false,
     });
+
+    if (filteredPosts.length === 0) {
+      wx.showToast({ title: "未找到相关帖子", icon: "none" });
+    } else {
+      wx.showToast({
+        title: `找到 ${filteredPosts.length} 个结果`,
+        icon: "none",
+      });
+    }
   },
 
   // 清除搜索
@@ -269,8 +289,18 @@ Page({
     this.setData({
       searchKeyword: "",
       currentPage: 1,
+      isSearching: false,
     });
-    this.loadPosts();
+
+    // 如果有原始数据，直接恢复；否则重新加载
+    if (this.data.originalPostList && this.data.originalPostList.length > 0) {
+      this.setData({
+        postList: this.data.originalPostList,
+        hasMore: true,
+      });
+    } else {
+      this.loadPosts();
+    }
   },
 
   // 下拉刷新
@@ -301,6 +331,10 @@ Page({
 
   // 显示用户菜单
   showUserMenu: function () {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("查看个人内容");
+      return;
+    }
     this.setData({
       showUserMenuModal: true,
     });
@@ -308,6 +342,10 @@ Page({
 
   // 跳转我的收藏
   goToMyCollections: function () {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("查看我的收藏");
+      return;
+    }
     wx.navigateTo({
       url: "/pages/community/my-collections/my-collections",
     });
@@ -316,6 +354,10 @@ Page({
 
   // 跳转我的评论
   goToMyComments: function () {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("查看我的评论");
+      return;
+    }
     wx.navigateTo({
       url: "/pages/community/my-comments/my-comments",
     });
@@ -324,6 +366,10 @@ Page({
 
   // 跳转我的发布
   goToMyPosts: function () {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("查看我的发布");
+      return;
+    }
     wx.navigateTo({
       url: "/pages/community/my-posts/my-posts",
     });
@@ -338,21 +384,7 @@ Page({
   },
 
   // 显示帖子菜单
-  showPostMenu: function (e) {
-    const postId = e.currentTarget.dataset.id;
-    this.setData({
-      showPostMenuModal: true,
-      currentPostId: postId,
-    });
-  },
-
-  // 隐藏帖子菜单
-  hidePostMenu: function () {
-    this.setData({
-      showPostMenuModal: false,
-      currentPostId: null,
-    });
-  },
+  // 删除了帖子菜单相关方法
 
   // 查看帖子详情
   viewPostDetail: function (e) {
@@ -364,12 +396,15 @@ Page({
 
   // 发布帖子
   createPost: function () {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("发布帖子");
+      return;
+    }
     wx.navigateTo({
       url: "/pages/community/post/post",
       events: {
         // 监听发帖成功事件
         postPublished: (data) => {
-          console.log("✅ 收到发帖成功通知:", data);
           // 立即刷新帖子列表
           this.refreshPostList();
         },
@@ -379,7 +414,6 @@ Page({
 
   // 刷新帖子列表
   refreshPostList: function () {
-    console.log("🔄 刷新帖子列表");
     this.setData({
       currentPage: 1,
       postList: [],
@@ -390,6 +424,10 @@ Page({
 
   // 切换点赞
   toggleLike: function (e) {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("点赞");
+      return;
+    }
     const postId = e.currentTarget.dataset.id;
 
     // 先更新本地UI
@@ -421,6 +459,10 @@ Page({
 
   // 切换收藏
   toggleCollect: function (e) {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("收藏");
+      return;
+    }
     const postId = e.currentTarget.dataset.id;
 
     // 先更新本地UI
@@ -462,6 +504,10 @@ Page({
 
   // 转发帖子
   sharePost: function (e) {
+    if (!this.checkLoginStatus()) {
+      this.showLoginPrompt("转发");
+      return;
+    }
     const postId = e.currentTarget.dataset.id;
 
     // 先更新本地UI
