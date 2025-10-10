@@ -10,6 +10,8 @@
     "dev:all": "npm run dev",
     "migrate-posts": "node scripts/migrate-old-posts.js",
     "cleanup-users": "node scripts/cleanup-keep-four-users.js",
+    "init-db": "node scripts/init-database.js",
+    "check-db": "node scripts/check-database.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
