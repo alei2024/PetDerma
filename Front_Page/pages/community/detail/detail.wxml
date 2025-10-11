@@ -1,0 +1,171 @@
+<!--pages/community/detail/detail.wxml-->
+<navigation-bar title="帖子详情" back="{{true}}" color="white" background="#A5D7E8">
+</navigation-bar>
+
+<scroll-view class="page-container" scroll-y type="list">
+  <view class="container">
+    <!-- 帖子详情 -->
+    <view class="post-detail">
+      <!-- 用户信息 -->
+      <view class="post-header">
+        <view class="user-info">
+          <image class="user-avatar" src="{{postDetail.authorId.avatar.url}}" mode="aspectFill"></image>
+          <view class="user-details">
+            <text class="username">{{postDetail.authorId.nickName}}</text>
+          </view>
+        </view>
+        <view class="header-right">
+          <text class="post-time">{{postDetail.postTime}}</text>
+          <view wx:if="{{postDetail.isOwner}}" class="delete-btn" bindtap="showDeleteConfirm">
+            <image class="delete-icon" src="/images/delete_icon.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 帖子内容 -->
+      <view class="post-content">
+        <text class="post-text">{{postDetail.content}}</text>
+        <view wx:if="{{postDetail.images && postDetail.images.length > 0}}" class="post-images" data-count="{{postDetail.images.length}}">
+          <block wx:for="{{postDetail.images}}" wx:key="index" wx:for-item="imgUrl">
+            <image class="post-image" src="{{imgUrl}}" mode="aspectFill" bindtap="previewImage" 
+                   data-urls="{{postDetail.images}}" data-current="{{imgUrl}}"></image>
+          </block>
+        </view>
+      </view>
+      
+      <!-- 标签 -->
+      <view wx:if="{{postDetail.tags && postDetail.tags.length > 0}}" class="post-tags">
+        <text wx:for="{{postDetail.tags}}" wx:key="index" class="tag">{{item}}</text>
+      </view>
+      
+      <!-- 互动按钮 -->
+      <view class="post-actions">
+        <view class="action-item" bindtap="toggleLike">
+          <image class="action-icon" src="{{postDetail.isLiked ? '/images/like_click_icon.png' : '/images/like_icon.png'}}" mode="aspectFit"></image>
+          <text class="action-count">{{postDetail.likeCount || 0}}</text>
+        </view>
+        <view class="action-item" bindtap="showCommentInput">
+          <image class="action-icon" src="/images/comment_icon.png" mode="aspectFit"></image>
+          <text class="action-count">{{postDetail.commentCount || 0}}</text>
+        </view>
+        <view class="action-item" bindtap="onFavoriteTap">
+          <image class="action-icon" src="{{postDetail.isFavorited ? '/images/collection_click_icon.png' : '/images/collect_icon.png'}}" mode="aspectFit"></image>
+          <text class="action-count">{{postDetail.favoriteCount || 0}}</text>
+        </view>
+        <view class="action-item" bindtap="sharePost">
+          <image class="action-icon" src="/images/share_icon.png" mode="aspectFit"></image>
+          <text class="action-count">{{postDetail.shareCount || 0}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 评论区 -->
+    <view class="comments-section">
+      <view class="comments-header">
+        <text class="comments-title">评论 ({{postDetail.commentCount || 0}})</text>
+        <view class="sort-options">
+          <text class="sort-option {{sortType === 'time' ? 'active' : ''}}" bindtap="changeSortType" data-type="time">时间</text>
+          <text class="sort-option {{sortType === 'hot' ? 'active' : ''}}" bindtap="changeSortType" data-type="hot">热度</text>
+        </view>
+      </view>
+      
+      <view class="comments-list">
+        <block wx:for="{{commentList}}" wx:key="id">
+          <view class="comment-item">
+            <!-- 评论头部 -->
+            <view class="comment-header">
+              <image class="comment-avatar" src="{{item.authorId.avatar.url}}" mode="aspectFill"></image>
+              <view class="comment-info">
+                <view class="comment-user">
+                  <text class="comment-username">{{item.authorId.nickName}}</text>
+                  <text class="comment-time">{{item.commentTime}}</text>
+                </view>
+                <text class="comment-content">{{item.content}}</text>
+                <!-- 评论图片 -->
+                <view wx:if="{{item.images && item.images.length > 0}}" class="comment-images">
+                  <image wx:for="{{item.images}}" wx:key="index" wx:for-item="imgUrl" 
+                         class="comment-image" src="{{imgUrl}}" mode="aspectFill" 
+                         bindtap="previewImage" data-urls="{{item.images}}" data-current="{{imgUrl}}"></image>
+                </view>
+                
+                <!-- 评论操作 -->
+                <view class="comment-actions">
+                  <view class="comment-action" bindtap="toggleCommentLike" data-id="{{item.id}}">
+                    <image class="comment-action-icon {{item.isLiked ? 'liked' : ''}}" 
+                           src="{{item.isLiked ? '/images/like_click_icon.png' : '/images/like_icon.png'}}" 
+                           mode="aspectFit"></image>
+                    <text class="comment-action-text {{item.isLiked ? 'liked' : ''}}">{{item.likeCount || 0}}</text>
+                  </view>
+                  <view class="comment-action" bindtap="replyComment" data-id="{{item.id}}" data-username="{{item.authorId.nickName}}">
+                    <image class="comment-action-icon" src="/images/comment_icon.png" mode="aspectFit"></image>
+                    <text class="comment-action-text">回复</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 回复列表 -->
+            <view wx:if="{{item.replies && item.replies.length > 0}}" class="replies-list">
+              <block wx:for="{{item.replies}}" wx:key="id" wx:for-item="reply">
+                <view class="reply-item">
+                  <text class="reply-username">{{reply.username}}</text>
+                  <text wx:if="{{reply.replyTo}}" class="reply-to">回复 {{reply.replyTo}}</text>
+                  <text class="reply-content">：{{reply.content}}</text>
+                  <text class="reply-time">{{reply.replyTime}}</text>
+                </view>
+              </block>
+              <view wx:if="{{item.totalReplies > item.replies.length}}" class="load-more-replies" 
+                    bindtap="loadMoreReplies" data-id="{{item.id}}">
+                查看更多回复 ({{item.totalReplies - item.replies.length}}条)
+              </view>
+            </view>
+          </view>
+        </block>
+        
+        <!-- 评论状态提示 -->
+        <view wx:if="{{hasMoreComments}}" class="load-more-comments">
+          <text>{{isLoadingComments ? '加载中...' : '上拉加载更多评论'}}</text>
+        </view>
+        <view wx:elif="{{commentList.length > 0}}" class="no-more-comments">
+          <text>没有更多评论了</text>
+        </view>
+        <view wx:else class="empty-comments">
+          <text>暂无评论，快来发表第一条评论吧</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 评论输入框蒙层 -->
+<view wx:if="{{showCommentInput}}" class="comment-mask" bindtap="hideCommentInput"></view>
+
+<!-- 评论输入框 -->
+<view wx:if="{{showCommentInput}}" class="comment-input-panel">
+  <view class="comment-input-wrapper">
+    <textarea class="comment-input" 
+              placeholder="{{replyToUser ? '回复 ' + replyToUser + ':' : '写下你的评论...'}}" 
+              value="{{commentContent}}" 
+              bindinput="onCommentInput" 
+              auto-focus="{{showCommentInput}}"
+              maxlength="500"></textarea>
+    <view class="comment-tools">
+      <view class="comment-send-btn {{commentContent.trim() ? 'active' : ''}}" bindtap="sendComment">发送</view>
+    </view>
+  </view>
+</view>
+
+<!-- 评论图片功能已移除 -->
+
+<!-- 删除确认弹窗 -->
+<view wx:if="{{showDeleteConfirm}}" class="delete-modal-mask" bindtap="hideDeleteConfirm"></view>
+<view wx:if="{{showDeleteConfirm}}" class="delete-modal">
+  <view class="delete-modal-content">
+    <view class="delete-modal-title">确认删除</view>
+    <view class="delete-modal-text">删除后将无法恢复，确定要删除这条帖子吗？</view>
+    <view class="delete-modal-actions">
+      <button class="delete-cancel-btn" bindtap="hideDeleteConfirm">取消</button>
+      <button class="delete-confirm-btn" bindtap="confirmDelete">删除</button>
+    </view>
+  </view>
+</view>

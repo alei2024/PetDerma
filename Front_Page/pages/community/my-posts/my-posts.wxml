@@ -1,0 +1,60 @@
+<view class="page-container">
+  <navigation-bar title="我的发布" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
+  
+  <view class="content">
+    <!-- 空状态 -->
+    <view wx:if="{{isEmpty}}" class="empty-state">
+      <image src="/images/add_icon.png" class="empty-icon"></image>
+      <text class="empty-text">还没有发布过帖子</text>
+      <text class="empty-tip">分享你的宠物故事吧</text>
+      <button class="go-post-btn" bindtap="goToPost">发布帖子</button>
+    </view>
+
+    <!-- 帖子列表 -->
+    <view wx:else class="posts-container">
+      <view 
+        wx:for="{{posts}}" 
+        wx:key="_id" 
+        class="post-item" 
+        data-post-id="{{item._id}}"
+        bindtap="onPostTap"
+      >
+        <!-- 用户信息 -->
+        <view class="post-header">
+          <view class="user-info">
+            <image class="user-avatar" src="{{item.authorId.avatar.displayUrl || '/images/user_default.png'}}" mode="aspectFill"></image>
+            <view class="user-details">
+              <text class="username">{{item.authorId.nickName}}</text>
+            </view>
+          </view>
+          <text class="post-time">{{item.formattedTime}}</text>
+        </view>
+        
+        <!-- 帖子内容 -->
+        <view class="post-content">
+          <text class="post-text">{{item.content}}</text>
+        </view>
+        
+        <!-- 标签 -->
+        <view wx:if="{{item.tags && item.tags.length > 0}}" class="post-tags">
+          <text wx:for="{{item.tags}}" wx:key="*this" class="tag">{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{loading}}" class="loading">
+        <text>加载中...</text>
+      </view>
+
+      <!-- 没有更多 -->
+      <view wx:if="{{!hasMore && posts.length > 0}}" class="no-more">
+        <text>没有更多发布了</text>
+      </view>
+    </view>
+
+    <!-- 悬浮发布按钮 -->
+    <view wx:if="{{!isEmpty}}" class="floating-post-btn" bindtap="goToPost">
+      <image src="/images/add.png" class="add-icon"></image>
+    </view>
+  </view>
+</view>

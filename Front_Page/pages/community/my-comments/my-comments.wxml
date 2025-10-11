@@ -1,0 +1,79 @@
+<view class="page-container">
+  <navigation-bar title="我的评论" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
+  
+  <view class="content">
+    <!-- 空状态 -->
+    <view wx:if="{{isEmpty}}" class="empty-state">
+      <image src="/images/comment_icon.png" class="empty-icon"></image>
+      <text class="empty-text">还没有发表过评论</text>
+      <text class="empty-tip">去社区参与讨论吧</text>
+      <button class="go-community-btn" bindtap="goToCommunity">去社区逛逛</button>
+    </view>
+
+    <!-- 评论列表 -->
+    <view wx:else class="comments-container">
+      <view 
+        wx:for="{{comments}}" 
+        wx:key="_id" 
+        class="comment-item" 
+        data-post-id="{{item.postId._id}}"
+        data-comment-id="{{item._id}}"
+        bindtap="onCommentTap"
+      >
+        <!-- 评论头部 -->
+        <view class="comment-header">
+          <view class="comment-info">
+            <image 
+              src="{{item.authorId.avatar.displayUrl || '/images/user_default.png'}}" 
+              class="user-avatar"
+            ></image>
+            <view class="comment-details">
+              <text class="user-name">{{item.authorId.nickName}}</text>
+              <text class="comment-time">{{item.formattedTime}}</text>
+            </view>
+          </view>
+          <view class="comment-type">
+            <text class="type-label">评论</text>
+          </view>
+        </view>
+
+        <!-- 我的评论内容 -->
+        <view class="my-comment-content">
+          <text class="comment-text">{{item.content}}</text>
+        </view>
+
+        <!-- 原帖信息 -->
+        <view class="original-post">
+          <view class="post-header">
+            <image 
+              src="{{item.postId.authorId.avatar.displayUrl || '/images/user_default.png'}}" 
+              class="post-author-avatar"
+            ></image>
+            <view class="post-info">
+              <text class="post-author">{{item.postId.authorId.nickName}}</text>
+            </view>
+          </view>
+          <view class="post-preview">
+            <text class="post-content">{{item.postId.contentPreview}}</text>
+          </view>
+        </view>
+
+        <!-- 查看详情提示 -->
+        <view class="view-detail">
+          <text class="detail-text">点击查看完整帖子</text>
+          <text class="arrow">→</text>
+        </view>
+      </view>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{loading}}" class="loading">
+        <text>加载中...</text>
+      </view>
+
+      <!-- 没有更多 -->
+      <view wx:if="{{!hasMore && comments.length > 0}}" class="no-more">
+        <text>没有更多评论了</text>
+      </view>
+    </view>
+  </view>
+</view>

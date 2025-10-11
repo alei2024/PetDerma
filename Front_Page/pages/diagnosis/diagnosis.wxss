@@ -1,0 +1,590 @@
+/* 右下角悬浮智能问诊按钮，复用知识科普圆形按钮样式 */
+.circle-btn {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: -50rpx;
+  border-radius: 50%;
+  background-color: #8bc34a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  box-shadow: 0 4rpx 20rpx rgba(165, 215, 232, 0.3);
+  transition: all 0.3s ease;
+}
+.circle-btn:active {
+  transform: scale(0.95);
+}
+.ai-float-btn {
+  position: fixed;
+  right: 48rpx;
+  bottom: 72rpx;
+  z-index: 999;
+}
+/* pages/diagnosis/diagnosis.wxss */
+/* 
+ * 诊断页面独立样式文件
+ * 注意：本页面的宠物头像样式完全独立于首页，避免样式冲突
+ * 所有涉及宠物头像的样式都使用 .diagnosis- 前缀
+ */
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-gray);
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  width: 104vw;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30rpx;
+}
+
+/* 诊断页面专用宠物头像选择区样式 */
+.pet-select-section {
+  margin-bottom: 30rpx;
+  margin-top: 30rpx;
+  background-color: white;
+  border-radius: 20rpx;
+  max-width: 630rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.diagnosis-pet-avatars {
+  display: flex;
+  gap: 24rpx;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+.diagnosis-pet-avatar {
+  min-width: 120rpx;
+  max-width: 120rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15rpx;
+  border-radius: 15rpx;
+  transition: all 0.3s ease;
+  background-color: #f8f8f8;
+  border: 3rpx solid transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.diagnosis-pet-avatar.active {
+  background-color: var(--primary-blue);
+  color: white;
+  transform: scale(1.05);
+  border-color: var(--primary-blue);
+  box-shadow: 0 4rpx 15rpx rgba(165, 215, 232, 0.4);
+}
+
+.diagnosis-pet-avatar .diagnosis-avatar-img {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8rpx;
+  border: 2rpx solid white;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.diagnosis-pet-avatar .diagnosis-avatar-name {
+  font-size: 24rpx;
+  text-align: center;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.diagnosis-pet-avatar.active .diagnosis-avatar-name {
+  color: white;
+  font-weight: bold;
+}
+
+/* 上传区域样式 */
+.upload-section {
+  margin-bottom: 30rpx;
+  padding: 30rpx;
+  width: calc(100% - 60rpx);
+}
+
+.upload-title {
+  margin-bottom: 20rpx;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.upload-title .title {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+.guide-btn {
+  padding: 8rpx 16rpx;
+  background-color: var(--primary-blue);
+  color: white;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+.upload-title .subtitle {
+  font-size: 26rpx;
+  color: var(--text-gray);
+}
+
+.upload-area {
+  width: 100%;
+  min-height: 130rpx;
+  border: 2rpx dashed #cccccc;
+  border-radius: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+}
+
+.upload-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: 10rpx;
+}
+
+.upload-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-bottom: 5rpx;
+  color: var(--text-dark);
+}
+
+.upload-tip {
+  font-size: 24rpx;
+  color: var(--text-gray);
+}
+
+/* 图片网格样式 */
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10rpx;
+  width: 100%;
+}
+
+.image-grid > view {
+  margin-left: 6rpx; /* 每个图片左边都留 6rpx */
+  margin-top: 6rpx; /* 每个图片上边都留 6rpx */
+}
+
+.image-item {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.uploaded-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 10rpx;
+  object-fit: cover;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -5rpx;
+  right: -5rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.add-image-btn {
+  width: 200rpx;
+  height: 200rpx;
+  border: 2rpx dashed #cccccc;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  color: #cccccc;
+}
+
+/* 症状描述区样式 */
+.description-section {
+  margin-bottom: 30rpx;
+  padding: 30rpx;
+  width: calc(100% - 60rpx);
+}
+
+.desc-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.desc-input {
+  width: 93%;
+  min-height: 280rpx;
+  padding: 20rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  line-height: 1.5;
+  background-color: #fafafa;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: var(--text-gray);
+  margin-top: 10rpx;
+}
+
+/* 分析按钮样式 */
+.analysis-section {
+  margin-bottom: 30rpx;
+  text-align: center;
+  margin-left: -495rpx;
+}
+
+.analysis-btn {
+  width: 120rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+/* 诊断结果区样式 */
+.result-section {
+  padding: 30rpx;
+  background-color: #f8f9fa;
+  border-left: 6rpx solid var(--primary-blue);
+}
+
+.result-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: var(--primary-blue);
+}
+
+.result-content {
+  font-size: 28rpx;
+}
+.example-section {
+  margin-bottom: 30rpx;
+  padding: 0 30rpx 30rpx 30rpx;
+}
+.example-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+.example-image {
+  width: 100%;
+  height: 260rpx;
+  object-fit: contain;
+  border-radius: 16rpx;
+  background: none;
+  box-shadow: none;
+}
+.guide-tip-divider {
+  border-top: 2rpx solid #e0e0e0;
+  margin-top: -10rpx;
+  margin-left: -25rpx;
+  width: 85%;
+  padding-top: 16rpx;
+}
+
+.upload-tip {
+  font-size: 24rpx;
+  color: var(--text-light);
+}
+
+.uploaded-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.image-actions {
+  position: absolute;
+  bottom: 30rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+/* 拍摄指南样式 */
+.guide-section {
+  margin-bottom: 30rpx;
+  padding: 30rpx;
+}
+
+.guide-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.guide-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.guide-tip {
+  display: flex;
+  align-items: center;
+}
+
+.tip-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+}
+
+.tip-text {
+  font-size: 28rpx;
+  color: var(--text-gray);
+}
+
+/* 示例图片样式 */
+.examples-section {
+  margin-bottom: 30rpx;
+  padding: 30rpx;
+}
+
+.examples-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.example-item {
+  border-radius: 12rpx;
+  overflow: hidden;
+  position: relative;
+  height: 180rpx;
+}
+
+.example-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.example-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 24rpx;
+  padding: 10rpx;
+  text-align: center;
+}
+
+/* 加载中弹窗 */
+.loading-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-content {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+}
+
+.loading-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid var(--primary-blue);
+  border-top: 6rpx solid transparent;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 30rpx;
+  color: var(--text-dark);
+}
+
+/* 拍摄指南弹窗样式 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.guide-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600rpx;
+  max-height: 80vh;
+  background-color: white;
+  border-radius: 20rpx;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 2rpx solid #e0e0e0;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.modal-close {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: var(--text-gray);
+}
+
+.modal-body {
+  max-height: 60vh;
+  padding: 30rpx;
+}
+
+.guide-modal .guide-tips {
+  margin-bottom: 30rpx;
+}
+
+.guide-modal .guide-tip {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+}
+
+.guide-modal .tip-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 15rpx;
+  margin-top: 5rpx;
+}
+
+.guide-modal .tip-text {
+  flex: 1;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.example-section {
+  border-top: 2rpx solid #e0e0e0;
+  padding-top: 30rpx;
+}
+
+.example-section .example-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.example-section .example-image {
+  width: 100%;
+  height: 300rpx;
+  border-radius: 10rpx;
+  background-color: #f0f0f0;
+}
+
+/* 通用卡片样式 */
+.card {
+  background-color: white;
+  border-radius: 20rpx;
+  max-width: 630rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 通用按钮样式 */
+.btn {
+  display: inline-block;
+  text-align: center;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.btn-outline {
+  border: 2rpx solid var(--primary-blue);
+  color: var(--primary-blue);
+  background-color: transparent;
+}

@@ -1,0 +1,91 @@
+<!--pages/diagnosis/test/test.wxml-->
+<navigation-bar title="模型测试" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<scroll-view class="container" scroll-y>
+  
+  <!-- 测试控制区域 -->
+  <view class="test-control-section card">
+    <view class="section-title">模型测试控制</view>
+    
+    <!-- 单张图片测试 -->
+    <view class="test-item">
+      <view class="test-title">单张图片测试</view>
+      <view class="test-actions">
+        <button class="btn btn-outline" bindtap="chooseTestImage">选择图片</button>
+        <button class="btn btn-primary" bindtap="runSingleImageTest" disabled="{{isTesting}}">
+          {{isTesting ? '测试中...' : '开始测试'}}
+        </button>
+      </view>
+      <view wx:if="{{testImagePath}}" class="selected-image">
+        <image src="{{testImagePath}}" mode="aspectFill" class="preview-image"></image>
+        <text class="image-path">{{testImagePath}}</text>
+      </view>
+    </view>
+    
+    <!-- 多张图片测试 -->
+    <view class="test-item">
+      <view class="test-title">多张图片测试</view>
+      <view class="test-actions">
+        <button class="btn btn-primary" bindtap="runMultipleImageTest" disabled="{{isTesting}}">
+          {{isTesting ? '测试中...' : '选择多张图片测试'}}
+        </button>
+      </view>
+    </view>
+    
+    <!-- 清空结果 -->
+    <view class="test-item">
+      <button class="btn btn-danger" bindtap="clearResults">清空测试结果</button>
+    </view>
+  </view>
+  
+  <!-- 测试结果区域 -->
+  <view class="test-results-section card">
+    <view class="section-title">测试结果 ({{testResults.length}})</view>
+    
+    <block wx:if="{{testResults.length === 0}}">
+      <view class="empty-state">
+        <text>暂无测试结果</text>
+      </view>
+    </block>
+    
+    <block wx:for="{{testResults}}" wx:key="id">
+      <view class="result-item">
+        <view class="result-header">
+          <text class="result-type">{{item.type === 'single' ? '单张图片' : '多张图片'}}测试</text>
+          <text class="result-time">{{item.timestamp}}</text>
+        </view>
+        
+        <view class="result-content">
+          <view class="disease-info">
+            <text class="disease-name">{{item.result.diseaseName}}</text>
+            <text class="confidence">可信度: {{item.result.confidence}}%</text>
+            <text class="severity">严重程度: {{item.result.severity}}</text>
+          </view>
+          
+          <view class="result-actions">
+            <button class="btn btn-small" bindtap="viewDetail" data-index="{{index}}">查看详情</button>
+          </view>
+        </view>
+        
+        <!-- 显示图片预览 -->
+        <view wx:if="{{item.type === 'single'}}" class="image-preview">
+          <image src="{{item.imagePath}}" mode="aspectFill" class="preview-image"></image>
+        </view>
+        
+        <view wx:else class="image-preview">
+          <block wx:for="{{item.imagePaths}}" wx:key="index">
+            <image src="{{item}}" mode="aspectFill" class="preview-image-small"></image>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+  
+</scroll-view>
+
+<!-- 加载中弹窗 -->
+<view class="loading-modal" wx:if="{{isTesting}}">
+  <view class="loading-content">
+    <view class="loading-icon"></view>
+    <text class="loading-text">正在测试...</text>
+  </view>
+</view>

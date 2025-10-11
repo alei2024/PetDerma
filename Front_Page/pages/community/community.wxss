@@ -1,0 +1,459 @@
+/* pages/community/community.wxss */
+/* 只保留一份 .container 定义 */
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+  padding-bottom: 80rpx;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  width: 104vw;
+}
+
+/* 导航左侧按钮 */
+.nav-left-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.nav-left-icon {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+/* 搜索区域 */
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  padding: 20rpx 30rpx;
+  background-color: white;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: calc(100% - 120rpx); /* 为搜索按钮留出空间 */
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  height: 80rpx;
+  background-color: #f8f9fa;
+  border-radius: 40rpx;
+  padding: 0 50rpx 0 30rpx;
+  font-size: 28rpx;
+  border: 2rpx solid #e9ecef;
+  box-sizing: border-box;
+  color: #333;
+}
+
+.search-input:focus {
+  border-color: #a5d7e8;
+  background-color: white;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 15rpx;
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #bbb;
+  border-radius: 50%;
+  color: white;
+  font-size: 20rpx;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.clear-btn:active {
+  background-color: #999;
+}
+
+.search-btn {
+  height: 80rpx;
+  background-color: #a5d7e8;
+  color: white;
+  border-radius: 40rpx;
+  font-size: 26rpx;
+  font-weight: bold;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20rpx;
+  min-width: 100rpx;
+  max-width: 100rpx;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+
+.search-btn:disabled {
+  background-color: #ccc;
+  color: #999;
+}
+
+.search-btn:not(:disabled):active {
+  background-color: #8cc5d4;
+}
+
+/* 帖子列表 */
+.post-list {
+  flex: 1;
+  margin-top: 20rpx;
+  padding: 0 20rpx 20rpx 20rpx;
+  min-height: 0;
+  max-height: 100%;
+}
+
+.post-item {
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  margin-left: 8rpx;
+  width: 86%;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 帖子头部 */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  object-fit: cover;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--text-dark);
+  margin-bottom: 5rpx;
+}
+
+.post-time {
+  font-size: 24rpx;
+  color: var(--text-gray);
+  flex-shrink: 0;
+}
+
+/* 删除了 .post-menu 样式 */
+
+.post-list {
+  margin-top: 20rpx;
+  padding: 0 20rpx 20rpx 20rpx;
+  flex: 1;
+  min-height: 0;
+  max-height: 100%;
+}
+
+/* 帖子内容 */
+.post-content {
+  margin-bottom: 20rpx;
+}
+
+.post-text {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: var(--text-dark);
+  display: block;
+  margin-bottom: 20rpx;
+  /* 限制显示最多6行文本 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+/* 图片网格布局 - 根据图片数量自适应 */
+.post-images {
+  display: grid;
+  gap: 8rpx;
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 1张图片 - 单列大图 */
+.post-images[data-count="1"] {
+  grid-template-columns: 1fr;
+  max-width: 400rpx;
+}
+
+.post-images[data-count="1"] .post-image {
+  height: 300rpx;
+  border-radius: 12rpx;
+}
+
+/* 2张图片 - 双列 */
+.post-images[data-count="2"] {
+  grid-template-columns: 1fr 1fr;
+}
+
+.post-images[data-count="2"] .post-image {
+  height: 180rpx;
+  border-radius: 12rpx;
+}
+
+/* 3张图片 - 三列 */
+.post-images[data-count="3"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.post-images[data-count="3"] .post-image {
+  height: 160rpx;
+  border-radius: 10rpx;
+}
+
+/* 4张图片 - 2x2网格 */
+.post-images[data-count="4"] {
+  grid-template-columns: 1fr 1fr;
+}
+
+.post-images[data-count="4"] .post-image {
+  height: 180rpx;
+  border-radius: 12rpx;
+}
+
+/* 5张图片 - 2+3布局 */
+.post-images[data-count="5"] {
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+
+.post-images[data-count="5"] .post-image:nth-child(1) {
+  grid-column: 1 / 3;
+  height: 200rpx;
+}
+
+.post-images[data-count="5"] .post-image:nth-child(2) {
+  grid-column: 3;
+  height: 200rpx;
+}
+
+.post-images[data-count="5"] .post-image:nth-child(n + 3) {
+  height: 160rpx;
+}
+
+/* 6张图片 - 3x2网格 */
+.post-images[data-count="6"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.post-images[data-count="6"] .post-image {
+  height: 160rpx;
+  border-radius: 10rpx;
+}
+
+/* 7-9张图片 - 3x3网格 */
+.post-images[data-count="7"],
+.post-images[data-count="8"],
+.post-images[data-count="9"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.post-images[data-count="7"] .post-image,
+.post-images[data-count="8"] .post-image,
+.post-images[data-count="9"] .post-image {
+  height: 140rpx;
+  border-radius: 8rpx;
+}
+
+/* 通用图片样式 */
+.post-image {
+  width: 100%;
+  object-fit: cover;
+  background-color: #f0f0f0;
+  transition: transform 0.2s ease;
+}
+
+.post-image:active {
+  transform: scale(0.95);
+}
+
+/* 更多图片提示 */
+.more-images-tip {
+  position: absolute;
+  bottom: 10rpx;
+  right: 10rpx;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8rpx 12rpx;
+  border-radius: 15rpx;
+  font-size: 24rpx;
+}
+
+.more-text {
+  font-weight: 500;
+}
+
+/* 确保图片容器有相对定位 */
+.post-images[data-count="3"] {
+  position: relative;
+}
+
+/* 标签 */
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.tag {
+  background-color: var(--primary-blue);
+  color: white;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+/* 互动区域 */
+.post-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f0f0f0;
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10rpx;
+}
+
+.action-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.action-icon.liked,
+.action-icon.collected {
+  filter: hue-rotate(180deg) saturate(2);
+}
+
+.action-text {
+  font-size: 24rpx;
+  color: var(--text-gray);
+}
+
+.action-text.liked,
+.action-text.collected {
+  color: var(--primary-blue);
+}
+
+/* 加载提示 */
+.load-more,
+.no-more {
+  text-align: center;
+  padding: 30rpx;
+  color: var(--text-gray);
+  font-size: 26rpx;
+}
+
+/* 发布按钮 */
+.fab-button {
+  position: fixed;
+  bottom: 100rpx;
+  right: 50rpx;
+  width: 120rpx;
+  height: 120rpx;
+  background-color: var(--primary-blue);
+  border-radius: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 30rpx rgba(165, 215, 232, 0.5);
+  z-index: 100;
+}
+
+.fab-icon {
+  font-size: 60rpx;
+  color: white;
+  font-weight: bold;
+}
+
+/* 用户菜单弹窗 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.user-menu-modal {
+  position: fixed;
+  top: 200rpx;
+  left: 50rpx;
+  background-color: white;
+  border-radius: 15rpx;
+  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  overflow: hidden;
+  min-width: 200rpx;
+}
+
+.menu-item {
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  font-size: 28rpx;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background-color: #f5f5f5;
+}
+
+/* 删除了帖子菜单相关样式 */
+
+/* 悬浮测试按钮 */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10rpx);
+  }
+}

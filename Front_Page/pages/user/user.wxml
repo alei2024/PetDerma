@@ -1,0 +1,228 @@
+<!--pages/user/user.wxml-->
+<navigation-bar title="个人中心" back="{{false}}" color="white" background="#A5D7E8">
+  <view slot="left" class="nav-left-btn" bindtap="openSettings">
+    <image class="nav-left-icon" src="/images/settings_icon.png" mode="aspectFit"></image>
+  </view>
+</navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 用户信息区域 -->
+    <view class="user-section">
+      <view class="avatar-container">
+        <image class="user-avatar" src="{{isLoggedIn ? userInfo.avatar : '/images/user_default.png'}}" mode="aspectFill" bindtap="{{isLoggedIn ? 'changeAvatar' : ''}}"></image>
+        <view class="avatar-edit" wx:if="{{isLoggedIn}}" bindtap="changeAvatar">
+          <text class="edit-icon">✏️</text>
+        </view>
+      </view>
+      
+      <view class="user-info">
+        <block wx:if="{{isLoggedIn}}">
+          <text class="user-name">{{userInfo.nickname || '用户'}}</text>
+          <text class="user-id">{{userInfo.userId || 'ID: 000000'}}</text>
+        </block>
+        <block wx:else>
+          <text class="user-name">未登录</text>
+          <button class="login-btn" bindtap="login">
+            点击登录
+          </button>
+        </block>
+      </view>
+      
+      <view class="switch-account" wx:if="{{isLoggedIn}}" bindtap="switchAccount">
+        <text class="switch-text">切换账号</text>
+      </view>
+    </view>
+
+    <!-- 统计数据区域 -->
+    <view class="statistics-section">
+      <view class="stat-item">
+        <text class="stat-number">{{statistics.petCount}}</text>
+        <text class="stat-label">宠物</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{statistics.recordCount}}</text>
+        <text class="stat-label">记录</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{statistics.reminderCount}}</text>
+        <text class="stat-label">提醒</text>
+      </view>
+    </view>
+
+    <!-- 爪爪健康计划 -->
+    <view class="health-plan-section">
+      <view class="plan-header">
+        <text class="plan-title">爪爪健康</text>
+        <view class="plan-stars">
+          <text class="star">☆</text>
+          <text class="star">☆</text>
+          <text class="star">☆</text>
+          <text class="star">☆</text>
+        </view>
+        <view class="plan-arrow" bindtap="navigateToHealthRecord">
+          <text class="arrow-text">></text>
+        </view>
+      </view>
+      
+      <view class="plan-functions">
+        <view class="plan-function-item" bindtap="navigateToPetManagement">
+          <view class="function-icon">
+            <text class="icon-text">📅</text>
+          </view>
+          <view class="function-content">
+            <text class="function-title">宠物管理</text>
+            <text class="function-desc">已连续管理0天</text>
+          </view>
+        </view>
+        
+        <view class="plan-function-item" bindtap="navigateToHealthRecord">
+          <view class="function-icon">
+            <text class="icon-text">🐟</text>
+          </view>
+          <view class="function-content">
+            <text class="function-title">健康档案</text>
+            <text class="function-desc">再记录100条换奖励</text>
+          </view>
+        </view>
+        
+        <view class="plan-function-item" bindtap="navigateToDiagnosis">
+          <view class="function-icon">
+            <text class="icon-text">🏥</text>
+          </view>
+          <view class="function-content">
+            <text class="function-title">当前诊断</text>
+            <text class="function-desc">0个诊断可用</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 常用功能 -->
+    <view class="common-functions-section">
+      <text class="section-title">常用功能</text>
+      <view class="functions-grid">
+        <view class="function-item" bindtap="navigateToMessages">
+          <view class="function-icon-container">
+            <text class="function-emoji">💬</text>
+          </view>
+          <text class="function-name">我的消息</text>
+        </view>
+        
+        <view class="function-item" bindtap="navigateToKnowledge">
+          <view class="function-icon-container">
+            <text class="function-emoji">📚</text>
+          </view>
+          <text class="function-name">养宠知识</text>
+        </view>
+        
+        <view class="function-item" bindtap="navigateToActivities">
+          <view class="function-icon-container">
+            <text class="function-emoji">🎉</text>
+          </view>
+          <text class="function-name">活动推荐</text>
+        </view>
+        
+        <view class="function-item" bindtap="navigateToFeedback">
+          <view class="function-icon-container">
+            <text class="function-emoji">💡</text>
+          </view>
+          <text class="function-name">反馈建议</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 手机号登录弹窗 -->
+<view wx:if="{{showPhoneLoginPopup}}" class="popup-mask" bindtap="closePhoneLoginPopup"></view>
+<view wx:if="{{showPhoneLoginPopup}}" class="popup-panel phone-login-panel">
+  <view class="popup-header">
+    <text>手机号登录</text>
+    <text class="popup-close" bindtap="closePhoneLoginPopup">×</text>
+  </view>
+  <view class="popup-body">
+    <!-- 头像上传区域 -->
+    <view class="avatar-upload-section">
+      <view class="upload-avatar-container" bindtap="uploadAvatar">
+        <image class="upload-avatar" src="{{tempAvatar || '/images/add.png'}}" mode="aspectFill"></image>
+        <view class="upload-overlay">
+          <text class="upload-text">{{tempAvatar ? '更换头像' : '上传头像'}}</text>
+        </view>
+      </view>
+      <text class="upload-tip">点击上传头像（必填）</text>
+    </view>
+    
+    <input type="number" placeholder="请输入手机号" value="{{phone}}" bindinput="inputPhone" class="login-input" />
+    <view class="code-container">
+      <input type="number" placeholder="请输入验证码" value="{{code}}" bindinput="inputCode" class="login-input code-input" />
+      <button class="get-code-btn" bindtap="getVerificationCode" disabled="{{codeButtonDisabled}}">
+        {{codeButtonText}}
+      </button>
+    </view>
+    <input type="text" placeholder="请输入用户名" value="{{nickname}}" bindinput="inputNickname" class="login-input" />
+    <button class="submit-btn" bindtap="submitPhoneLogin">登录</button>
+  </view>
+</view>
+
+<!-- 设置弹窗 -->
+<view wx:if="{{showSettingsPopup}}" class="popup-mask" bindtap="closeSettings"></view>
+<view wx:if="{{showSettingsPopup}}" class="popup-panel">
+	<view class="popup-header">
+		<text>设置</text>
+		<text class="popup-close" bindtap="closeSettings">×</text>
+	</view>
+	<view class="popup-body">
+		<view class="settings-item" bindtap="openNotificationSettings">
+			<text>消息通知</text>
+			<switch checked="{{notificationEnabled}}" bindchange="toggleNotification"></switch>
+		</view>
+		<view class="settings-item" bindtap="openPrivacySettings">
+			<text>隐私设置</text>
+			<image src="/images/arrow_right.png" mode="aspectFit"></image>
+		</view>
+		<view class="settings-item" bindtap="clearCache">
+			<text>清除缓存</text>
+			<image src="/images/arrow_right.png" mode="aspectFit"></image>
+		</view>
+		<view class="settings-item" bindtap="checkUpdate">
+			<text>检查更新</text>
+			<image src="/images/arrow_right.png" mode="aspectFit"></image>
+		</view>
+		<view class="settings-item" bindtap="logout" wx:if="{{isLoggedIn}}">
+			<text class="logout-text">退出登录</text>
+		</view>
+	</view>
+</view>
+
+<!-- 模拟微信授权弹窗 -->
+<view wx:if="{{showWechatAuthPopup}}" class="popup-mask" bindtap="closeWechatAuth"></view>
+<view wx:if="{{showWechatAuthPopup}}" class="wechat-auth-panel">
+	<view class="wechat-auth-header">
+		<view class="wechat-logo">💬</view>
+		<text class="wechat-title">微信授权</text>
+	</view>
+	<view class="wechat-auth-content">
+		<view class="auth-app-info">
+			<image class="app-icon" src="/images/user_icon.png" mode="aspectFit"></image>
+			<view class="app-details">
+				<text class="app-name">PetDerma</text>
+				<text class="app-desc">宠物皮肤健康助手</text>
+			</view>
+		</view>
+		<view class="auth-permissions">
+			<text class="permission-title">申请获取以下权限：</text>
+			<view class="permission-item">
+				<text class="permission-icon">👤</text>
+				<text class="permission-text">获取您的公开信息（昵称、头像等）</text>
+			</view>
+		</view>
+		<view class="auth-tips">
+			<text class="tips-text">授权后，PetDerma将获得您的微信头像和昵称信息，用于完善个人资料。</text>
+		</view>
+	</view>
+	<view class="wechat-auth-footer">
+		<button class="auth-cancel-btn" bindtap="closeWechatAuth">取消</button>
+		<button class="auth-confirm-btn" bindtap="confirmWechatAuth">确认授权</button>
+	</view>
+</view>

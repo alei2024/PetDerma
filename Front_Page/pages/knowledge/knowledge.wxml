@@ -1,0 +1,107 @@
+<!--pages/knowledge/knowledge.wxml-->
+<navigation-bar title="知识科普" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
+<view class="container">
+	<!-- 搜索区域 -->
+	<view class="search-area">
+		<input class="search-input" placeholder="搜索科普内容" value="{{searchQuery}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="doSearch"/>
+		<button class="search-btn" bindtap="doSearch">搜索</button>
+	</view>
+
+	<!-- 内容区域：根据标签切换 -->
+	<view class="content-area">
+		<block wx:if="{{activeTab === 'science'}}">
+			<block wx:for="{{displayArticles}}" wx:key="id">
+				<view class="article-card" bindtap="showArticleDetail" data-id="{{item.id}}">
+					<view class="article-header">
+						<view class="article-title">{{item.title}}</view>
+						<view class="article-meta">
+							<text class="article-time">{{item.publishTime}}</text>
+						</view>
+					</view>
+					<view class="article-summary">{{item.summary}}</view>
+					<view class="article-footer">
+						<view class="article-category">{{item.category}}</view>
+						<view class="article-stats">
+							<text class="read-count">阅读 {{item.readCount}}</text>
+						</view>
+					</view>
+				</view>
+			</block>
+			<view class="empty" wx:if="{{displayArticles.length === 0}}">未找到相关内容</view>
+		</block>
+		<block wx:elif="{{activeTab === 'favorite'}}">
+			<block wx:for="{{favoriteArticles}}" wx:key="id">
+				<view class="article-card" bindtap="showArticleDetail" data-id="{{item.id}}">
+					<view class="article-header">
+						<view class="article-title">{{item.title}}</view>
+						<view class="article-meta">
+							<text class="article-time">{{item.publishTime}}</text>
+						</view>
+					</view>
+					<view class="article-summary">{{item.summary}}</view>
+					<view class="article-footer">
+						<view class="article-category">{{item.category}}</view>
+						<view class="article-stats">
+							<text class="read-count">阅读 {{item.readCount}}</text>
+						</view>
+					</view>
+				</view>
+			</block>
+			<view class="empty" wx:if="{{favoriteArticles.length === 0}}">暂无收藏</view>
+		</block>
+	</view>
+
+	<!-- 底部圆形按钮：科普 / 收藏 -->
+	<view class="bottom-buttons">
+		<view class="circle-btn {{activeTab === 'science' ? 'active' : ''}}" bindtap="switchTab" data-tab="science">
+			<text>科普</text>
+		</view>
+		<view class="circle-btn {{activeTab === 'favorite' ? 'active' : ''}}" bindtap="switchTab" data-tab="favorite">
+			<text>收藏</text>
+		</view>
+	</view>
+</view>
+
+<!-- 文章详情弹窗 -->
+<view wx:if="{{showArticleModal}}" class="article-modal-mask" bindtap="hideArticleDetail">
+	<view class="article-modal" catchtap="">
+		<!-- 弹窗头部 -->
+		<view class="modal-header">
+			<view class="modal-title">{{selectedArticle.title}}</view>
+			<view class="modal-close" bindtap="hideArticleDetail">×</view>
+		</view>
+		
+		<!-- 文章信息 -->
+		<view class="article-info">
+			<view class="info-row">
+				<text class="info-label">更新时间：</text>
+				<text class="info-value">{{selectedArticle.publishTime}}</text>
+			</view>
+			<view class="info-row">
+				<text class="info-label">分类：</text>
+				<text class="info-value category-tag">{{selectedArticle.category}}</text>
+			</view>
+			<view class="info-row">
+				<text class="info-label">阅读：</text>
+				<text class="info-value">{{selectedArticle.readCount}} 次</text>
+			</view>
+		</view>
+		
+		<!-- 文章内容 -->
+		<scroll-view class="article-content" scroll-y="true" enhanced="true" show-scrollbar="false">
+			<rich-text nodes="{{selectedArticle.content}}"></rich-text>
+		</scroll-view>
+		
+		<!-- 操作按钮 -->
+		<view class="modal-actions">
+			<view class="action-btn" bindtap="toggleFavorite">
+				<text class="action-icon">{{isFavorited() ? '♥' : '♡'}}</text>
+				<text class="action-text">{{isFavorited() ? '已收藏' : '收藏'}}</text>
+			</view>
+			<view class="action-btn" bindtap="shareArticle">
+				<text class="action-icon">↗</text>
+				<text class="action-text">分享</text>
+			</view>
+		</view>
+	</view>
+</view> 
