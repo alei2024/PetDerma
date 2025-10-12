@@ -2,8 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { getWechatUserInfo } = require("../utils/wechatAuth");
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "S3cReT_2025_Xyz!AbCdEfGh123456";
+const JWT_SECRET = process.env.JWT_SECRET || "S3cReT_2025_Xyz!AbCdEfGh123456";
 
 // 生成JWT Token
 const generateToken = (userId) => {
@@ -375,13 +374,19 @@ const phoneLogin = async (req, res) => {
           user.avatar = {
             url: avatar.url,
             source: "upload",
-            key: avatar.key || avatar.imageId,
+            key: avatar.key || avatar.imageId.toString(),
             wechatUrl: "",
             imageId: avatar.imageId,
           };
         } else {
-          // 兼容旧格式
-          user.avatar = avatar;
+          // 兼容旧格式，只提取需要的字段
+          user.avatar = {
+            url: avatar.url || "/images/user_default.png",
+            source: avatar.source || "upload",
+            key: avatar.key || "",
+            wechatUrl: avatar.wechatUrl || "",
+            imageId: avatar.imageId || null,
+          };
         }
       }
       user.lastLoginAt = new Date();
@@ -393,7 +398,7 @@ const phoneLogin = async (req, res) => {
           ? {
               url: avatar.url,
               source: "upload",
-              key: avatar.key || avatar.imageId,
+              key: avatar.key || avatar.imageId.toString(),
               wechatUrl: "",
               imageId: avatar.imageId,
             }
@@ -460,6 +465,56 @@ const refreshToken = async (req, res) => {
   }
 };
 
+// 更新用户头像
+const updateUserAvatar = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { avatar } = req.body;
+
+    if (!avatar) {
+      return res.status(400).json({
+        success: false,
+        message: "头像数据不能为空",
+      });
+    }
+
+    // 查找用户
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "用户不存在",
+      });
+    }
+
+    // 更新用户头像，只提取需要的字段
+    const cleanAvatar = {
+      url: avatar.url,
+      source: avatar.source || "upload",
+      key: avatar.key || (avatar.imageId ? avatar.imageId.toString() : ""),
+      wechatUrl: avatar.wechatUrl || "",
+      imageId: avatar.imageId || null,
+    };
+
+    user.avatar = cleanAvatar;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "头像更新成功",
+      data: {
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    console.error("更新用户头像错误:", error);
+    res.status(500).json({
+      success: false,
+      message: "服务器内部错误",
+    });
+  }
+};
+
 module.exports = {
   wechatLogin,
   phoneLogin,
@@ -470,4 +525,5 @@ module.exports = {
   updatePet,
   deletePet,
   refreshToken,
+  updateUserAvatar,
 };

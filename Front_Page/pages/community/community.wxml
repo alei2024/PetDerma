@@ -25,12 +25,12 @@
   <!-- 帖子列表 -->
   <scroll-view class="post-list" scroll-y refresher-enabled="{{true}}" bindrefresherrefresh="onRefresh" 
                refresher-triggered="{{isRefreshing}}" bindscrolltolower="loadMore" enhanced="{{true}}">
-    <block wx:for="{{postList}}" wx:key="_id">
+    <block wx:for="{{postList}}" wx:key="id" wx:for-index="postIndex">
       <view class="post-item" bindtap="viewPostDetail" data-id="{{item.id}}">
         <!-- 用户信息 -->
         <view class="post-header">
           <view class="user-info">
-            <image class="user-avatar" src="{{item.userAvatar}}" mode="aspectFill"></image>
+            <image class="user-avatar" src="{{item.userAvatar}}" mode="aspectFill" binderror="onAvatarError" data-default="/images/user_default.png" data-index="{{index}}"></image>
             <view class="user-details">
               <text class="username">{{item.username}}</text>
             </view>
@@ -61,16 +61,16 @@
         <!-- 互动区域 -->
         <view class="post-actions">
           <view class="action-item" bindtap="toggleLike" data-id="{{item.id}}" catchtap="true">
-            <image class="action-icon {{item.isLiked ? 'liked' : ''}}" src="/images/like_icon.png" mode="aspectFit"></image>
-            <text class="action-text {{item.isLiked ? 'liked' : ''}}">{{item.likeCount || 0}}</text>
+            <image class="action-icon" src="{{item.isLiked ? '/images/like_click_icon.png' : '/images/like_icon.png'}}" mode="aspectFit"></image>
+            <text class="action-text">{{item.likeCount || 0}}</text>
           </view>
           <view class="action-item" bindtap="showComments" data-id="{{item.id}}" catchtap="true">
             <image class="action-icon" src="/images/comment_icon.png" mode="aspectFit"></image>
             <text class="action-text">{{item.commentCount || 0}}</text>
           </view>
           <view class="action-item" bindtap="toggleCollect" data-id="{{item.id}}" catchtap="true">
-            <image class="action-icon {{item.isCollected ? 'collected' : ''}}" src="/images/collect_icon.png" mode="aspectFit"></image>
-            <text class="action-text {{item.isCollected ? 'collected' : ''}}">{{item.collectCount || 0}}</text>
+            <image class="action-icon" src="{{item.isCollected ? '/images/collect_click_icon.png' : '/images/collect_icon.png'}}" mode="aspectFit"></image>
+            <text class="action-text">{{item.collectCount || 0}}</text>
           </view>
           <view class="action-item" bindtap="sharePost" data-id="{{item.id}}" catchtap="true">
             <image class="action-icon" src="/images/share_icon.png" mode="aspectFit"></image>

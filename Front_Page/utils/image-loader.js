@@ -9,6 +9,12 @@ const app = getApp();
 function processImageUrl(imageObj) {
   if (!imageObj) return "";
 
+  // 获取baseUrl，添加容错处理
+  const baseUrl =
+    app.globalData?.baseUrl ||
+    app.globalData?.baseURL ||
+    "http://192.168.31.247:3000";
+
   // 如果是字符串
   if (typeof imageObj === "string") {
     // 如果是完整的HTTP URL，直接返回
@@ -18,30 +24,46 @@ function processImageUrl(imageObj) {
 
     // 如果是以 / 开头的路径
     if (imageObj.startsWith("/")) {
-      return `${app.globalData.baseUrl}${imageObj}`;
+      // 如果是API路径，直接使用baseUrl拼接
+      if (imageObj.startsWith("/api/")) {
+        return `${baseUrl}${imageObj}`;
+      }
+      // 如果是静态资源路径，也使用baseUrl拼接
+      return `${baseUrl}${imageObj}`;
     }
 
     // 如果是图片ID（24位十六进制字符串）
     if (/^[0-9a-fA-F]{24}$/.test(imageObj)) {
-      return `${app.globalData.baseUrl}/api/images/${imageObj}`;
+      return `${baseUrl}/api/images/${imageObj}`;
     }
 
     // 其他情况，当作相对路径处理
-    return `${app.globalData.baseUrl}/${imageObj}`;
+    return `${baseUrl}/${imageObj}`;
   }
 
   // 如果是对象（新格式）
   if (typeof imageObj === "object") {
     // 如果对象有 _id 属性（MongoDB 图片对象）
     if (imageObj._id) {
-      return `${app.globalData.baseUrl}/api/images/${imageObj._id}`;
+      return `${baseUrl}/api/images/${imageObj._id}`;
+    }
+
+    // 如果对象有 imageId 属性
+    if (imageObj.imageId) {
+      return `${baseUrl}/api/images/${imageObj.imageId}`;
     }
 
     // 如果对象有 url 属性
     if (imageObj.url) {
-      return imageObj.url.startsWith("http")
-        ? imageObj.url
-        : `${app.globalData.baseUrl}${imageObj.url}`;
+      if (imageObj.url.startsWith("http")) {
+        return imageObj.url;
+      } else if (imageObj.url.startsWith("/api/")) {
+        return `${baseUrl}${imageObj.url}`;
+      } else if (imageObj.url.startsWith("/")) {
+        return `${baseUrl}${imageObj.url}`;
+      } else {
+        return `${baseUrl}/${imageObj.url}`;
+      }
     }
   }
 

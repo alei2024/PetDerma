@@ -7,8 +7,10 @@
 
 .content {
   padding: 20rpx;
-  margin-top: 100rpx;
   padding-bottom: 120rpx; /* 为悬浮按钮留出空间 */
+  height: 100vh;
+  margin-top: -20rpx;
+  box-sizing: border-box;
 }
 
 /* 空状态样式 */
@@ -18,6 +20,7 @@
   align-items: center;
   justify-content: center;
   padding: 120rpx 40rpx;
+  margin-top: 30rpx;
   text-align: center;
 }
 
@@ -50,6 +53,7 @@
 
 /* 帖子列表样式 */
 .posts-container {
+  padding-top: 30rpx;
   padding-bottom: 40rpx;
 }
 
@@ -125,7 +129,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 0rpx;
 }
 
 .tag {
@@ -178,7 +182,7 @@
 .loading,
 .no-more {
   text-align: center;
-  padding: 40rpx;
+  padding: 20rpx 40rpx 60rpx 40rpx;
   color: #999;
   font-size: 28rpx;
 }

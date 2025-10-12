@@ -14,8 +14,8 @@ const {
 } = require("../controllers/postController");
 const { authenticateToken, optionalAuth } = require("../middleware/auth");
 
-// 获取帖子列表
-router.get("/", getPosts);
+// 获取帖子列表 - 使用可选认证（用于显示用户相关的点赞、收藏状态）
+router.get("/", optionalAuth, getPosts);
 
 // 获取热门标签
 router.get("/tags", getPopularTags);

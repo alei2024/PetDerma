@@ -27,6 +27,7 @@ Page({
     hasMore: true,
     currentPage: 1,
     pageSize: 10,
+    isLoading: false, // 防止重复加载
     showUserMenuModal: false,
     // 删除了帖子菜单相关数据
     isSearching: false, // 是否在搜索状态
@@ -35,10 +36,22 @@ Page({
   // 检查用户是否已登录
   checkLoginStatus: function () {
     const app = getApp();
+    const token = wx.getStorageSync("token") || app.globalData.token;
+    const userInfo = wx.getStorageSync("userInfo") || app.globalData.userInfo;
+
+    console.log("🔍 检查登录状态:", {
+      hasLogin: app.globalData.hasLogin,
+      hasToken: !!token,
+      hasUserInfo: !!userInfo,
+      token: token ? token.substring(0, 20) + "..." : "null",
+    });
+
     return (
       app.globalData.hasLogin &&
-      app.globalData.token &&
-      app.globalData.token !== "test-token"
+      token &&
+      token !== "test-token" &&
+      userInfo &&
+      userInfo.id
     );
   },
 
@@ -77,10 +90,18 @@ Page({
 
   // 加载帖子数据
   async loadPosts() {
+    // 防止重复加载
+    if (this.data.isLoading) {
+      console.log("正在加载中，跳过重复请求");
+      return;
+    }
+
+    this.setData({ isLoading: true });
     wx.showLoading({ title: "加载中..." });
     try {
       const res = await app.request({
         url: `/api/posts?page=${this.data.currentPage}&pageSize=${this.data.pageSize}`,
+        requireAuth: false, // 获取帖子列表不需要认证
       });
 
       if (res.data && res.data.success) {
@@ -100,13 +121,23 @@ Page({
             isSearching: false, // 重置搜索状态
           });
         } else {
-          const newPostList = [...this.data.postList, ...processedPosts];
+          // 去重合并：使用Map来确保ID唯一
+          const existingIds = new Set(
+            this.data.postList.map((post) => post._id || post.id)
+          );
+          const uniqueNewPosts = processedPosts.filter(
+            (post) => !existingIds.has(post._id || post.id)
+          );
+
+          const newPostList = [...this.data.postList, ...uniqueNewPosts];
+          const newOriginalList =
+            this.data.currentPage === 1
+              ? processedPosts
+              : [...this.data.originalPostList, ...uniqueNewPosts];
+
           this.setData({
             postList: newPostList,
-            originalPostList:
-              this.data.currentPage === 1
-                ? processedPosts
-                : [...this.data.originalPostList, ...processedPosts],
+            originalPostList: newOriginalList,
             hasMore:
               posts.length === this.data.pageSize ||
               (pagination.total || 0) > newPostList.length,
@@ -130,6 +161,7 @@ Page({
       });
     } finally {
       wx.hideLoading();
+      this.setData({ isLoading: false });
     }
   },
 
@@ -167,6 +199,7 @@ Page({
         url: `/api/posts?search=${encodeURIComponent(keyword)}&page=1&limit=${
           this.data.pageSize
         }`,
+        requireAuth: false, // 搜索帖子不需要认证
       })
       .then((res) => {
         if (res.data && res.data.success) {
@@ -210,31 +243,35 @@ Page({
 
   // 处理帖子数据的通用方法
   processPostsData(posts) {
-    return posts.map((post) => ({
-      ...post,
-      // 确保唯一ID字段 - 优先使用MongoDB的_id
-      _id:
+    return posts.map((post, index) => {
+      // 确保每个帖子都有唯一的ID，添加时间戳和索引避免重复
+      const uniqueId =
         post._id ||
         post.id ||
-        `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      id:
-        post._id ||
-        post.id ||
-        `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      // 使用新的图片处理工具 - 社区页面只显示前3张
-      images: processImageList((post.images || []).slice(0, 3)),
-      // 保存所有图片用于预览
-      allImages: processImageList(post.images || []),
-      // 保存原始图片数量用于显示
-      totalImageCount: (post.images || []).length,
-      // 处理用户信息显示
-      username: post.authorId?.nickName || "匿名用户",
-      userAvatar: processAvatarUrl(post.authorId?.avatar),
-      // 格式化时间
-      postTime: app.formatTime(new Date(post.createdAt || Date.now())),
-      // 统一字段名称
-      collectCount: post.favoriteCount || 0,
-    }));
+        `post_${Date.now()}_${index}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`;
+
+      return {
+        ...post,
+        // 确保唯一ID字段 - 优先使用MongoDB的_id
+        _id: uniqueId,
+        id: uniqueId,
+        // 使用新的图片处理工具 - 社区页面只显示前3张
+        images: processImageList((post.images || []).slice(0, 3)),
+        // 保存所有图片用于预览
+        allImages: processImageList(post.images || []),
+        // 保存原始图片数量用于显示
+        totalImageCount: (post.images || []).length,
+        // 处理用户信息显示
+        username: post.authorId?.nickName || "匿名用户",
+        userAvatar: processAvatarUrl(post.authorId?.avatar),
+        // 格式化时间
+        postTime: app.formatTime(new Date(post.createdAt || Date.now())),
+        // 统一字段名称
+        collectCount: post.favoriteCount || 0,
+      };
+    });
   },
 
   // 本地搜索（备用方案）
@@ -386,6 +423,30 @@ Page({
   // 显示帖子菜单
   // 删除了帖子菜单相关方法
 
+  // 头像加载错误处理
+  onAvatarError: function (e) {
+    const defaultAvatar =
+      e.currentTarget.dataset.default || "/images/user_default.png";
+    const failedUrl = e.currentTarget.src || e.detail?.src || "unknown";
+
+    console.log("❌ 头像加载失败:");
+    console.log("  失败URL:", failedUrl);
+    console.log("  使用默认头像:", defaultAvatar);
+
+    // 更新数据中的头像URL
+    const index = e.currentTarget.dataset.index;
+    if (
+      typeof index !== "undefined" &&
+      this.data.posts &&
+      this.data.posts[index]
+    ) {
+      const updateKey = `posts[${index}].userAvatar`;
+      this.setData({
+        [updateKey]: defaultAvatar,
+      });
+    }
+  },
+
   // 查看帖子详情
   viewPostDetail: function (e) {
     const postId = e.currentTarget.dataset.id;
@@ -417,6 +478,7 @@ Page({
     this.setData({
       currentPage: 1,
       postList: [],
+      originalPostList: [], // 清除缓存的原始数据
       hasMore: true,
     });
     this.loadPosts();
@@ -449,6 +511,16 @@ Page({
       .request({
         url: `/api/interactions/posts/${postId}/like`,
         method: "POST",
+      })
+      .then((res) => {
+        if (res.success) {
+          // 发送WebSocket事件
+          this.sendWebSocketEvent("like_post", {
+            postId: postId,
+            isLiked: res.data.liked,
+            likeCount: res.data.likeCount,
+          });
+        }
       })
       .catch((e) => {
         console.error("点赞操作失败:", e);
@@ -486,6 +558,16 @@ Page({
       .request({
         url: `/api/interactions/posts/${postId}/favorite`,
         method: "POST",
+      })
+      .then((res) => {
+        if (res.success) {
+          // 发送WebSocket事件
+          this.sendWebSocketEvent("favorite_post", {
+            postId: postId,
+            isFavorited: res.data.favorited,
+            favoriteCount: res.data.favoriteCount,
+          });
+        }
       })
       .catch((e) => {
         console.error("收藏操作失败:", e);
@@ -595,5 +677,37 @@ Page({
       title: "已隐藏",
       icon: "success",
     });
+  },
+
+  // 发送WebSocket事件
+  sendWebSocketEvent: function (eventType, data) {
+    try {
+      const app = getApp();
+      const socket = app.globalData.socket;
+
+      if (socket && app.globalData.socketConnected) {
+        console.log(`📡 发送WebSocket事件: ${eventType}`, data);
+
+        const message = JSON.stringify({
+          type: eventType,
+          payload: data,
+          timestamp: Date.now(),
+        });
+
+        socket.send({
+          data: message,
+          success: () => {
+            console.log(`✅ WebSocket事件发送成功: ${eventType}`);
+          },
+          fail: (error) => {
+            console.error(`❌ WebSocket事件发送失败: ${eventType}`, error);
+          },
+        });
+      } else {
+        console.log("⚠️ WebSocket未连接，跳过事件发送");
+      }
+    } catch (error) {
+      console.error("❌ 发送WebSocket事件失败:", error);
+    }
   },
 });

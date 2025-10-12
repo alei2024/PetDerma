@@ -1,42 +1,51 @@
 // 认证辅助工具
 const config = require("../config/environment");
 
-// 获取开发环境token
-function getDevToken() {
+// 检查用户是否已登录（从存储中获取）
+function checkStoredLogin() {
+  try {
+    const token = wx.getStorageSync("token");
+    const userInfo = wx.getStorageSync("userInfo");
+
+    if (token && userInfo && token !== "test-token" && token.length > 10) {
+      const app = getApp();
+      app.globalData.token = token;
+      app.globalData.userInfo = userInfo;
+      app.globalData.hasLogin = true;
+
+      console.log("✅ 从存储中恢复登录状态");
+      return { token, userInfo };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("❌ 检查存储登录状态失败:", error);
+    return null;
+  }
+}
+
+// 提示用户登录
+function promptLogin() {
   return new Promise((resolve, reject) => {
-    console.log("🔑 获取开发环境token...");
-
-    wx.request({
-      url: `${config.baseUrl}/api/auth/dev-token`,
-      method: "GET",
+    wx.showModal({
+      title: "需要登录",
+      content: "请先登录后再使用此功能",
+      confirmText: "去登录",
+      cancelText: "取消",
       success: (res) => {
-        if (res.statusCode === 200 && res.data.success) {
-          console.log("✅ 获取开发token成功");
-
-          // 设置用户信息到全局数据
-          const app = getApp();
-          if (res.data.user) {
-            const userInfo = {
-              userId: res.data.user.id,
-              _id: res.data.user.id,
-              id: res.data.user.id,
-              nickName: res.data.user.nickName,
-              avatar: res.data.user.avatar,
-            };
-
-            app.updateUserInfo(userInfo);
-            console.log("✅ 开发环境用户信息已设置:", userInfo);
-          }
-
-          resolve(res.data.token);
+        if (res.confirm) {
+          wx.switchTab({
+            url: "/pages/user/user",
+            success: () => {
+              reject(new Error("用户选择登录"));
+            },
+          });
         } else {
-          console.error("❌ 获取开发token失败:", res.data);
-          reject(new Error("获取token失败"));
+          reject(new Error("用户取消登录"));
         }
       },
-      fail: (error) => {
-        console.error("❌ 请求开发token失败:", error);
-        reject(error);
+      fail: () => {
+        reject(new Error("显示登录提示失败"));
       },
     });
   });
@@ -66,48 +75,38 @@ function validateToken(token) {
   });
 }
 
-// 确保有有效的token
-async function ensureValidToken() {
-  const app = getApp();
-  let token = app.globalData.token;
+// 确保用户已登录
+async function ensureLogin() {
+  console.log("🔍 检查登录状态...");
 
-  console.log("🔍 检查token有效性...");
-
-  // 如果是测试token或无token，获取新的
-  if (!token || token === "test-token") {
-    console.log("需要获取新token");
-    try {
-      token = await getDevToken();
-      app.globalData.token = token;
-      console.log("✅ Token更新成功");
-      return token;
-    } catch (error) {
-      console.error("❌ 获取token失败，使用测试模式");
-      return "test-token";
+  // 首先检查存储中的登录状态
+  const storedLogin = checkStoredLogin();
+  if (storedLogin) {
+    // 验证token是否仍然有效
+    const isValid = await validateToken(storedLogin.token);
+    if (isValid) {
+      console.log("✅ 用户已登录且token有效");
+      return storedLogin;
+    } else {
+      console.log("⚠️ Token已失效，需要重新登录");
+      // 清除无效的登录信息
+      wx.removeStorageSync("token");
+      wx.removeStorageSync("userInfo");
+      const app = getApp();
+      app.globalData.hasLogin = false;
+      app.globalData.token = "";
+      app.globalData.userInfo = null;
     }
   }
 
-  // 验证现有token
-  const isValid = await validateToken(token);
-  if (!isValid) {
-    console.log("Token已失效，获取新token");
-    try {
-      token = await getDevToken();
-      app.globalData.token = token;
-      console.log("✅ Token刷新成功");
-      return token;
-    } catch (error) {
-      console.error("❌ 刷新token失败，使用测试模式");
-      return "test-token";
-    }
-  }
-
-  console.log("✅ Token有效");
-  return token;
+  // 如果没有有效登录，提示用户登录
+  console.log("❌ 用户未登录，需要登录");
+  throw new Error("需要登录");
 }
 
 module.exports = {
-  getDevToken,
+  checkStoredLogin,
   validateToken,
-  ensureValidToken,
+  ensureLogin,
+  promptLogin,
 };

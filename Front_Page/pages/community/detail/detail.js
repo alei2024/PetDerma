@@ -31,7 +31,6 @@ Page({
     isRefreshing: false,
     pageSize: 10,
     currentPage: 1,
-    hasMoreComments: true,
     // 评论输入相关
     showCommentInput: false,
     commentContent: "",
@@ -107,6 +106,17 @@ Page({
     this.stopPolling();
   },
 
+  // 头像加载错误处理
+  onAvatarError: function (e) {
+    const defaultAvatar =
+      e.currentTarget.dataset.default || "/images/user_default.png";
+    console.log("头像加载失败，使用默认头像:", defaultAvatar);
+
+    // 获取当前元素并设置默认头像
+    const target = e.currentTarget;
+    target.src = defaultAvatar;
+  },
+
   // 设置WebSocket事件监听
   setupWebSocketListeners: function () {
     try {
@@ -148,16 +158,25 @@ Page({
         socket = app.globalData.socket;
       }
 
-      if (socket) {
+      if (socket && app.globalData.socketConnected) {
         console.log("📡 移除WebSocket事件监听");
 
-        // 离开帖子房间
-        socket.emit("leave_post", { postId: this.data.postId });
+        // 离开帖子房间 - 使用原生WebSocket发送消息
+        const message = JSON.stringify({
+          type: "leave_post",
+          payload: { postId: this.data.postId },
+          timestamp: Date.now(),
+        });
 
-        // 移除事件监听
-        socket.off("post_liked", this.handlePostLiked);
-        socket.off("post_favorited", this.handlePostFavorited);
-        socket.off("post_commented", this.handlePostCommented);
+        socket.send({
+          data: message,
+          success: () => {
+            console.log("✅ 离开帖子房间成功");
+          },
+          fail: (error) => {
+            console.error("❌ 离开帖子房间失败:", error);
+          },
+        });
       }
     } catch (error) {
       console.error("❌ 移除WebSocket监听失败:", error);
@@ -422,18 +441,12 @@ Page({
               commentList: [...this.data.commentList, ...formattedComments],
             });
           }
-
-          // 检查是否还有更多评论
-          this.setData({
-            hasMoreComments: formattedComments.length === this.data.pageSize,
-          });
         } else {
           console.error("❌ 评论API返回失败:", res.data);
           wx.showToast({ title: "加载评论失败", icon: "none" });
           // 设置空评论列表
           this.setData({
             commentList: [],
-            hasMoreComments: false,
           });
         }
       })
@@ -443,7 +456,6 @@ Page({
         // 设置空评论列表
         this.setData({
           commentList: [],
-          hasMoreComments: false,
         });
       })
       .finally(() => {
@@ -459,7 +471,6 @@ Page({
       currentTab: tab,
       currentPage: 1,
       comments: [],
-      hasMoreComments: true,
     });
 
     if (tab === "comments") {
@@ -497,6 +508,13 @@ Page({
             commentInputFocus: false,
             currentPage: 1,
           });
+
+          // 发送WebSocket事件
+          this.sendWebSocketEvent("comment_post", {
+            postId: this.data.postId,
+            comment: res.data.data,
+          });
+
           // 重新加载评论
           this.loadComments();
           // 手动更新评论数（避免重复请求）
@@ -836,17 +854,6 @@ Page({
     });
   },
 
-  // 加载更多评论
-  loadMoreComments: function () {
-    if (!this.data.hasMoreComments || this.data.isLoading) return;
-
-    this.setData({
-      currentPage: this.data.currentPage + 1,
-    });
-
-    this.loadComments();
-  },
-
   // 举报帖子
   reportPost: function () {
     wx.showToast({
@@ -1110,19 +1117,6 @@ Page({
     });
   },
 
-  // 加载更多回复
-  loadMoreReplies: function (e) {
-    const commentId = e.currentTarget.dataset.id;
-    console.log("🔄 加载更多回复，评论ID:", commentId);
-
-    // 这里可以实现加载更多回复的逻辑
-    // 暂时显示提示
-    wx.showToast({
-      title: "功能开发中",
-      icon: "none",
-    });
-  },
-
   // 发送评论
   sendComment: function () {
     if (!this.checkLoginStatus()) {
@@ -1221,11 +1215,20 @@ Page({
     const app = getApp();
     const currentUserId = app.globalData.currentUserId;
 
+    console.log("🔍 检查帖子所有权:", {
+      currentUserId: currentUserId,
+      authorId: authorId,
+      userInfo: app.globalData.userInfo,
+    });
+
     if (!currentUserId || !authorId) {
+      console.log("❌ 用户ID或作者ID缺失");
       return false;
     }
 
-    return currentUserId === authorId.toString();
+    const isOwner = currentUserId === authorId.toString();
+    console.log("✅ 是否为帖子作者:", isOwner);
+    return isOwner;
   },
 
   // 显示删除确认弹窗
@@ -1296,5 +1299,37 @@ Page({
           showDeleteConfirm: false,
         });
       });
+  },
+
+  // 发送WebSocket事件
+  sendWebSocketEvent: function (eventType, data) {
+    try {
+      const app = getApp();
+      const socket = app.globalData.socket;
+
+      if (socket && app.globalData.socketConnected) {
+        console.log(`📡 发送WebSocket事件: ${eventType}`, data);
+
+        const message = JSON.stringify({
+          type: eventType,
+          payload: data,
+          timestamp: Date.now(),
+        });
+
+        socket.send({
+          data: message,
+          success: () => {
+            console.log(`✅ WebSocket事件发送成功: ${eventType}`);
+          },
+          fail: (error) => {
+            console.error(`❌ WebSocket事件发送失败: ${eventType}`, error);
+          },
+        });
+      } else {
+        console.log("⚠️ WebSocket未连接，跳过事件发送");
+      }
+    } catch (error) {
+      console.error("❌ 发送WebSocket事件失败:", error);
+    }
   },
 });

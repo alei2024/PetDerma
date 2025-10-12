@@ -9,7 +9,7 @@
       <!-- 用户信息 -->
       <view class="post-header">
         <view class="user-info">
-          <image class="user-avatar" src="{{postDetail.authorId.avatar.url}}" mode="aspectFill"></image>
+          <image class="user-avatar" src="{{postDetail.authorId.avatar.url}}" mode="aspectFill" binderror="onAvatarError" data-default="/images/user_default.png"></image>
           <view class="user-details">
             <text class="username">{{postDetail.authorId.nickName}}</text>
           </view>
@@ -49,7 +49,7 @@
           <text class="action-count">{{postDetail.commentCount || 0}}</text>
         </view>
         <view class="action-item" bindtap="onFavoriteTap">
-          <image class="action-icon" src="{{postDetail.isFavorited ? '/images/collection_click_icon.png' : '/images/collect_icon.png'}}" mode="aspectFit"></image>
+          <image class="action-icon" src="{{postDetail.isFavorited ? '/images/collect_click_icon.png' : '/images/collect_icon.png'}}" mode="aspectFit"></image>
           <text class="action-count">{{postDetail.favoriteCount || 0}}</text>
         </view>
         <view class="action-item" bindtap="sharePost">
@@ -63,10 +63,6 @@
     <view class="comments-section">
       <view class="comments-header">
         <text class="comments-title">评论 ({{postDetail.commentCount || 0}})</text>
-        <view class="sort-options">
-          <text class="sort-option {{sortType === 'time' ? 'active' : ''}}" bindtap="changeSortType" data-type="time">时间</text>
-          <text class="sort-option {{sortType === 'hot' ? 'active' : ''}}" bindtap="changeSortType" data-type="hot">热度</text>
-        </view>
       </view>
       
       <view class="comments-list">
@@ -91,10 +87,10 @@
                 <!-- 评论操作 -->
                 <view class="comment-actions">
                   <view class="comment-action" bindtap="toggleCommentLike" data-id="{{item.id}}">
-                    <image class="comment-action-icon {{item.isLiked ? 'liked' : ''}}" 
+                    <image class="comment-action-icon" 
                            src="{{item.isLiked ? '/images/like_click_icon.png' : '/images/like_icon.png'}}" 
                            mode="aspectFit"></image>
-                    <text class="comment-action-text {{item.isLiked ? 'liked' : ''}}">{{item.likeCount || 0}}</text>
+                    <text class="comment-action-text">{{item.likeCount || 0}}</text>
                   </view>
                   <view class="comment-action" bindtap="replyComment" data-id="{{item.id}}" data-username="{{item.authorId.nickName}}">
                     <image class="comment-action-icon" src="/images/comment_icon.png" mode="aspectFit"></image>
@@ -114,19 +110,11 @@
                   <text class="reply-time">{{reply.replyTime}}</text>
                 </view>
               </block>
-              <view wx:if="{{item.totalReplies > item.replies.length}}" class="load-more-replies" 
-                    bindtap="loadMoreReplies" data-id="{{item.id}}">
-                查看更多回复 ({{item.totalReplies - item.replies.length}}条)
-              </view>
             </view>
           </view>
         </block>
         
-        <!-- 评论状态提示 -->
-        <view wx:if="{{hasMoreComments}}" class="load-more-comments">
-          <text>{{isLoadingComments ? '加载中...' : '上拉加载更多评论'}}</text>
-        </view>
-        <view wx:elif="{{commentList.length > 0}}" class="no-more-comments">
+        <view wx:if="{{commentList.length > 0}}" class="no-more-comments">
           <text>没有更多评论了</text>
         </view>
         <view wx:else class="empty-comments">
@@ -162,7 +150,7 @@
 <view wx:if="{{showDeleteConfirm}}" class="delete-modal">
   <view class="delete-modal-content">
     <view class="delete-modal-title">确认删除</view>
-    <view class="delete-modal-text">删除后将无法恢复，确定要删除这条帖子吗？</view>
+    <view class="delete-modal-text">删除后将无法恢复，确定删除这条帖子吗？</view>
     <view class="delete-modal-actions">
       <button class="delete-cancel-btn" bindtap="hideDeleteConfirm">取消</button>
       <button class="delete-confirm-btn" bindtap="confirmDelete">删除</button>

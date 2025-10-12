@@ -2,6 +2,9 @@
 <navigation-bar title="PetDerma" back="{{false}}" color="white" background="#A5D7E8" titleStyle="font-size: 20px;">
 	<view slot="left" class="nav-left-btn" bindtap="openMessages">
 		<image class="nav-left-icon" src="/images/message_icon.svg" mode="aspectFit"></image>
+		<view wx:if="{{unreadCount > 0}}" class="message-badge">
+			<text class="badge-text">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+		</view>
 	</view>
 </navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">

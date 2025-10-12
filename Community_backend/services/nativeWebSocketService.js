@@ -24,9 +24,20 @@ class NativeWebSocketService {
 
   setupEventHandlers() {
     this.wss.on("connection", (ws, req) => {
-      // 解析URL参数获取token
-      const url = new URL(req.url, `http://${req.headers.host}`);
-      const token = url.searchParams.get("token");
+      // 从Authorization header或URL参数获取token
+      let token = null;
+
+      // 优先从Authorization header获取
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.substring(7);
+      }
+
+      // 如果header中没有，尝试从URL参数获取
+      if (!token) {
+        const url = new URL(req.url, `http://${req.headers.host}`);
+        token = url.searchParams.get("token");
+      }
 
       this.handleConnection(ws, token);
     });
@@ -34,8 +45,11 @@ class NativeWebSocketService {
 
   async handleConnection(ws, token) {
     try {
+      console.log("🔐 WebSocket认证开始，token:", token ? "已提供" : "未提供");
+
       // 认证用户
       const user = await this.authenticateUser(token);
+      console.log("✅ WebSocket认证成功，用户:", user.nickName);
 
       // 设置客户端信息
       const clientId = this.generateClientId();
@@ -50,13 +64,6 @@ class NativeWebSocketService {
         user,
         rooms: new Set(),
         lastSeen: new Date(),
-      });
-
-      // 发送连接成功消息
-      this.sendMessage(ws, "connect", {
-        message: "连接成功",
-        userId: user.id,
-        user: user,
       });
 
       // 设置消息处理
@@ -78,6 +85,17 @@ class NativeWebSocketService {
       ws.on("ping", () => {
         ws.pong();
       });
+
+      // 发送连接成功消息
+      this.sendMessage(ws, "connect", {
+        message: "连接成功",
+        user: {
+          id: user._id,
+          nickName: user.nickName,
+        },
+      });
+
+      console.log(`🎉 用户 ${user.nickName} WebSocket连接成功 (${clientId})`);
     } catch (error) {
       console.error("❌ WebSocket认证失败:", error.message);
       this.sendMessage(ws, "connect_error", {
@@ -89,16 +107,15 @@ class NativeWebSocketService {
 
   async authenticateUser(token) {
     if (!token || token === "test-token") {
-      // 开发环境测试用户 - 使用有效的ObjectId格式
-      return {
-        id: "507f1f77bcf86cd799439011", // 有效的ObjectId格式
-        nickName: "测试用户",
-        avatar: null,
-      };
+      // 测试用户已移除，需要真实登录
+      throw new Error("需要有效的登录token");
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || "S3cReT_2025_Xyz!AbCdEfGh123456"
+      );
       const user = await User.findById(decoded.userId);
 
       if (!user) {
@@ -118,9 +135,13 @@ class NativeWebSocketService {
   handleMessage(ws, data) {
     try {
       const message = JSON.parse(data.toString());
-      const { type, event, data: eventData } = message;
+      const { type, event, data: eventData, payload } = message;
 
-      if (type === "event") {
+      // 支持新的消息格式
+      if (type && type !== "event") {
+        this.handleEvent(ws, type, payload || eventData || message);
+      } else if (type === "event" || event) {
+        // 兼容旧格式
         this.handleEvent(ws, event, eventData);
       }
     } catch (error) {
@@ -139,10 +160,20 @@ class NativeWebSocketService {
       case "leave_post":
         this.handleLeavePost(ws, data);
         break;
+      case "like_post":
+        this.handleLikePost(ws, data);
+        break;
+      case "favorite_post":
+        this.handleFavoritePost(ws, data);
+        break;
+      case "comment_post":
+        this.handleCommentPost(ws, data);
+        break;
       case "ping":
         this.sendMessage(ws, "pong", { timestamp: Date.now() });
         break;
       default:
+        console.log(`🔄 收到未处理的事件: ${event}`, data);
     }
   }
 
@@ -234,12 +265,12 @@ class NativeWebSocketService {
   sendMessage(ws, event, data) {
     if (ws.readyState === WebSocket.OPEN) {
       const message = JSON.stringify({
-        type: "event",
-        event,
-        data,
+        type: event,
+        data: data,
         timestamp: Date.now(),
       });
       ws.send(message);
+      console.log(`📤 发送WebSocket消息: ${event}`, data);
     }
   }
 
@@ -283,6 +314,96 @@ class NativeWebSocketService {
   // 获取在线用户数量
   getOnlineUserCount() {
     return this.connectedClients.size;
+  }
+
+  // 处理点赞事件
+  handleLikePost(ws, data) {
+    const { postId, isLiked, likeCount } = data;
+    const client = this.connectedClients.get(ws.clientId);
+    if (!client) return;
+
+    console.log(`👍 用户 ${client.user.nickName} 点赞帖子: ${postId}`);
+
+    // 广播给帖子房间内的其他用户
+    this.broadcastToRoom(
+      `post_${postId}`,
+      "post_liked",
+      {
+        postId,
+        userId: client.userId,
+        user: client.user,
+        isLiked,
+        likeCount,
+        timestamp: new Date(),
+      },
+      ws.clientId
+    );
+  }
+
+  // 处理收藏事件
+  handleFavoritePost(ws, data) {
+    const { postId, isFavorited, favoriteCount } = data;
+    const client = this.connectedClients.get(ws.clientId);
+    if (!client) return;
+
+    console.log(`⭐ 用户 ${client.user.nickName} 收藏帖子: ${postId}`);
+
+    // 广播给帖子房间内的其他用户
+    this.broadcastToRoom(
+      `post_${postId}`,
+      "post_favorited",
+      {
+        postId,
+        userId: client.userId,
+        user: client.user,
+        isFavorited,
+        favoriteCount,
+        timestamp: new Date(),
+      },
+      ws.clientId
+    );
+  }
+
+  // 处理评论事件
+  handleCommentPost(ws, data) {
+    const { postId, comment } = data;
+    const client = this.connectedClients.get(ws.clientId);
+    if (!client) return;
+
+    console.log(`💬 用户 ${client.user.nickName} 评论帖子: ${postId}`);
+
+    // 广播给帖子房间内的其他用户
+    this.broadcastToRoom(
+      `post_${postId}`,
+      "post_commented",
+      {
+        postId,
+        comment,
+        userId: client.userId,
+        user: client.user,
+        timestamp: new Date(),
+      },
+      ws.clientId
+    );
+  }
+
+  // 发送通知给特定用户
+  sendNotificationToUser(userId, notification) {
+    // 查找用户的连接
+    for (const [clientId, client] of this.connectedClients) {
+      if (client.userId === userId) {
+        this.sendMessage(
+          client.ws,
+          notification.type || "notification",
+          notification
+        );
+        console.log(
+          `📨 通知已发送给用户 ${client.user.nickName}:`,
+          notification
+        );
+        break;
+      }
+    }
   }
 }
 

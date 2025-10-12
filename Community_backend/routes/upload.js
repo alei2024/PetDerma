@@ -9,12 +9,13 @@ const {
 const { authenticateToken, optionalAuth } = require("../middleware/auth");
 const {
   uploadSingle,
+  uploadAvatarMiddleware,
   uploadMultiple,
   handleUploadError,
 } = require("../middleware/upload");
 
 // 上传头像（允许未认证用户，用于注册）
-router.post("/avatar", uploadSingle, optionalAuth, uploadAvatar);
+router.post("/avatar", uploadAvatarMiddleware, optionalAuth, uploadAvatar);
 
 // 需要认证的路由
 router.use(authenticateToken);

@@ -10,7 +10,7 @@
     <!-- 用户信息区域 -->
     <view class="user-section">
       <view class="avatar-container">
-        <image class="user-avatar" src="{{isLoggedIn ? userInfo.avatar : '/images/user_default.png'}}" mode="aspectFill" bindtap="{{isLoggedIn ? 'changeAvatar' : ''}}"></image>
+        <image class="user-avatar" src="{{avatarUrl}}" mode="aspectFill" bindtap="{{isLoggedIn ? 'changeAvatar' : ''}}" binderror="onAvatarError"></image>
         <view class="avatar-edit" wx:if="{{isLoggedIn}}" bindtap="changeAvatar">
           <text class="edit-icon">✏️</text>
         </view>

@@ -360,6 +360,7 @@ const getUserComments = async (req, res) => {
     const comments = await Comment.find({
       authorId: userId,
       isActive: true,
+      status: { $ne: "deleted" }, // 过滤已删除的评论
     })
       .populate({
         path: "postId",
@@ -381,6 +382,7 @@ const getUserComments = async (req, res) => {
     const total = await Comment.countDocuments({
       authorId: userId,
       isActive: true,
+      status: { $ne: "deleted" }, // 过滤已删除的评论
     });
 
     res.json({

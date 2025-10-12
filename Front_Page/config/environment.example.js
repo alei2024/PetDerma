@@ -1,13 +1,14 @@
-// 环境配置
+// 环境配置模板文件
+// 复制此文件为 environment.js 并修改为您的配置
 const ENV = {
   development: {
-    baseUrl: "http://192.168.5.97:3000",
-    wsUrl: "ws://192.168.5.97:3000",
+    baseUrl: "http://YOUR_IP_ADDRESS:3000", // 替换为您的IP地址
+    wsUrl: "ws://YOUR_IP_ADDRESS:3000",
     debug: true,
   },
   production: {
-    baseUrl: "http://192.168.5.97:3000",
-    wsUrl: "ws://192.168.5.97:3000",
+    baseUrl: "http://YOUR_PRODUCTION_URL:3000", // 替换为生产环境地址
+    wsUrl: "ws://YOUR_PRODUCTION_URL:3000",
     debug: false,
   },
 };

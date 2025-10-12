@@ -27,6 +27,9 @@ const upload = multer({
 // 单文件上传中间件
 const uploadSingle = upload.single("file");
 
+// 头像上传中间件
+const uploadAvatarMiddleware = upload.single("avatar");
+
 // 多文件上传中间件
 const uploadMultiple = upload.array("files", 9);
 
@@ -61,6 +64,7 @@ const handleUploadError = (error, req, res, next) => {
 
 module.exports = {
   uploadSingle,
+  uploadAvatarMiddleware,
   uploadMultiple,
   handleUploadError,
 };

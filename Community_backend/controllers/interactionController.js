@@ -378,6 +378,7 @@ const getPostComments = async (req, res) => {
       postId,
       parent: null,
       isActive: true,
+      status: { $ne: "deleted" }, // 过滤已删除的评论
     });
 
     // 调试：检查返回的评论数据
@@ -425,6 +426,7 @@ const getCommentReplies = async (req, res) => {
     const total = await Comment.countDocuments({
       parent: commentId,
       isActive: true,
+      status: { $ne: "deleted" }, // 过滤已删除的回复
     });
 
     res.json({
@@ -467,6 +469,18 @@ const deleteComment = async (req, res) => {
 
     // 软删除：将状态改为deleted
     await Comment.findByIdAndUpdate(commentId, { status: "deleted" });
+
+    // 更新帖子的评论计数
+    const Post = require("../models/Post");
+    const activeCommentsCount = await Comment.countDocuments({
+      postId: comment.postId,
+      isActive: true,
+      status: { $ne: "deleted" },
+    });
+
+    await Post.findByIdAndUpdate(comment.postId, {
+      commentCount: activeCommentsCount,
+    });
 
     res.json({
       success: true,
