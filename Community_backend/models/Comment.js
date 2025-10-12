@@ -136,6 +136,7 @@ commentSchema.statics.getPostComments = async function (
     postId: postId,
     parent: null, // 只获取顶级评论
     isActive: true,
+    status: { $ne: "deleted" }, // 过滤已删除的评论
   })
     .populate("authorId", "nickName avatar")
     .populate("replyTo", "nickName")
@@ -151,6 +152,7 @@ commentSchema.statics.getPostComments = async function (
     const replies = await this.find({
       parent: comment._id,
       isActive: true,
+      status: { $ne: "deleted" }, // 过滤已删除的回复
     })
       .populate("authorId", "nickName avatar")
       .populate("replyTo", "nickName")
@@ -186,6 +188,7 @@ commentSchema.statics.getCommentReplies = function (
   return this.find({
     parent: commentId,
     isActive: true,
+    status: { $ne: "deleted" }, // 过滤已删除的回复
   })
     .populate("authorId", "nickName avatar")
     .populate("replyTo", "nickName")

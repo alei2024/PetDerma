@@ -37,19 +37,10 @@ class SocketService {
 
         console.log("WebSocket认证尝试，token:", token ? "已提供" : "未提供");
 
-        // 开发环境：允许无token连接或使用测试用户
-        const isDevelopment = process.env.NODE_ENV !== "production";
-
-        if (isDevelopment && (!token || token === "test-token")) {
-          console.log("⚠️ 开发模式：使用测试用户");
-          socket.userId = "507f1f77bcf86cd799439011";
-          socket.user = {
-            id: "507f1f77bcf86cd799439011",
-            nickName: "测试用户",
-            avatar: "/uploads/user_default.png",
-          };
-          console.log("✅ WebSocket认证通过（开发模式）");
-          return next();
+        // 所有环境都需要有效token
+        if (!token || token === "test-token") {
+          console.log("❌ WebSocket连接被拒绝：缺少有效token");
+          return next(new Error("需要登录"));
         }
 
         if (!token) {
@@ -268,6 +259,10 @@ class SocketService {
     if (user) {
       this.io.to(user.socketId).emit("notification", notification);
     }
+
+    // 同时通过原生WebSocket发送
+    const nativeWebSocketService = require("./nativeWebSocketService");
+    nativeWebSocketService.sendNotificationToUser(userId, notification);
   }
 
   // 广播系统消息

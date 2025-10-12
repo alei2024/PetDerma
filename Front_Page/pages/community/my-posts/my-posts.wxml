@@ -1,7 +1,7 @@
 <view class="page-container">
   <navigation-bar title="我的发布" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
   
-  <view class="content">
+  <scroll-view class="content" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
     <!-- 空状态 -->
     <view wx:if="{{isEmpty}}" class="empty-state">
       <image src="/images/add_icon.png" class="empty-icon"></image>
@@ -51,10 +51,10 @@
         <text>没有更多发布了</text>
       </view>
     </view>
+  </scroll-view>
 
-    <!-- 悬浮发布按钮 -->
-    <view wx:if="{{!isEmpty}}" class="floating-post-btn" bindtap="goToPost">
-      <image src="/images/add.png" class="add-icon"></image>
-    </view>
+  <!-- 悬浮发布按钮 -->
+  <view wx:if="{{!isEmpty}}" class="floating-post-btn" bindtap="goToPost">
+    <image src="/images/add.png" class="add-icon"></image>
   </view>
 </view>

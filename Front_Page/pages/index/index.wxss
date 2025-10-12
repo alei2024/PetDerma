@@ -22,10 +22,35 @@ page {
   justify-content: center;
   width: 80rpx;
   height: 80rpx;
+  position: relative;
 }
 .nav-left-icon {
   width: 56rpx;
   height: 56rpx;
+}
+
+/* 消息红点 */
+.message-badge {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  background: #ff4757;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid #ffffff;
+  box-shadow: 0 2rpx 8rpx rgba(255, 71, 87, 0.3);
+}
+
+.badge-text {
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0 6rpx;
 }
 
 /* 欢迎区域样式 */
@@ -188,7 +213,7 @@ page {
 /* 每日科普 */
 .daily-knowledge {
   width: 100%;
-  background: linear-gradient(135deg, #A5D7E8 0%, #E8F4FD 100%);
+  background: linear-gradient(135deg, #a5d7e8 0%, #e8f4fd 100%);
   border-radius: 20rpx;
   padding: 30rpx;
   min-height: 200rpx;
@@ -215,13 +240,13 @@ page {
 .daily-title {
   font-size: 32rpx;
   font-weight: bold;
-  color: #2C5F7C;
+  color: #2c5f7c;
   margin: 0;
 }
 
 .daily-subtitle {
   font-size: 22rpx;
-  color: #5A8BA8;
+  color: #5a8ba8;
   background: rgba(255, 255, 255, 0.6);
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
@@ -235,7 +260,7 @@ page {
   display: block;
   font-size: 28rpx;
   font-weight: bold;
-  color: #1A4A5C;
+  color: #1a4a5c;
   margin-bottom: 12rpx;
   line-height: 1.4;
 }
@@ -243,7 +268,7 @@ page {
 .daily-summary {
   display: block;
   font-size: 24rpx;
-  color: #2C5F7C;
+  color: #2c5f7c;
   line-height: 1.6;
   opacity: 0.9;
 }
@@ -256,7 +281,7 @@ page {
 
 .daily-more {
   font-size: 22rpx;
-  color: #5A8BA8;
+  color: #5a8ba8;
   background: rgba(255, 255, 255, 0.7);
   padding: 8rpx 16rpx;
   border-radius: 16rpx;
@@ -383,11 +408,11 @@ page {
     padding: 24rpx;
     min-height: 180rpx;
   }
-  
+
   .feature-title {
     font-size: 28rpx;
   }
-  
+
   .feature-desc {
     font-size: 22rpx;
   }

@@ -9,6 +9,8 @@ Page({
     page: 1,
     limit: 10,
     isEmpty: false,
+    showDeleteConfirm: false, // 显示删除确认弹窗
+    currentDeleteCommentId: "", // 当前要删除的评论ID
   },
 
   onLoad() {
@@ -167,6 +169,88 @@ Page({
   // 上拉加载更多
   onReachBottom() {
     this.loadComments();
+  },
+
+  // 显示删除确认弹窗
+  deleteComment(e) {
+    const commentId = e.currentTarget.dataset.commentId;
+
+    if (!commentId) {
+      wx.showToast({
+        title: "评论ID获取失败",
+        icon: "none",
+      });
+      return;
+    }
+
+    this.setData({
+      showDeleteConfirm: true,
+      currentDeleteCommentId: commentId,
+    });
+  },
+
+  // 隐藏删除确认弹窗
+  hideDeleteConfirm() {
+    this.setData({
+      showDeleteConfirm: false,
+      currentDeleteCommentId: "",
+    });
+  },
+
+  // 确认删除评论
+  async confirmDelete() {
+    const commentId = this.data.currentDeleteCommentId;
+    if (!commentId) {
+      wx.showToast({
+        title: "评论信息错误",
+        icon: "none",
+      });
+      return;
+    }
+
+    wx.showLoading({ title: "删除中..." });
+
+    try {
+      const response = await app.request({
+        url: `/api/interactions/comments/${commentId}`,
+        method: "DELETE",
+      });
+
+      wx.hideLoading();
+
+      if (response.data && response.data.success) {
+        wx.showToast({
+          title: "删除成功",
+          icon: "success",
+        });
+
+        // 从列表中移除已删除的评论
+        const updatedComments = this.data.comments.filter(
+          (comment) => comment._id !== commentId
+        );
+
+        this.setData({
+          comments: updatedComments,
+          isEmpty: updatedComments.length === 0,
+          showDeleteConfirm: false,
+          currentDeleteCommentId: "",
+        });
+      } else {
+        wx.showToast({
+          title: response.data?.message || "删除失败",
+          icon: "none",
+        });
+        this.hideDeleteConfirm();
+      }
+    } catch (error) {
+      wx.hideLoading();
+      console.error("删除评论失败:", error);
+      wx.showToast({
+        title: "网络错误",
+        icon: "none",
+      });
+      this.hideDeleteConfirm();
+    }
   },
 
   // 去社区逛逛

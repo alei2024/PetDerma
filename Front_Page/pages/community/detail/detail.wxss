@@ -21,6 +21,7 @@ page {
   background: white;
   border-radius: 20rpx;
   padding: 30rpx;
+  padding-bottom: 10rpx;
   margin-bottom: 20rpx;
   min-width: 90%;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
@@ -30,7 +31,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 30rpx;
+  margin-bottom: 10rpx;
 }
 
 .user-info {
@@ -72,7 +73,7 @@ page {
 }
 
 .delete-btn {
-  padding: 8rpx;
+  padding: 6rpx;
   border-radius: 50%;
   transition: background-color 0.2s;
 }
@@ -82,6 +83,7 @@ page {
 }
 
 .delete-icon {
+  padding-top: 0rpx;
   width: 32rpx;
   height: 32rpx;
 }
@@ -144,7 +146,7 @@ page {
   display: flex;
   gap: 12rpx;
   flex-wrap: wrap;
-  margin-bottom: 30rpx;
+  margin-bottom: 10rpx;
 }
 
 .tag {
@@ -175,7 +177,7 @@ page {
 .post-actions {
   display: flex;
   justify-content: space-around;
-  padding: 20rpx 0;
+  padding: 10rpx 0;
 }
 
 .action-item {
@@ -197,11 +199,13 @@ page {
   height: 44rpx;
 }
 
+/* 移除图标滤镜效果，改为使用不同的图标文件 */
+
 /* 计数文字样式 - 统一样式，不再根据状态改变颜色 */
 .action-count {
   font-size: 24rpx;
   color: #666;
-  margin-top: 8rpx;
+  margin-top: -2rpx;
 }
 
 /* 评论区 */
@@ -254,7 +258,7 @@ page {
 
 .comment-item {
   margin-bottom: 40rpx;
-  padding-bottom: 30rpx;
+  padding-bottom: 20rpx;
   border-bottom: 1rpx solid #f8f8f8;
 }
 
@@ -349,16 +353,8 @@ page {
   height: 32rpx;
 }
 
-.comment-action-icon.liked {
-  /* 移除filter效果，直接使用切换的图标文件 */
-}
-
 .comment-action-text {
-  color: #333; /* 基础文字颜色为黑色 */
-}
-
-.comment-action-text.liked {
-  color: #333; /* 点赞后也保持黑色，不变色 */
+  color: #666; /* 统一的文字颜色 */
 }
 
 /* 回复列表 */
@@ -400,21 +396,11 @@ page {
   margin-left: 12rpx;
 }
 
-.load-more-replies {
-  color: #a5d7e8;
-  font-size: 24rpx;
-  margin-top: 16rpx;
-  padding: 8rpx 0;
-  text-align: center;
-  border-top: 1rpx solid #e8f4f8;
-}
-
 /* 加载状态 */
-.load-more-comments,
 .no-more-comments,
 .empty-comments {
   text-align: center;
-  padding: 40rpx 20rpx;
+  padding: 0rpx 10rpx 30rpx 10rpx;
   color: #999;
   font-size: 24rpx;
 }
@@ -598,6 +584,7 @@ page {
 
 .delete-cancel-btn,
 .delete-confirm-btn {
+  padding-top: 22rpx;
   flex: 1;
   height: 80rpx;
   border-radius: 40rpx;

@@ -68,9 +68,30 @@ app.use(
       "Origin, X-Requested-With, Content-Type, Accept"
     );
     res.header("Cross-Origin-Resource-Policy", "cross-origin");
+    res.header("Cross-Origin-Embedder-Policy", "unsafe-none");
+    res.header("X-Content-Type-Options", "nosniff");
     next();
   },
   express.static("uploads")
+);
+
+// 静态文件服务 - 处理前端资源文件（默认头像等）
+app.use(
+  "/images",
+  (req, res, next) => {
+    // 为前端图片资源添加CORS头
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.header("Cross-Origin-Resource-Policy", "cross-origin");
+    res.header("Cross-Origin-Embedder-Policy", "unsafe-none");
+    res.header("X-Content-Type-Options", "nosniff");
+    next();
+  },
+  express.static("uploads") // 将/images路径映射到uploads目录
 );
 
 // 限流中间件 - 开发环境放宽限制
@@ -107,24 +128,30 @@ app.get("/health", (req, res) => {
   });
 });
 
-// 图片路由专用中间件
-app.use("/api/images", (req, res, next) => {
-  // 为图片请求设置特殊的响应头
-  res.set({
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Cross-Origin-Resource-Policy": "cross-origin",
-    "X-Content-Type-Options": "nosniff",
-  });
-  next();
-});
-
 // API路由
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/interactions", interactionRoutes);
 app.use("/api/upload", uploadLimiter, uploadRoutes);
-app.use("/api/images", imageRoutes);
+
+// 图片路由 - 设置特殊的响应头并注册路由
+app.use(
+  "/api/images",
+  (req, res, next) => {
+    // 为图片请求设置特殊的响应头
+    res.set({
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers":
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+      "Cross-Origin-Resource-Policy": "cross-origin",
+      "Cross-Origin-Embedder-Policy": "unsafe-none",
+      "X-Content-Type-Options": "nosniff",
+    });
+    next();
+  },
+  imageRoutes
+);
 app.use("/api/notifications", require("./routes/notifications"));
 
 // 404处理（Express v5 兼容：使用无路径兜底中间件）

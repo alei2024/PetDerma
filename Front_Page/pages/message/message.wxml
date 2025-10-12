@@ -1,0 +1,51 @@
+<!--message.wxml-->
+<view class="page-container">
+  <navigation-bar title="消息中心" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+  
+  <scroll-view class="content" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <!-- 未读消息统计 -->
+    <view wx:if="{{unreadCount > 0}}" class="unread-summary">
+      <text class="unread-text">您有 {{unreadCount}} 条未读消息</text>
+      <view class="mark-all-read" bindtap="markAllAsRead">
+        <text>全部标记为已读</text>
+      </view>
+    </view>
+
+    <!-- 消息列表 -->
+    <view wx:if="{{notifications.length > 0}}" class="messages-container">
+      <view wx:for="{{notifications}}" wx:key="notificationId" class="message-item {{item.isRead ? 'read' : 'unread'}}" bindtap="onMessageTap" data-notification="{{item}}">
+        <!-- 消息图标 -->
+        <view class="message-icon">
+          <image wx:if="{{item.type === 'like'}}" src="/images/like_icon.png" class="icon-img"></image>
+          <image wx:elif="{{item.type === 'favorite'}}" src="/images/collect_icon.png" class="icon-img"></image>
+          <image wx:elif="{{item.type === 'comment'}}" src="/images/comment_icon.png" class="icon-img"></image>
+          <image wx:else src="/images/message_icon.svg" class="icon-img"></image>
+        </view>
+
+        <!-- 消息内容 -->
+        <view class="message-content">
+          <view class="message-header">
+            <text class="message-title">{{item.title}}</text>
+            <text class="message-time">{{item.createdAt}}</text>
+          </view>
+          <text class="message-text">{{item.content}}</text>
+        </view>
+
+        <!-- 未读标识 -->
+        <view wx:if="{{!item.isRead}}" class="unread-dot"></view>
+      </view>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{hasMore}}" class="load-more" bindtap="loadMore">
+        <text wx:if="{{!loading}}">加载更多</text>
+        <text wx:else>加载中...</text>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:else class="empty-state">
+      <image src="/images/message_icon.svg" class="empty-icon"></image>
+      <text class="empty-text">暂无消息</text>
+    </view>
+  </scroll-view>
+</view>

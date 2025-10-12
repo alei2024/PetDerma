@@ -1,81 +1,125 @@
-const io = require("weapp.socket.io");
-const websocketMonitor = require("./websocket-monitor");
-
+// 微信小程序原生WebSocket封装
 let socket = null;
+let isConnected = false;
+let eventListeners = new Map();
 
 function connectSocket({ baseUrl, token }) {
-  if (socket && socket.connected) return socket;
+  if (socket && isConnected) return socket;
 
   console.log("正在连接WebSocket...", { baseUrl, hasToken: !!token });
 
-  socket = io(baseUrl, {
-    // 先用polling（HTTP轮询）避免微信小程序WebSocket兼容问题
-    transports: ["polling", "websocket"],
-    auth: { token },
-    timeout: 20000,
-    reconnection: true,
-    reconnectionDelay: 2000,
-    reconnectionAttempts: 5,
-    path: "/socket.io",
-    // 强制使用polling起步，成功后自动升级websocket
-    upgrade: true,
-    rememberUpgrade: false,
-  });
+  // 将HTTP URL转换为WebSocket URL
+  const wsUrl = baseUrl.replace(/^https?:/, "ws:") + "/ws";
 
-  // 使用监控工具处理连接事件
-  socket.on("connect", () => {
-    websocketMonitor.onConnect(socket);
-  });
+  try {
+    socket = wx.connectSocket({
+      url: wsUrl,
+      header: {
+        Authorization: `Bearer ${token}`,
+      },
+      protocols: ["websocket"],
+    });
 
-  socket.on("connect_error", (err) => {
-    websocketMonitor.onConnectError(err);
+    socket.onOpen(() => {
+      console.log("✅ WebSocket连接成功");
+      isConnected = true;
 
-    // 如果是认证错误，清除token并重新登录
-    if (err.message && err.message.includes("认证")) {
-      console.log("认证失败，请重新登录");
-      wx.removeStorageSync("token");
-      wx.removeStorageSync("userInfo");
-    }
-  });
+      // 触发连接成功事件
+      triggerEvent("connect", {});
+    });
 
-  socket.on("disconnect", (reason) => {
-    websocketMonitor.onDisconnect(reason);
-  });
+    socket.onMessage((res) => {
+      try {
+        const data = JSON.parse(res.data);
+        console.log("📨 收到WebSocket消息:", data);
 
-  socket.on("reconnect", (attemptNumber) => {
-    websocketMonitor.onReconnect(attemptNumber);
-  });
+        // 根据消息类型触发相应事件
+        if (data.type) {
+          triggerEvent(data.type, data.payload || data);
+        }
+      } catch (error) {
+        console.error("解析WebSocket消息失败:", error);
+      }
+    });
 
-  socket.on("reconnect_error", (error) => {
-    console.error("WS reconnection error:", error);
-  });
+    socket.onClose((res) => {
+      console.log("❌ WebSocket连接关闭:", res);
+      isConnected = false;
 
-  socket.on("reconnect_failed", () => {
-    websocketMonitor.onReconnectFailed();
-  });
+      // 触发断开连接事件
+      triggerEvent("disconnect", res);
 
-  // 重连成功事件
-  socket.on("reconnect", (attemptNumber) => {
-    websocketMonitor.onReconnectSuccess(attemptNumber);
-  });
+      // 自动重连
+      setTimeout(() => {
+        if (!isConnected) {
+          console.log("🔄 尝试重新连接WebSocket...");
+          connectSocket({ baseUrl, token });
+        }
+      }, 3000);
+    });
 
-  // 常用业务事件
-  socket.on("post_liked", (data) => {
-    console.log("📨 收到post_liked事件:", data);
-    websocketMonitor.notifyListeners("postLiked", data);
-  });
+    socket.onError((error) => {
+      console.error("❌ WebSocket连接错误:", error);
+      isConnected = false;
 
-  socket.on("post_favorited", (data) => {
-    console.log("📨 收到post_favorited事件:", data);
-    websocketMonitor.notifyListeners("postFavorited", data);
-  });
+      // 触发错误事件
+      triggerEvent("error", error);
+    });
 
-  socket.on("post_commented", (data) => {
-    console.log("📨 收到post_commented事件:", data);
-    websocketMonitor.notifyListeners("postCommented", data);
-  });
+    // 添加事件监听方法
+    socket.on = function (event, callback) {
+      if (!eventListeners.has(event)) {
+        eventListeners.set(event, []);
+      }
+      eventListeners.get(event).push(callback);
+    };
 
-  return socket;
+    // 添加事件发送方法
+    socket.emit = function (event, data) {
+      if (isConnected) {
+        const message = JSON.stringify({
+          type: event,
+          payload: data,
+          timestamp: Date.now(),
+        });
+
+        socket.send({
+          data: message,
+          success: () => {
+            console.log(`📤 WebSocket事件发送成功: ${event}`, data);
+          },
+          fail: (error) => {
+            console.error(`❌ WebSocket事件发送失败: ${event}`, error);
+          },
+        });
+      } else {
+        console.warn("⚠️ WebSocket未连接，无法发送事件:", event);
+      }
+    };
+
+    // 添加连接状态属性
+    Object.defineProperty(socket, "connected", {
+      get: () => isConnected,
+    });
+
+    return socket;
+  } catch (error) {
+    console.error("❌ 创建WebSocket连接失败:", error);
+    return null;
+  }
+}
+
+// 触发事件
+function triggerEvent(event, data) {
+  if (eventListeners.has(event)) {
+    eventListeners.get(event).forEach((callback) => {
+      try {
+        callback(data);
+      } catch (error) {
+        console.error(`事件回调执行失败 ${event}:`, error);
+      }
+    });
+  }
 }
 
 function getSocket() {

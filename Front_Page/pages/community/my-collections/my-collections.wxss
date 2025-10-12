@@ -6,7 +6,9 @@
 
 .content {
   padding: 20rpx;
-  margin-top: 100rpx;
+  height: 100vh;
+  margin-top: -20rpx;
+  box-sizing: border-box;
 }
 
 /* 空状态样式 */
@@ -16,6 +18,7 @@
   align-items: center;
   justify-content: center;
   padding: 120rpx 40rpx;
+  margin-top: 30rpx;
   text-align: center;
 }
 
@@ -48,7 +51,8 @@
 
 /* 帖子列表样式 */
 .posts-container {
-  padding-bottom: 40rpx;
+  padding-top: 30rpx;
+  padding-bottom: 160rpx;
 }
 
 .post-item {
@@ -123,7 +127,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 0rpx;
 }
 
 .tag {

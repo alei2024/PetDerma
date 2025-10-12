@@ -5,27 +5,24 @@ Page({
     imageList: [],
     selectedTags: [],
     customTagInput: "",
-    allowComments: true,
-    isAnonymous: false,
-    showPublishConfirm: false,
     isPublishing: false,
     canPublish: false,
 
     // 预设标签
-    petTypeTags: ["猫咪", "狗狗", "兔子", "鸟类", "其他宠物"],
+    petTypeTags: ["猫咪", "狗狗"],
     problemTags: [
-      "皮肤病",
-      "脱毛",
-      "红斑",
-      "真菌",
-      "过敏",
+      "过敏性皮炎",
+      "真菌感染",
+      "皮肤癣",
+      "螨虫病",
+      "过敏反应",
+      "皮肤肿瘤",
       "寄生虫",
       "湿疹",
-      "皮屑",
     ],
     contentTags: [
-      "求助",
-      "分享经验",
+      "疾病求助",
+      "经验分享",
       "产品推荐",
       "治疗记录",
       "日常护理",
@@ -184,20 +181,6 @@ Page({
     });
   },
 
-  // 允许评论设置
-  onAllowCommentsChange: function (e) {
-    this.setData({
-      allowComments: e.detail.value,
-    });
-  },
-
-  // 匿名发布设置
-  onAnonymousChange: function (e) {
-    this.setData({
-      isAnonymous: e.detail.value,
-    });
-  },
-
   // 发布帖子
   publishPost: function () {
     if (!this.data.canPublish) {
@@ -209,25 +192,10 @@ Page({
     }
 
     this.setData({
-      showPublishConfirm: true,
-    });
-  },
-
-  // 隐藏发布确认弹窗
-  hidePublishConfirm: function () {
-    this.setData({
-      showPublishConfirm: false,
-    });
-  },
-
-  // 确认发布
-  confirmPublish: function () {
-    this.setData({
-      showPublishConfirm: false,
       isPublishing: true,
     });
 
-    // 先上传图片，然后发布帖子
+    // 直接上传图片并发布帖子
     this.uploadImagesAndPublish();
   },
 

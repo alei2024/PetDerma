@@ -131,14 +131,28 @@ const uploadImages = async (req, res) => {
 const getImage = async (req, res) => {
   try {
     const imageId = req.params.id;
+
+    // 验证图片ID格式
+    if (!imageId || !/^[0-9a-fA-F]{24}$/.test(imageId)) {
+      return res.status(400).json({
+        success: false,
+        message: "无效的图片ID",
+      });
+    }
+
     const image = await Image.findById(imageId);
 
     if (!image) {
+      console.log(`图片不存在: ${imageId}`);
       return res.status(404).json({
         success: false,
         message: "图片不存在",
       });
     }
+
+    console.log(
+      `✅ 成功获取图片: ${imageId}, 类型: ${image.contentType}, 大小: ${image.data.length} bytes`
+    );
 
     // 清除所有可能冲突的响应头
     res.removeHeader("X-Powered-By");
@@ -154,19 +168,24 @@ const getImage = async (req, res) => {
         "Origin, X-Requested-With, Content-Type, Accept, Authorization",
       "Cross-Origin-Resource-Policy": "cross-origin",
       "Cross-Origin-Embedder-Policy": "unsafe-none",
-      "Cache-Control": "public, max-age=31536000",
+      "Cache-Control": "public, max-age=86400", // 缓存1天
       Pragma: "public",
-      Expires: new Date(Date.now() + 31536000000).toUTCString(),
+      Expires: new Date(Date.now() + 86400000).toUTCString(), // 1天后过期
     });
 
     // 直接发送二进制数据
     res.end(image.data);
   } catch (error) {
     console.error("获取图片错误:", error);
-    res.status(500).json({
-      success: false,
-      message: "获取图片失败",
-    });
+
+    // 确保错误响应也有正确的头部
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        message: "获取图片失败",
+        error: error.message,
+      });
+    }
   }
 };
 

@@ -1,7 +1,7 @@
 <view class="page-container">
   <navigation-bar title="我的收藏" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
   
-  <view class="content">
+  <scroll-view class="content" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
     <!-- 空状态 -->
     <view wx:if="{{isEmpty}}" class="empty-state">
       <image src="/images/collect_icon.png" class="empty-icon"></image>
@@ -51,5 +51,5 @@
         <text>没有更多收藏了</text>
       </view>
     </view>
-  </view>
+  </scroll-view>
 </view>
