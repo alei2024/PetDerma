@@ -29,7 +29,7 @@ router.get("/user/:userId", getUserPosts);
 // 需要认证的路由
 router.use(authenticateToken);
 
-// 创建帖子
+// 创建帖子 - 需要认证
 router.post("/", createPost);
 
 // 更新帖子

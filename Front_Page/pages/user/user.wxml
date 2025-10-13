@@ -134,7 +134,50 @@
   </view>
 </scroll-view>
 
-<!-- 手机号登录弹窗 -->
+<!-- 登录注册弹窗 -->
+<view wx:if="{{showLoginRegisterPopup}}" class="popup-mask" bindtap="closeLoginRegisterPopup"></view>
+<view wx:if="{{showLoginRegisterPopup}}" class="popup-panel login-register-panel">
+  <view class="popup-header">
+    <text>{{isLoginMode ? '登录' : '注册'}}</text>
+    <text class="popup-close" bindtap="closeLoginRegisterPopup">×</text>
+  </view>
+  <view class="popup-body">
+    <!-- 手机号输入 -->
+    <input type="number" placeholder="请输入手机号" value="{{phone}}" bindinput="inputPhone" class="login-input" />
+    
+    <!-- 登录模式：密码输入 -->
+    <block wx:if="{{isLoginMode}}">
+      <input type="password" placeholder="请输入密码" value="{{password}}" bindinput="inputPassword" class="login-input" />
+    </block>
+    
+    <!-- 注册模式：验证码、昵称、密码输入 -->
+    <block wx:else>
+      <view class="code-container">
+        <input type="number" placeholder="请输入验证码" value="{{code}}" bindinput="inputCode" class="login-input code-input" />
+        <button class="get-code-btn" bindtap="getVerificationCode" disabled="{{codeButtonDisabled}}">
+          {{codeButtonText}}
+        </button>
+      </view>
+      <input type="text" placeholder="请输入用户名" value="{{nickname}}" bindinput="inputNickname" class="login-input" />
+      <input type="password" placeholder="请输入密码（至少6位）" value="{{password}}" bindinput="inputPassword" class="login-input" />
+      <input type="password" placeholder="请确认密码" value="{{confirmPassword}}" bindinput="inputConfirmPassword" class="login-input" />
+    </block>
+    
+    <!-- 提交按钮 -->
+    <button class="submit-btn" bindtap="submitLoginRegister">
+      {{isLoginMode ? '登录' : '注册'}}
+    </button>
+    
+    <!-- 切换登录/注册模式 -->
+    <view class="switch-mode">
+      <text class="switch-text" bindtap="switchLoginRegisterMode">
+        {{isLoginMode ? '没有账号？点击注册' : '已有账号？点击登录'}}
+      </text>
+    </view>
+  </view>
+</view>
+
+<!-- 手机号登录弹窗（保留原有功能） -->
 <view wx:if="{{showPhoneLoginPopup}}" class="popup-mask" bindtap="closePhoneLoginPopup"></view>
 <view wx:if="{{showPhoneLoginPopup}}" class="popup-panel phone-login-panel">
   <view class="popup-header">

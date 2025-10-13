@@ -23,6 +23,7 @@ const authenticateToken = async (req, res, next) => {
     // 检查用户是否存在
     const user = await User.findById(decoded.userId);
     if (!user) {
+      console.log("❌ 用户不存在，userId:", decoded.userId);
       return res.status(401).json({
         success: false,
         message: "用户不存在",

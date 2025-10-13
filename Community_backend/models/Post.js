@@ -24,11 +24,11 @@ const postSchema = new mongoose.Schema(
       maxlength: 2000,
     },
 
-    // 图片URL数组
+    // 图片引用数组（引用Image模型）
     images: [
       {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
       },
     ],
 

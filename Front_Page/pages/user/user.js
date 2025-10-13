@@ -21,9 +21,13 @@ Page({
     notificationEnabled: true,
     showPhoneLoginPopup: false,
     showWechatAuthPopup: false, // 新增：微信授权弹窗状态
+    showLoginRegisterPopup: false, // 新增：登录注册弹窗
+    isLoginMode: true, // true: 登录模式, false: 注册模式
     phone: "",
     code: "",
     nickname: "",
+    password: "",
+    confirmPassword: "",
     tempAvatar: "", // 临时头像，用于手机号登录时上传
     tempAvatarData: null, // 服务器返回的头像数据
     codeButtonDisabled: false,
@@ -101,31 +105,19 @@ Page({
 
   // 登录功能
   login: function (e) {
-    wx.showModal({
-      title: "选择登录方式",
-      content: "请选择您偏好的登录方式",
-      showCancel: true,
-      cancelText: "微信登录",
-      confirmText: "短信登录",
-      success: (res) => {
-        if (res.confirm) {
-          // 短信验证码登录
-          this.phoneLogin();
-        } else if (res.cancel) {
-          // 微信授权登录
-          this.wechatLogin();
-        }
-      },
-      fail: (err) => {
-        console.error("显示登录选择框失败:", err);
-        // 如果弹窗失败，显示错误提示
-        wx.showModal({
-          title: "提示",
-          content: "登录选择框显示失败，请重试",
-          showCancel: false,
-          confirmText: "确定",
-        });
-      },
+    this.setData({
+      showLoginRegisterPopup: true,
+      isLoginMode: true,
+      phone: "",
+      password: "",
+      code: "",
+      nickname: "",
+      confirmPassword: "",
+      tempAvatar: "",
+      tempAvatarData: null,
+      codeButtonDisabled: false,
+      codeButtonText: "获取验证码",
+      countdown: 0,
     });
   },
 
@@ -219,6 +211,40 @@ Page({
       nickname: "",
       tempAvatar: "",
       tempAvatarData: null,
+    });
+  },
+
+  // 关闭登录注册弹窗
+  closeLoginRegisterPopup: function () {
+    this.setData({
+      showLoginRegisterPopup: false,
+      phone: "",
+      password: "",
+      code: "",
+      nickname: "",
+      confirmPassword: "",
+      tempAvatar: "",
+      tempAvatarData: null,
+      codeButtonDisabled: false,
+      codeButtonText: "获取验证码",
+      countdown: 0,
+    });
+  },
+
+  // 切换登录/注册模式
+  switchLoginRegisterMode: function () {
+    this.setData({
+      isLoginMode: !this.data.isLoginMode,
+      phone: "",
+      password: "",
+      code: "",
+      nickname: "",
+      confirmPassword: "",
+      tempAvatar: "",
+      tempAvatarData: null,
+      codeButtonDisabled: false,
+      codeButtonText: "获取验证码",
+      countdown: 0,
     });
   },
 
@@ -316,6 +342,16 @@ Page({
     this.setData({ nickname: e.detail.value });
   },
 
+  // 输入密码
+  inputPassword: function (e) {
+    this.setData({ password: e.detail.value });
+  },
+
+  // 输入确认密码
+  inputConfirmPassword: function (e) {
+    this.setData({ confirmPassword: e.detail.value });
+  },
+
   // 获取验证码
   getVerificationCode: function () {
     const phone = this.data.phone;
@@ -332,8 +368,53 @@ Page({
 
     this.startCountdown();
 
-    // 模拟发送验证码（实际需调用后端接口）
-    wx.showToast({ title: "验证码已发送（模拟）", icon: "none" });
+    // 调用后端API发送验证码
+    const app = getApp();
+    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+
+    wx.request({
+      url: `${baseUrl}/api/auth/send-verification-code`,
+      method: "POST",
+      data: {
+        phoneNumber: phone,
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          wx.showToast({ 
+            title: "验证码已发送", 
+            icon: "success" 
+          });
+          // 开发环境显示验证码
+          if (res.data.data && res.data.data.verificationCode) {
+            console.log(`验证码: ${res.data.data.verificationCode}`);
+          }
+        } else {
+          wx.showToast({ 
+            title: res.data?.message || "发送失败", 
+            icon: "none" 
+          });
+          // 重置按钮状态
+          this.setData({
+            codeButtonDisabled: false,
+            codeButtonText: "获取验证码",
+            countdown: 0,
+          });
+        }
+      },
+      fail: (error) => {
+        console.error("发送验证码失败:", error);
+        wx.showToast({ 
+          title: "网络错误，请重试", 
+          icon: "none" 
+        });
+        // 重置按钮状态
+        this.setData({
+          codeButtonDisabled: false,
+          codeButtonText: "获取验证码",
+          countdown: 0,
+        });
+      },
+    });
   },
 
   // 倒计时功能
@@ -357,7 +438,211 @@ Page({
     }, 1000);
   },
 
-  // 提交手机号登录
+  // 提交登录/注册
+  submitLoginRegister: function () {
+    const { phone, password, code, nickname, confirmPassword, isLoginMode } = this.data;
+
+    // 验证手机号格式
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+      wx.showToast({ title: "手机号格式错误", icon: "none" });
+      return;
+    }
+
+    if (isLoginMode) {
+      // 登录模式
+      if (!phone || !password) {
+        wx.showToast({ title: "请填写手机号和密码", icon: "none" });
+        return;
+      }
+      this.performLogin();
+    } else {
+      // 注册模式
+      if (!phone || !code || !nickname || !password || !confirmPassword) {
+        wx.showToast({ title: "请填写完整信息", icon: "none" });
+        return;
+      }
+
+      if (password.length < 6) {
+        wx.showToast({ title: "密码长度不能少于6位", icon: "none" });
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        wx.showToast({ title: "两次输入的密码不一致", icon: "none" });
+        return;
+      }
+
+      this.performRegister();
+    }
+  },
+
+  // 执行登录
+  performLogin: function () {
+    const { phone, password } = this.data;
+    const app = getApp();
+    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+
+    wx.showLoading({
+      title: "登录中...",
+      mask: true,
+    });
+
+    wx.request({
+      url: `${baseUrl}/api/auth/phone-password-login`,
+      method: "POST",
+      data: {
+        phoneNumber: phone,
+        password: password,
+      },
+      success: (res) => {
+        wx.hideLoading();
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          const backendUser = res.data.data.user || {};
+          const token = res.data.data.token;
+
+          const userInfo = {
+            id: backendUser.id,
+            userId: backendUser.id,
+            _id: backendUser.id,
+            phoneNumber: backendUser.phoneNumber,
+            nickName: backendUser.nickName,
+            nickname: backendUser.nickName,
+            avatar: backendUser.avatar,
+            gender: backendUser.gender,
+            city: backendUser.city,
+            province: backendUser.province,
+            country: backendUser.country,
+            loginType: "phone",
+            phone: backendUser.phoneNumber,
+            token: token,
+          };
+
+          this.handleLoginSuccess(userInfo);
+        } else {
+          wx.showToast({
+            title: res.data?.message || "登录失败",
+            icon: "none",
+          });
+        }
+      },
+      fail: (error) => {
+        wx.hideLoading();
+        console.error("登录请求失败:", error);
+        wx.showToast({
+          title: "网络错误，请重试",
+          icon: "none",
+        });
+      },
+    });
+  },
+
+  // 执行注册
+  performRegister: function () {
+    const { phone, code, nickname, password, confirmPassword } = this.data;
+    const app = getApp();
+    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+
+    wx.showLoading({
+      title: "注册中...",
+      mask: true,
+    });
+
+    wx.request({
+      url: `${baseUrl}/api/auth/register`,
+      method: "POST",
+      data: {
+        phoneNumber: phone,
+        verificationCode: code,
+        password: password,
+        confirmPassword: confirmPassword,
+        nickName: nickname,
+      },
+      success: (res) => {
+        wx.hideLoading();
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          const backendUser = res.data.data.user || {};
+          const token = res.data.data.token;
+
+          const userInfo = {
+            id: backendUser.id,
+            userId: backendUser.id,
+            _id: backendUser.id,
+            phoneNumber: backendUser.phoneNumber,
+            nickName: backendUser.nickName,
+            nickname: backendUser.nickName,
+            avatar: backendUser.avatar,
+            gender: backendUser.gender,
+            city: backendUser.city,
+            province: backendUser.province,
+            country: backendUser.country,
+            loginType: "phone",
+            phone: backendUser.phoneNumber,
+            token: token,
+          };
+
+          wx.showToast({
+            title: "注册成功",
+            icon: "success",
+          });
+
+          // 注册成功后自动登录
+          setTimeout(() => {
+            this.handleLoginSuccess(userInfo);
+          }, 1000);
+        } else {
+          wx.showToast({
+            title: res.data?.message || "注册失败",
+            icon: "none",
+          });
+        }
+      },
+      fail: (error) => {
+        wx.hideLoading();
+        console.error("注册请求失败:", error);
+        wx.showToast({
+          title: "网络错误，请重试",
+          icon: "none",
+        });
+      },
+    });
+  },
+
+  // 处理登录成功
+  handleLoginSuccess: function (userInfo) {
+    // 存储token和用户信息到本地存储
+    wx.setStorageSync("token", userInfo.token);
+    wx.setStorageSync("userInfo", userInfo);
+    
+    // 更新全局状态
+    const app = getApp();
+    app.globalData.token = userInfo.token;
+    app.globalData.userInfo = userInfo;
+    app.globalData.hasLogin = true;
+    app.globalData.currentUserId = userInfo.id;
+
+    // 更新页面状态
+    const avatarUrl = this.computeAvatarUrl(userInfo.avatar);
+    this.setData({
+      isLoggedIn: true,
+      userInfo: userInfo,
+      avatarUrl: avatarUrl,
+      showLoginRegisterPopup: false,
+      phone: "",
+      password: "",
+      code: "",
+      nickname: "",
+      confirmPassword: "",
+      tempAvatar: "",
+      tempAvatarData: null,
+    });
+
+    wx.showToast({
+      title: "登录成功",
+      icon: "success",
+    });
+  },
+
+  // 提交手机号登录（保留原有方法，用于兼容）
   submitPhoneLogin: function () {
     const { phone, code, nickname, tempAvatar } = this.data;
 
@@ -532,6 +817,17 @@ Page({
                 _id: backendUser.id,
               };
 
+              // 存储token和用户信息到本地存储
+              wx.setStorageSync("token", token);
+              wx.setStorageSync("userInfo", finalUserInfo);
+              
+              // 更新全局状态
+              const app = getApp();
+              app.globalData.token = token;
+              app.globalData.userInfo = finalUserInfo;
+              app.globalData.hasLogin = true;
+              app.globalData.currentUserId = backendUser.id;
+
               console.log("✅ 手机号登录成功，最终用户信息:", finalUserInfo);
               resolve(finalUserInfo);
             } else {
@@ -574,6 +870,17 @@ Page({
                       userId: backendUser.id,
                       _id: backendUser.id,
                     };
+
+                    // 存储token和用户信息到本地存储
+                    wx.setStorageSync("token", token);
+                    wx.setStorageSync("userInfo", finalUserInfo);
+                    
+                    // 更新全局状态
+                    const app = getApp();
+                    app.globalData.token = token;
+                    app.globalData.userInfo = finalUserInfo;
+                    app.globalData.hasLogin = true;
+                    app.globalData.currentUserId = backendUser.id;
 
                     resolve(finalUserInfo);
                   } else {

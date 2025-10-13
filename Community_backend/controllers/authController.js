@@ -228,88 +228,276 @@ const updateUserSettings = async (req, res) => {
   }
 };
 
-// 添加宠物
-const addPet = async (req, res) => {
-  try {
-    const { name, species, breed, age, avatar } = req.body;
-    const userId = req.user.userId;
 
-    if (!name || !species) {
+// 发送验证码（模拟实现）
+const sendVerificationCode = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    if (!phoneNumber) {
       return res.status(400).json({
         success: false,
-        message: "宠物名称和种类不能为空",
+        message: "手机号不能为空",
       });
     }
 
-    const petData = {
-      name,
-      species,
-      breed: breed || "",
-      age: age || 0,
-      avatar: avatar || "",
-    };
+    // 清理手机号
+    const cleanPhoneNumber = phoneNumber.trim();
+    
+    // 验证手机号格式
+    if (!/^1[3-9]\d{9}$/.test(cleanPhoneNumber)) {
+      return res.status(400).json({
+        success: false,
+        message: "手机号格式不正确",
+      });
+    }
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $push: { pets: petData } },
-      { new: true, runValidators: true }
-    ).select("-openid -unionid -__v");
+    // 模拟发送验证码（实际项目中应该调用短信服务）
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // 在开发环境中，将验证码存储到内存中（实际项目中应该存储到Redis等缓存中）
+    if (!global.verificationCodes) {
+      global.verificationCodes = new Map();
+    }
+    
+    // 设置验证码，5分钟过期
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5分钟后过期
+    global.verificationCodes.set(cleanPhoneNumber, {
+      code: verificationCode,
+      expiresAt: expiresAt,
+    });
 
+    console.log(`📱 验证码已发送到 ${cleanPhoneNumber}: ${verificationCode}`);
+    console.log(`⏰ 过期时间: ${new Date(expiresAt).toLocaleString()}`);
+    console.log(`📊 当前存储的验证码数量: ${global.verificationCodes.size}`);
+
+    res.json({
+      success: true,
+      message: "验证码已发送",
+      data: {
+        // 开发环境返回验证码，生产环境不返回
+        verificationCode: process.env.NODE_ENV !== "production" ? verificationCode : undefined,
+      },
+    });
+  } catch (error) {
+    console.error("发送验证码错误:", error);
+    res.status(500).json({
+      success: false,
+      message: "服务器内部错误",
+    });
+  }
+};
+
+// 验证验证码
+const verifyCode = (phoneNumber, code) => {
+  console.log(`🔍 验证验证码 - 手机号: ${phoneNumber}, 验证码: ${code}`);
+  
+  if (!global.verificationCodes) {
+    console.log('❌ 验证码存储不存在');
+    return false;
+  }
+
+  const stored = global.verificationCodes.get(phoneNumber);
+  if (!stored) {
+    console.log('❌ 未找到该手机号的验证码');
+    console.log('📱 当前存储的验证码:', Array.from(global.verificationCodes.keys()));
+    return false;
+  }
+
+  console.log(`📱 存储的验证码: ${stored.code}, 过期时间: ${new Date(stored.expiresAt).toLocaleString()}`);
+  console.log(`⏰ 当前时间: ${new Date().toLocaleString()}`);
+
+  // 检查是否过期
+  if (Date.now() > stored.expiresAt) {
+    console.log('❌ 验证码已过期');
+    global.verificationCodes.delete(phoneNumber);
+    return false;
+  }
+
+  // 验证码正确 - 确保都是字符串类型进行比较
+  if (String(stored.code) === String(code)) {
+    console.log('✅ 验证码验证成功');
+    global.verificationCodes.delete(phoneNumber);
+    return true;
+  }
+
+  console.log('❌ 验证码不匹配');
+  return false;
+};
+
+// 用户注册
+const register = async (req, res) => {
+  try {
+    const { phoneNumber, verificationCode, password, confirmPassword, nickName } = req.body;
+    
+    console.log('📝 注册请求数据:', {
+      phoneNumber,
+      verificationCode,
+      nickName,
+      passwordLength: password ? password.length : 0,
+      confirmPasswordLength: confirmPassword ? confirmPassword.length : 0
+    });
+
+    // 验证必填字段
+    if (!phoneNumber || !verificationCode || !password || !confirmPassword || !nickName) {
+      return res.status(400).json({
+        success: false,
+        message: "所有字段都是必填的",
+      });
+    }
+
+    // 验证手机号格式 - 先清理手机号
+    const cleanPhoneNumber = phoneNumber.trim();
+    if (!/^1[3-9]\d{9}$/.test(cleanPhoneNumber)) {
+      return res.status(400).json({
+        success: false,
+        message: "手机号格式不正确",
+      });
+    }
+
+    // 验证密码长度
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "密码长度不能少于6位",
+      });
+    }
+
+    // 验证两次密码是否一致
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "两次输入的密码不一致",
+      });
+    }
+
+    // 验证验证码
+    // 确保验证码是字符串类型进行比较
+    const codeToVerify = String(verificationCode).trim();
+    if (!verifyCode(cleanPhoneNumber, codeToVerify)) {
+      return res.status(400).json({
+        success: false,
+        message: "验证码错误或已过期",
+      });
+    }
+
+    // 检查手机号是否已注册
+    const existingUser = await User.findOne({ phoneNumber: cleanPhoneNumber, status: "active" });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "该手机号已注册",
+      });
+    }
+
+    // 创建新用户
+    const user = new User({
+      phoneNumber: cleanPhoneNumber,
+      password,
+      nickName,
+      avatar: {
+        url: "/images/user_default.png",
+        source: "upload",
+        key: "",
+        wechatUrl: "",
+      },
+    });
+
+    await user.save();
+
+    // 生成JWT Token
+    const token = generateToken(user._id);
+
+    res.json({
+      success: true,
+      message: "注册成功",
+      data: {
+        token,
+        user: {
+          id: user._id,
+          phoneNumber: user.phoneNumber,
+          nickName: user.nickName,
+          avatar: user.avatar,
+          gender: user.gender,
+          city: user.city,
+          province: user.province,
+          country: user.country,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("用户注册错误:", error);
+    res.status(500).json({
+      success: false,
+      message: "服务器内部错误",
+    });
+  }
+};
+
+// 手机号密码登录
+const phonePasswordLogin = async (req, res) => {
+  try {
+    const { phoneNumber, password } = req.body;
+
+    if (!phoneNumber || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "手机号和密码不能为空",
+      });
+    }
+
+    // 验证手机号格式
+    if (!/^1[3-9]\d{9}$/.test(phoneNumber)) {
+      return res.status(400).json({
+        success: false,
+        message: "手机号格式不正确",
+      });
+    }
+
+    // 查找用户
+    const user = await User.findOne({ phoneNumber, status: "active" });
     if (!user) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
         message: "用户不存在",
       });
     }
 
-    res.json({
-      success: true,
-      message: "宠物添加成功",
-      data: user.pets,
-    });
-  } catch (error) {
-    console.error("添加宠物错误:", error);
-    res.status(500).json({
-      success: false,
-      message: "服务器内部错误",
-    });
-  }
-};
-
-// 更新宠物信息
-const updatePet = async (req, res) => {
-  try {
-    const { petId } = req.params;
-    const { name, species, breed, age, avatar } = req.body;
-    const userId = req.user.userId;
-
-    const updateData = {};
-    if (name) updateData["pets.$.name"] = name;
-    if (species) updateData["pets.$.species"] = species;
-    if (breed !== undefined) updateData["pets.$.breed"] = breed;
-    if (age !== undefined) updateData["pets.$.age"] = age;
-    if (avatar !== undefined) updateData["pets.$.avatar"] = avatar;
-
-    const user = await User.findOneAndUpdate(
-      { _id: userId, "pets._id": petId },
-      { $set: updateData },
-      { new: true, runValidators: true }
-    ).select("-openid -unionid -__v");
-
-    if (!user) {
-      return res.status(404).json({
+    // 验证密码
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(400).json({
         success: false,
-        message: "用户或宠物不存在",
+        message: "密码错误",
       });
     }
 
+    // 更新最后登录时间
+    user.lastLoginAt = new Date();
+    await user.save();
+
+    // 生成JWT Token
+    const token = generateToken(user._id);
+
     res.json({
       success: true,
-      message: "宠物信息更新成功",
-      data: user.pets,
+      message: "登录成功",
+      data: {
+        token,
+        user: {
+          id: user._id,
+          phoneNumber: user.phoneNumber,
+          nickName: user.nickName,
+          avatar: user.avatar,
+          gender: user.gender,
+          city: user.city,
+          province: user.province,
+          country: user.country,
+        },
+      },
     });
   } catch (error) {
-    console.error("更新宠物信息错误:", error);
+    console.error("手机号密码登录错误:", error);
     res.status(500).json({
       success: false,
       message: "服务器内部错误",
@@ -317,40 +505,7 @@ const updatePet = async (req, res) => {
   }
 };
 
-// 删除宠物
-const deletePet = async (req, res) => {
-  try {
-    const { petId } = req.params;
-    const userId = req.user.userId;
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $pull: { pets: { _id: petId } } },
-      { new: true, runValidators: true }
-    ).select("-openid -unionid -__v");
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "用户不存在",
-      });
-    }
-
-    res.json({
-      success: true,
-      message: "宠物删除成功",
-      data: user.pets,
-    });
-  } catch (error) {
-    console.error("删除宠物错误:", error);
-    res.status(500).json({
-      success: false,
-      message: "服务器内部错误",
-    });
-  }
-};
-
-// 手机号登录/注册
+// 手机号登录/注册（保留原有功能）
 const phoneLogin = async (req, res) => {
   try {
     const { phoneNumber, nickName, avatar } = req.body;
@@ -518,12 +673,12 @@ const updateUserAvatar = async (req, res) => {
 module.exports = {
   wechatLogin,
   phoneLogin,
+  phonePasswordLogin,
+  register,
+  sendVerificationCode,
   getUserInfo,
   updateUserInfo,
   updateUserSettings,
-  addPet,
-  updatePet,
-  deletePet,
   refreshToken,
   updateUserAvatar,
 };

@@ -3,16 +3,19 @@ page {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(180deg, #A5D7E8 0%, #FFFFFF 40%);
 }
 .scrollarea {
   flex: 1;
-  overflow-y: hidden;
+  overflow-y: auto;
+  height: calc(100vh - 88rpx); /* 减去导航栏高度 */
 }
 
 .container {
   width: 100%;
-  padding: 0 30rpx;
+  padding: 20rpx 30rpx 40rpx;
   box-sizing: border-box;
+  min-height: calc(100vh - 88rpx - 40rpx); /* 确保容器有足够高度 */
 }
 
 /* 导航左侧按钮 */
@@ -59,8 +62,8 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 28rpx 0 30rpx;
-  padding: 32rpx;
+  margin: 0 0 20rpx;
+  padding: 24rpx;
   background-color: var(--primary-blue);
   border-radius: 20rpx;
   color: white;
@@ -85,8 +88,9 @@ page {
 }
 
 .welcome-image {
-  width: 160rpx;
-  height: 160rpx;
+  width: 120rpx;
+  height: 120rpx;
+  flex-shrink: 0;
 }
 
 .welcome-image image {
@@ -98,11 +102,11 @@ page {
 .pet-avatars {
   width: 100%;
   display: flex;
-  gap: 24rpx;
+  gap: 20rpx;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 10rpx 30rpx 0;
-  margin-bottom: 30rpx;
+  padding: 0;
+  margin-bottom: 20rpx;
 }
 
 .pet-avatar {
@@ -140,24 +144,25 @@ page {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin: 20rpx 0 30rpx;
+  margin: 0 0 20rpx;
   box-sizing: border-box;
+  gap: 20rpx;
 }
 
 .feature-item {
   width: calc(50% - 10rpx);
   background-color: white;
-  border-radius: 20rpx;
-  padding: 30rpx;
+  border-radius: 16rpx;
+  padding: 24rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  margin-bottom: 20rpx;
+  margin-bottom: 0;
   box-sizing: border-box;
   flex-shrink: 0;
-  min-height: 200rpx;
+  min-height: 180rpx;
 }
 
 .feature-item:active {
@@ -165,13 +170,13 @@ page {
 }
 
 .feature-icon-container {
-  width: 100rpx;
-  height: 100rpx;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
   position: relative;
 }
 
@@ -189,8 +194,8 @@ page {
 }
 
 .feature-icon {
-  width: 60rpx;
-  height: 60rpx;
+  width: 48rpx;
+  height: 48rpx;
 }
 
 .feature-title {
@@ -214,11 +219,11 @@ page {
 .daily-knowledge {
   width: 100%;
   background: linear-gradient(135deg, #a5d7e8 0%, #e8f4fd 100%);
-  border-radius: 20rpx;
-  padding: 30rpx;
-  min-height: 200rpx;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  min-height: 180rpx;
   box-shadow: 0 4rpx 20rpx rgba(165, 215, 232, 0.3);
-  margin: 0 0 30rpx;
+  margin: 0 0 20rpx;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -292,20 +297,21 @@ page {
 .tips-section {
   width: 100%;
   background-color: white;
-  border-radius: 20rpx;
-  padding: 30rpx;
+  border-radius: 16rpx;
+  padding: 20rpx;
   min-height: 60rpx;
   display: flex;
   align-items: center;
-  margin: 0 0 30rpx;
+  margin: 0 0 20rpx;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
 }
 
 .tips-icon {
-  width: 80rpx;
-  height: 80rpx;
-  margin-right: 20rpx;
+  width: 60rpx;
+  height: 60rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
 }
 .tips-icon image {
   width: 100%;
@@ -403,10 +409,23 @@ page {
 
 /* 响应式适配 */
 @media screen and (max-width: 375px) {
+  .container {
+    padding: 15rpx 20rpx 30rpx;
+  }
+  
+  .welcome-section {
+    padding: 20rpx;
+  }
+  
+  .welcome-image {
+    width: 100rpx;
+    height: 100rpx;
+  }
+  
   .feature-item {
     width: calc(50% - 8rpx);
-    padding: 24rpx;
-    min-height: 180rpx;
+    padding: 20rpx;
+    min-height: 160rpx;
   }
 
   .feature-title {
@@ -416,12 +435,30 @@ page {
   .feature-desc {
     font-size: 22rpx;
   }
+  
+  .tips-section {
+    padding: 16rpx;
+  }
+  
+  .daily-knowledge {
+    padding: 20rpx;
+    min-height: 160rpx;
+  }
 }
 
 @media screen and (min-width: 414px) {
   .feature-item {
     width: calc(50% - 12rpx);
-    padding: 32rpx;
-    min-height: 220rpx;
+    padding: 28rpx;
+    min-height: 200rpx;
+  }
+  
+  .welcome-section {
+    padding: 28rpx;
+  }
+  
+  .welcome-image {
+    width: 140rpx;
+    height: 140rpx;
   }
 }

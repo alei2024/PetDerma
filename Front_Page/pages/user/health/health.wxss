@@ -1,22 +1,506 @@
 /* pages/user/health/health.wxss */
-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #F5F5F5;
+.scrollarea {
+  height: calc(100vh - 88rpx - 100rpx);
+  background-color: #f5f7fa;
+  padding-bottom: 50rpx;
+  box-sizing: border-box;
 }
 
 .container {
-  flex: 1;
-  padding: 30rpx;
+  padding: 15rpx 15rpx 120rpx 15rpx;
+  min-height: calc(100vh - 88rpx - 100rpx - 30rpx);
+  max-width: 100%;
   box-sizing: border-box;
-  background-color: #F5F5F5;
 }
 
-.page-title {
-  font-size: 36rpx;
+/* 宠物选择区域 */
+.pet-selection {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 32rpx;
   font-weight: bold;
   color: #333;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.pet-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+  width: 100%;
+}
+
+.pet-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 180rpx;
+  max-width: 300rpx;
+  box-sizing: border-box;
+}
+
+.pet-item.selected {
+  border-color: #a5d7e8;
+  background-color: #f0f8ff;
+}
+
+.pet-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 16rpx;
+}
+
+.pet-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.pet-info {
+  flex: 1;
+}
+
+.pet-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.pet-breed {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+}
+
+.empty-pets {
   text-align: center;
-  margin-top: 200rpx;
-} 
+  padding: 60rpx 20rpx;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.empty-desc {
+  font-size: 24rpx;
+  color: #ccc;
+  display: block;
+}
+
+/* 健康档案内容 */
+.health-content {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.health-section {
+  margin-bottom: 40rpx;
+}
+
+.health-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.add-btn {
+  background-color: #a5d7e8;
+  color: white;
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.add-btn:active {
+  background-color: #8bc7d8;
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.debug-info {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 16rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fafafa;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #a5d7e8;
+  background-color: white;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.form-textarea:focus {
+  border-color: #a5d7e8;
+  background-color: white;
+}
+
+.form-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 0 16rpx;
+  background-color: #fafafa;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.form-picker image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+/* 单选按钮组 */
+.radio-group {
+  display: flex;
+  gap: 20rpx;
+  flex-wrap: wrap;
+}
+
+.radio-item {
+  padding: 16rpx 32rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 20rpx;
+  background-color: #fafafa;
+  font-size: 26rpx;
+  color: #666;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.radio-item.selected {
+  border-color: #a5d7e8;
+  background-color: #a5d7e8;
+  color: white;
+}
+
+.radio-item:active {
+  transform: scale(0.98);
+}
+
+/* 复选框组 */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.checkbox-item {
+  padding: 16rpx 24rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 16rpx;
+  background-color: #fafafa;
+  font-size: 24rpx;
+  color: #666;
+  transition: all 0.3s ease;
+  min-height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.checkbox-item.selected {
+  border-color: #a5d7e8;
+  background-color: #a5d7e8;
+  color: white;
+}
+
+.checkbox-item:active {
+  transform: scale(0.95);
+  background-color: #e8f4f8;
+}
+
+/* 皮肤病史列表 */
+.skin-history-list {
+  margin-top: 20rpx;
+}
+
+.skin-history-item {
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  background-color: #fafafa;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.disease-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.history-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.edit-btn, .delete-btn {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  cursor: pointer;
+}
+
+.edit-btn {
+  color: #a5d7e8;
+  background-color: rgba(165, 215, 232, 0.1);
+}
+
+.delete-btn {
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.history-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.detail-item {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 40rpx 20rpx;
+  color: #999;
+  font-size: 26rpx;
+}
+
+/* 保存按钮 */
+.save-section {
+  margin-top: 40rpx;
+  padding: 30rpx 0 60rpx 0;
+  border-top: 2rpx solid #f0f0f0;
+}
+
+.save-btn {
+  width: 100%;
+  height: 88rpx;
+  background-color: #a5d7e8;
+  color: white;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-top: 0;
+}
+
+.save-btn:active {
+  background-color: #8bc7d8;
+  transform: scale(0.98);
+}
+
+/* 弹窗样式 */
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.popup-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95%;
+  max-width: 650rpx;
+  max-height: 80vh;
+  background-color: white;
+  border-radius: 20rpx;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.skin-disease-panel {
+  width: 95%;
+  max-width: 750rpx;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.popup-header text:first-child {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.popup-close {
+  font-size: 40rpx;
+  color: #999;
+  cursor: pointer;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-close:active {
+  color: #666;
+}
+
+.popup-body {
+  max-height: 60vh;
+  padding: 20rpx;
+}
+
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+  padding-top: 30rpx;
+  border-top: 2rpx solid #f0f0f0;
+}
+
+.cancel-btn, .save-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 2rpx solid #e0e0e0;
+}
+
+.cancel-btn:active {
+  background-color: #e0e0e0;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 375px) {
+  .container {
+    padding: 15rpx;
+  }
+  
+  .pet-selection, .health-content {
+    padding: 20rpx;
+  }
+  
+  .pet-item {
+    min-width: 160rpx;
+    padding: 16rpx;
+  }
+  
+  .pet-avatar {
+    width: 50rpx;
+    height: 50rpx;
+  }
+  
+  .radio-group, .checkbox-group {
+    gap: 12rpx;
+  }
+  
+  .radio-item, .checkbox-item {
+    padding: 10rpx 20rpx;
+    font-size: 22rpx;
+  }
+}

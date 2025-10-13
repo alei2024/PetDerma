@@ -14,6 +14,8 @@ const postRoutes = require("./routes/posts");
 const interactionRoutes = require("./routes/interactions");
 const uploadRoutes = require("./routes/upload");
 const imageRoutes = require("./routes/images");
+const petRoutes = require("./routes/pets");
+const healthRoutes = require("./routes/health");
 
 // 导入中间件
 const { handleUploadError } = require("./middleware/upload");
@@ -133,6 +135,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/interactions", interactionRoutes);
 app.use("/api/upload", uploadLimiter, uploadRoutes);
+app.use("/api/pets", petRoutes);
+app.use("/api/health", healthRoutes);
 
 // 图片路由 - 设置特殊的响应头并注册路由
 app.use(

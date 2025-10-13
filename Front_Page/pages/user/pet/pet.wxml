@@ -7,25 +7,25 @@
   <view class="container">
     <!-- 宠物列表 -->
     <view class="pet-list" wx:if="{{petList.length > 0}}">
-      <view class="pet-item" wx:for="{{petList}}" wx:key="id" bindtap="editPet" data-id="{{item.id}}">
+      <view class="pet-item" wx:for="{{petList}}" wx:key="{{item._id || item.id}}" bindtap="editPet" data-id="{{item._id || item.id}}">
         <view class="pet-avatar">
-          <image src="{{item.avatar || '/images/default_pet.png'}}" mode="aspectFill"></image>
+          <image src="{{item.avatar ? (item.avatar.url || item.avatar) : '/images/default_pet.png'}}" mode="aspectFill"></image>
         </view>
         <view class="pet-info">
           <view class="pet-name-row">
-    <text class="pet-name">{{item.name}}</text>
-    <text class="pet-breed">{{item.breed}}</text>
-    <text class="pet-age">{{item.age}}岁</text>
-    <text class="pet-gender {{item.gender === 'male' ? 'male' : 'female'}}">
-      {{item.gender === 'male' ? '♂' : '♀'}}
-    </text>
-  </view>
+            <text class="pet-name">{{item.name}}</text>
+            <text class="pet-breed">{{item.breed}}</text>
+            <text class="pet-age">{{item.age || item.ageInMonths ? (item.age ? item.age + '岁' : item.ageInMonths + '个月') : '未知'}}</text>
+            <text class="pet-gender {{item.gender === 'male' ? 'male' : 'female'}}">
+              {{item.gender === 'male' ? '♂' : '♀'}}
+            </text>
+          </view>
         </view>
         <view class="pet-actions">
-          <view class="action-btn" catchtap="viewHealth" data-id="{{item.id}}">
+          <view class="action-btn" catchtap="viewHealth" data-id="{{item._id || item.id}}">
             <image src="/images/health_little.png" mode="aspectFit"></image>
           </view>
-          <view class="action-btn" catchtap="deletePet" data-id="{{item.id}}">
+          <view class="action-btn" catchtap="deletePet" data-id="{{item._id || item.id}}">
             <image src="/images/delete_icon.png" mode="aspectFit"></image>
           </view>
         </view>
@@ -87,7 +87,12 @@
 
     <view class="form-group">
       <text class="form-label">品种</text>
-      <input class="form-input" placeholder="请输入品种" value="{{petForm.breed}}" bindinput="onBreedInput" />
+      <picker mode="selector" range="{{breedList}}" value="{{breedIndex}}" bindchange="onBreedChange">
+        <view class="form-picker">
+          <text>{{petForm.breed || '请选择品种'}}</text>
+          <image src="/images/arrow_down.png" mode="aspectFit"></image>
+        </view>
+      </picker>
     </view>
 
     <view class="form-group">
@@ -113,30 +118,8 @@
     </view>
 
     <view class="form-group">
-      <text class="form-label">体重 (kg)</text>
-      <input class="form-input" type="digit" placeholder="请输入体重" value="{{petForm.weight}}" bindinput="onWeightInput" />
-    </view>
-
-    <view class="form-group">
-      <text class="form-label">绝育状态</text>
-      <view class="gender-selector">
-        <view class="gender-option {{petForm.sterilized === 'yes' ? 'selected' : ''}}" bindtap="selectSterilized" data-sterilized="yes">
-          <text>已绝育</text>
-        </view>
-        <view class="gender-option {{petForm.sterilized === 'no' ? 'selected' : ''}}" bindtap="selectSterilized" data-sterilized="no">
-          <text>未绝育</text>
-        </view>
-      </view>
-    </view>
-
-    <view class="form-group">
-      <text class="form-label">过敏史</text>
-      <textarea class="form-textarea" placeholder="请添加过敏史" value="{{petForm.notes}}" bindinput="onNotesInput"></textarea>
-    </view>
-
-    <view class="form-group">
-      <text class="form-label">既往病史</text>
-      <textarea class="form-textarea" placeholder="请添加既往病史" value="{{petForm.medicalHistory}}" bindinput="onMedicalHistoryInput"></textarea>
+      <text class="form-label">备注</text>
+      <textarea class="form-textarea" placeholder="请添加备注信息" value="{{petForm.notes}}" bindinput="onNotesInput"></textarea>
     </view>
 
     <view class="form-actions">

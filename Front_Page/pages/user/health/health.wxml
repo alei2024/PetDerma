@@ -1,5 +1,350 @@
 <!--pages/user/health/health.wxml-->
-<navigation-bar title="健康记录" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
+<navigation-bar title="健康档案" back="{{true}}" color="white" background="#A5D7E8" backColor="white"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y type="list">
 <view class="container">
-  <view class="page-title">健康记录页面开发中</view>
+    <!-- 宠物选择区域 -->
+    <view class="pet-selection">
+      <text class="section-title">选择宠物</text>
+      <view class="pet-list" wx:if="{{petList.length > 0}}">
+        <view 
+          class="pet-item {{selectedPetId === item._id || selectedPetId === item.id ? 'selected' : ''}}" 
+          wx:for="{{petList}}" 
+          wx:key="{{item._id || item.id}}"
+          bindtap="selectPet" 
+          data-pet-id="{{item._id || item.id}}"
+        >
+          <view class="pet-avatar">
+            <image src="{{item.avatar ? (item.avatar.url || item.avatar) : '/images/default_pet.png'}}" mode="aspectFill"></image>
+          </view>
+          <view class="pet-info">
+            <text class="pet-name">{{item.name}}</text>
+            <text class="pet-breed">{{item.breed}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="empty-pets" wx:else>
+        <image class="empty-icon" src="/images/default_pet.png" mode="aspectFit"></image>
+        <text class="empty-text">暂无宠物档案</text>
+        <text class="empty-desc">请先添加宠物</text>
+      </view>
+    </view>
+
+    <!-- 健康档案内容 -->
+    <view class="health-content" wx:if="{{selectedPetId}}">
+      <!-- 基本信息 -->
+      <view class="health-section">
+        <text class="section-title">基本信息</text>
+        <view class="form-group">
+          <text class="form-label">体重 (kg)</text>
+          <input 
+            class="form-input" 
+            type="digit" 
+            placeholder="请输入体重" 
+            value="{{healthForm.weight}}" 
+            bindinput="onWeightInput" 
+          />
+        </view>
+        
+        <view class="form-group">
+          <text class="form-label">过敏史</text>
+          <textarea 
+            class="form-textarea" 
+            placeholder="请输入过敏史，无则填'无'" 
+            value="{{healthForm.allergies}}" 
+            bindinput="onAllergiesInput"
+          ></textarea>
+        </view>
+        
+        <view class="form-group">
+          <text class="form-label">绝育状态</text>
+          <view class="radio-group">
+            <view 
+              class="radio-item {{healthForm.sterilized === '是' ? 'selected' : ''}}" 
+              bindtap="selectSterilized" 
+              data-value="是"
+            >
+              <text>是</text>
+            </view>
+            <view 
+              class="radio-item {{healthForm.sterilized === '否' ? 'selected' : ''}}" 
+              bindtap="selectSterilized" 
+              data-value="否"
+            >
+              <text>否</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 驱虫信息 -->
+      <view class="health-section">
+        <text class="section-title">定期驱虫</text>
+        <view class="form-group">
+          <text class="form-label">驱虫频率</text>
+          <view class="radio-group">
+            <view 
+              class="radio-item {{healthForm.deworming.frequency === '每月' ? 'selected' : ''}}" 
+              bindtap="selectDewormingFreq" 
+              data-value="每月"
+            >
+              <text>每月</text>
+            </view>
+            <view 
+              class="radio-item {{healthForm.deworming.frequency === '每季度' ? 'selected' : ''}}" 
+              bindtap="selectDewormingFreq" 
+              data-value="每季度"
+            >
+              <text>每季度</text>
+            </view>
+            <view 
+              class="radio-item {{healthForm.deworming.frequency === '偶尔' ? 'selected' : ''}}" 
+              bindtap="selectDewormingFreq" 
+              data-value="偶尔"
+            >
+              <text>偶尔</text>
+            </view>
+            <view 
+              class="radio-item {{healthForm.deworming.frequency === '从不' ? 'selected' : ''}}" 
+              bindtap="selectDewormingFreq" 
+              data-value="从不"
+            >
+              <text>从不</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="form-group" wx:if="{{healthForm.deworming.frequency !== '从不'}}">
+          <text class="form-label">最近驱虫时间</text>
+          <picker mode="date" value="{{healthForm.deworming.lastDate}}" bindchange="onDewormingDateChange">
+            <view class="form-picker">
+              <text>{{healthForm.deworming.lastDate || '请选择最近驱虫时间'}}</text>
+              <image src="/images/arrow_down.png" mode="aspectFit"></image>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <!-- 近期接触史 -->
+      <view class="health-section">
+        <text class="section-title">近期接触史</text>
+        <view class="form-group">
+          <textarea 
+            class="form-textarea" 
+            placeholder="如：上周去过寄养店、接触过流浪猫等" 
+            value="{{healthForm.recentContact}}" 
+            bindinput="onRecentContactInput"
+          ></textarea>
+        </view>
+      </view>
+
+      <!-- 既往皮肤病史 -->
+      <view class="health-section">
+        <view class="section-header">
+          <text class="section-title">既往皮肤病史</text>
+          <view class="add-btn" bindtap="addSkinDiseaseHistory">
+            <text>+ 添加记录</text>
+          </view>
+        </view>
+        
+        <view class="skin-history-list" wx:if="{{healthForm.skinDiseaseHistory.length > 0}}">
+          <view 
+            class="skin-history-item" 
+            wx:for="{{healthForm.skinDiseaseHistory}}" 
+            wx:key="index"
+          >
+            <view class="history-header">
+              <text class="disease-name">{{item.diseaseName}}</text>
+              <view class="history-actions">
+                <text class="edit-btn" bindtap="editSkinDiseaseHistory" data-index="{{index}}">编辑</text>
+                <text class="delete-btn" bindtap="deleteSkinDiseaseHistory" data-index="{{index}}">删除</text>
+              </view>
+            </view>
+            <view class="history-details">
+              <text class="detail-item">开始时间：{{item.startDate}}</text>
+              <text class="detail-item" wx:if="{{item.affectedAreas.length > 0}}">患病部位：{{item.affectedAreas.join('、')}}</text>
+              <text class="detail-item" wx:if="{{item.symptoms.length > 0}}">症状表现：{{item.symptoms.join('、')}}</text>
+              <text class="detail-item" wx:if="{{item.medication}}">用药：{{item.medication}}</text>
+              <text class="detail-item">是否治愈：{{item.isCured}}</text>
+              <text class="detail-item" wx:if="{{item.notes}}">备注：{{item.notes}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="empty-history" wx:else>
+          <text class="empty-text">暂无皮肤病史记录</text>
+        </view>
+      </view>
+
+      <!-- 保存按钮 -->
+      <view class="save-section">
+        <view class="save-btn" bindtap="saveHealthRecord">
+          <text>保存健康档案</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 皮肤病史编辑弹窗 -->
+<view wx:if="{{showSkinDiseaseForm}}" class="popup-mask" bindtap="closeSkinDiseaseForm"></view>
+<view wx:if="{{showSkinDiseaseForm}}" class="popup-panel skin-disease-panel">
+  <view class="popup-header">
+    <text>{{editingSkinDiseaseIndex >= 0 ? '编辑皮肤病史' : '添加皮肤病史'}}</text>
+    <text class="popup-close" bindtap="closeSkinDiseaseForm">×</text>
+  </view>
+  <scroll-view scroll-y class="popup-body">
+    <view class="form-group">
+      <text class="form-label">开始时间</text>
+      <picker mode="date" value="{{skinDiseaseForm.startDate}}" bindchange="onSkinDiseaseDateChange">
+        <view class="form-picker">
+          <text>{{skinDiseaseForm.startDate || '请选择开始时间'}}</text>
+          <image src="/images/arrow_down.png" mode="aspectFit"></image>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">患病名称</text>
+      <input 
+        class="form-input" 
+        placeholder="请输入患病名称" 
+        value="{{skinDiseaseForm.diseaseName}}" 
+        bindinput="onDiseaseNameInput" 
+      />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">患病部位（多选）</text>
+      <text class="debug-info">当前选中: {{skinDiseaseForm.affectedAreas}}</text>
+      <view class="checkbox-group">
+        <view 
+          class="checkbox-item {{skinDiseaseForm.affectedAreas.includes('背部') ? 'selected' : ''}}" 
+          bindtap="toggleAffectedArea" 
+          data-area="背部"
+        >
+          <text>背部</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.affectedAreas.includes('腹部') ? 'selected' : ''}}" 
+          bindtap="toggleAffectedArea" 
+          data-area="腹部"
+        >
+          <text>腹部</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.affectedAreas.includes('爪缝') ? 'selected' : ''}}" 
+          bindtap="toggleAffectedArea" 
+          data-area="爪缝"
+        >
+          <text>爪缝</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.affectedAreas.includes('面部') ? 'selected' : ''}}" 
+          bindtap="toggleAffectedArea" 
+          data-area="面部"
+        >
+          <text>面部</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.affectedAreas.includes('全身') ? 'selected' : ''}}" 
+          bindtap="toggleAffectedArea" 
+          data-area="全身"
+        >
+          <text>全身</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">症状表现（多选）</text>
+      <text class="debug-info">当前选中: {{skinDiseaseForm.symptoms}}</text>
+      <view class="checkbox-group">
+        <view 
+          class="checkbox-item {{skinDiseaseForm.symptoms.includes('掉毛') ? 'selected' : ''}}" 
+          bindtap="toggleSymptom" 
+          data-symptom="掉毛"
+        >
+          <text>掉毛</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.symptoms.includes('结痂') ? 'selected' : ''}}" 
+          bindtap="toggleSymptom" 
+          data-symptom="结痂"
+        >
+          <text>结痂</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.symptoms.includes('渗液') ? 'selected' : ''}}" 
+          bindtap="toggleSymptom" 
+          data-symptom="渗液"
+        >
+          <text>渗液</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.symptoms.includes('红斑') ? 'selected' : ''}}" 
+          bindtap="toggleSymptom" 
+          data-symptom="红斑"
+        >
+          <text>红斑</text>
+        </view>
+        <view 
+          class="checkbox-item {{skinDiseaseForm.symptoms.includes('瘙痒') ? 'selected' : ''}}" 
+          bindtap="toggleSymptom" 
+          data-symptom="瘙痒"
+        >
+          <text>瘙痒</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">用药</text>
+      <input 
+        class="form-input" 
+        placeholder="请输入用药信息" 
+        value="{{skinDiseaseForm.medication}}" 
+        bindinput="onMedicationInput" 
+      />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">是否治愈</text>
+      <view class="radio-group">
+        <view 
+          class="radio-item {{skinDiseaseForm.isCured === '是' ? 'selected' : ''}}" 
+          bindtap="selectIsCured" 
+          data-value="是"
+        >
+          <text>是</text>
+        </view>
+        <view 
+          class="radio-item {{skinDiseaseForm.isCured === '否' ? 'selected' : ''}}" 
+          bindtap="selectIsCured" 
+          data-value="否"
+        >
+          <text>否</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">备注</text>
+      <textarea 
+        class="form-textarea" 
+        placeholder="请输入备注信息" 
+        value="{{skinDiseaseForm.notes}}" 
+        bindinput="onSkinDiseaseNotesInput"
+      ></textarea>
+    </view>
+
+    <view class="form-actions">
+      <view class="cancel-btn" bindtap="closeSkinDiseaseForm">
+        <text>取消</text>
+      </view>
+      <view class="save-btn" bindtap="saveSkinDiseaseHistory">
+        <text>保存</text>
+      </view>
+    </view>
+  </scroll-view>
 </view> 

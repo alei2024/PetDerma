@@ -16,6 +16,12 @@ const userSchema = new mongoose.Schema(
       sparse: true,
       index: true,
     },
+    password: {
+      type: String,
+      required: function() {
+        return this.phoneNumber && !this.openid;
+      },
+    },
 
     // 用户基本信息
     nickName: {
@@ -74,6 +80,44 @@ const userSchema = new mongoose.Schema(
       default: "active",
     },
 
+    // 宠物信息
+    pets: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        species: {
+          type: String,
+          required: true,
+        },
+        breed: {
+          type: String,
+          default: "",
+        },
+        age: {
+          type: Number,
+          default: 0,
+        },
+        avatar: {
+          type: String,
+          default: "",
+        },
+      },
+    ],
+
+    // 用户设置
+    settings: {
+      privacy: {
+        type: Object,
+        default: {},
+      },
+      notifications: {
+        type: Object,
+        default: {},
+      },
+    },
+
     // 时间戳
     lastLoginAt: {
       type: Date,
@@ -98,6 +142,26 @@ userSchema.virtual("userId").get(function () {
 // 确保虚拟字段包含在JSON输出中
 userSchema.set("toJSON", { virtuals: true });
 userSchema.set("toObject", { virtuals: true });
+
+// 密码加密中间件
+userSchema.pre('save', async function(next) {
+  // 只有密码被修改时才加密
+  if (!this.isModified('password')) return next();
+  
+  try {
+    // 加密密码
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 验证密码方法
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 // 静态方法：根据openid查找用户
 userSchema.statics.findByOpenid = function (openid) {

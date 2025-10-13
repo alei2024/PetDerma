@@ -496,7 +496,7 @@ page {
   height: 24rpx;
 }
 
-/* 手机号登录弹窗样式 */
+/* 登录注册弹窗样式 */
 .popup-mask {
   position: fixed;
   top: 0;
@@ -505,6 +505,15 @@ page {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+}
+
+.login-register-panel {
+  width: 680rpx;
+  margin: 150rpx auto 0;
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
 }
 
 .phone-login-panel {
@@ -678,6 +687,25 @@ page {
   background-color: #8bc7d8;
   transform: scale(0.98);
   box-shadow: 0 2rpx 8rpx rgba(165, 215, 232, 0.4);
+}
+
+/* 切换模式样式 */
+.switch-mode {
+  text-align: center;
+  margin-top: 30rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.switch-text {
+  color: #a5d7e8;
+  font-size: 28rpx;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.switch-text:active {
+  color: #8bc7d8;
 }
 
 /* 弹窗样式 */

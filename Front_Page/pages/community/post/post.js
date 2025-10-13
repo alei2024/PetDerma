@@ -214,12 +214,13 @@ Page({
         // 批量上传图片到数据库
         const uploadPromises = imageList.map((imagePath) => {
           return new Promise((resolve, reject) => {
+            const token = wx.getStorageSync("token");
             wx.uploadFile({
               url: `${app.globalData.baseUrl}/api/images/upload`,
               filePath: imagePath,
               name: "file",
               header: {
-                Authorization: `Bearer ${app.globalData.token}`,
+                Authorization: `Bearer ${token}`,
               },
               success: (res) => {
                 try {

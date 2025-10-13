@@ -4,12 +4,12 @@ const router = express.Router();
 const {
   wechatLogin,
   phoneLogin,
+  phonePasswordLogin,
+  register,
+  sendVerificationCode,
   getUserInfo,
   updateUserInfo,
   updateUserSettings,
-  addPet,
-  updatePet,
-  deletePet,
   refreshToken,
   updateUserAvatar,
 } = require("../controllers/authController");
@@ -23,6 +23,15 @@ router.post("/wechat-login", wechatLogin);
 
 // 手机号登录
 router.post("/phone-login", phoneLogin);
+
+// 发送验证码
+router.post("/send-verification-code", sendVerificationCode);
+
+// 用户注册
+router.post("/register", register);
+
+// 手机号密码登录
+router.post("/phone-password-login", phonePasswordLogin);
 
 // 开发环境：快速获取测试token - 已禁用，请使用真实登录
 // router.get("/dev-token", async (req, res) => {
@@ -47,9 +56,5 @@ router.put("/user-settings", authenticateToken, updateUserSettings);
 // 更新用户头像
 router.put("/update-avatar", authenticateToken, updateUserAvatar);
 
-// 宠物管理
-router.post("/pets", authenticateToken, addPet);
-router.put("/pets/:petId", authenticateToken, updatePet);
-router.delete("/pets/:petId", authenticateToken, deletePet);
 
 module.exports = router;

@@ -119,6 +119,7 @@ class NativeWebSocketService {
       const user = await User.findById(decoded.userId);
 
       if (!user) {
+        console.log("❌ WebSocket认证失败：用户不存在，userId:", decoded.userId);
         throw new Error("用户不存在");
       }
 

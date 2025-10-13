@@ -195,11 +195,30 @@ Page({
   initPetList() {
     // 从宠物管理页面同步数据
     const petList = wx.getStorageSync("petList") || [];
-    const processedPets = petList.map((p, idx) => ({
-      id: p.id || `p${idx + 1}`,
-      name: p.name || `宠物${idx + 1}`,
-      avatar: p.avatar || "/images/default_pet.png",
-    }));
+    console.log("主页加载宠物列表:", petList);
+    
+    const processedPets = petList.map((p, idx) => {
+      // 处理头像字段，支持对象和字符串两种格式
+      let avatar = "/images/default_pet.png";
+      if (p.avatar) {
+        if (typeof p.avatar === 'string') {
+          avatar = p.avatar;
+        } else if (p.avatar.url) {
+          avatar = p.avatar.url;
+        }
+      }
+      
+      const processedPet = {
+        id: p.id || p._id || `p${idx + 1}`,
+        name: p.name || `宠物${idx + 1}`,
+        avatar: avatar,
+      };
+      
+      console.log(`处理宠物 ${idx + 1}:`, processedPet);
+      return processedPet;
+    });
+    
+    console.log("处理后的宠物列表:", processedPets);
     this.setData({ petList: processedPets });
   },
 
@@ -293,8 +312,8 @@ Page({
     const app = getApp();
     const token = wx.getStorageSync("token");
 
-    if (!token) {
-      console.log("未登录，跳过WebSocket连接");
+    if (!token || token === "test-token") {
+      console.log("未登录或token无效，跳过WebSocket连接");
       return;
     }
 
@@ -325,9 +344,16 @@ Page({
             console.log("✅ WebSocket认证成功:", data.data?.message);
           } else if (data.type === "connect_error") {
             console.error("❌ WebSocket认证失败:", data.data?.message);
-            // 认证失败，可能需要重新登录
+            // 认证失败，清除无效的登录信息
+            wx.removeStorageSync("token");
+            wx.removeStorageSync("userInfo");
+            app.globalData.token = "";
+            app.globalData.userInfo = null;
+            app.globalData.hasLogin = false;
+            app.globalData.currentUserId = null;
+            
             wx.showToast({
-              title: "连接失败，请重新登录",
+              title: "登录已过期，请重新登录",
               icon: "none",
             });
           } else if (data.type === "new_notification") {
@@ -395,7 +421,10 @@ Page({
     const app = getApp();
     const token = wx.getStorageSync("token");
 
-    if (!token) return;
+    if (!token || token === "test-token") {
+      console.log("未登录或token无效，跳过加载通知");
+      return;
+    }
 
     wx.request({
       url: `${app.globalData.baseUrl}/api/notifications`,
@@ -410,6 +439,15 @@ Page({
             notifications: notifications || [],
             unreadCount: unreadCount || 0,
           });
+        } else if (res.statusCode === 401) {
+          // 认证失败，清除无效的登录信息
+          wx.removeStorageSync("token");
+          wx.removeStorageSync("userInfo");
+          app.globalData.token = "";
+          app.globalData.userInfo = null;
+          app.globalData.hasLogin = false;
+          app.globalData.currentUserId = null;
+          console.log("认证失败，已清除登录信息");
         }
       },
       fail: (error) => {
@@ -423,7 +461,10 @@ Page({
     const app = getApp();
     const token = wx.getStorageSync("token");
 
-    if (!token) return;
+    if (!token || token === "test-token") {
+      console.log("未登录或token无效，跳过加载未读数量");
+      return;
+    }
 
     wx.request({
       url: `${app.globalData.baseUrl}/api/notifications/unread-count`,
@@ -436,6 +477,15 @@ Page({
           this.setData({
             unreadCount: res.data.data.unreadCount || 0,
           });
+        } else if (res.statusCode === 401) {
+          // 认证失败，清除无效的登录信息
+          wx.removeStorageSync("token");
+          wx.removeStorageSync("userInfo");
+          app.globalData.token = "";
+          app.globalData.userInfo = null;
+          app.globalData.hasLogin = false;
+          app.globalData.currentUserId = null;
+          console.log("认证失败，已清除登录信息");
         }
       },
       fail: (error) => {
