@@ -117,7 +117,7 @@ npm start
 MongoDB Connected: localhost
 ```
 
-### 3. 模型诊断
+### 3. 模型诊断【❗必做】
 
 **启动Flask服务器**
 
