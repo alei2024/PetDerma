@@ -117,9 +117,16 @@ npm start
 MongoDB Connected: localhost
 ```
 
+### 3. 模型诊断
 
+**启动Flask服务器**
 
-### 3. 前端配置【❗必做】
+```bash
+cd Front_Page/pages/diagnosis/model
+python server_example.py
+```
+
+### 4. 前端配置【❗必做】
 
 #### 3.1 获取本机 IP 地址
 
@@ -190,7 +197,7 @@ production: {
    - ❗**勾选 "不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书"**
    - 勾选 "启用调试"
 
-### 4. 验证配置
+### 5. 验证配置
 
 #### 4.1 后端验证
 
