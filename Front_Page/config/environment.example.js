@@ -3,13 +3,13 @@
 const ENV = {
   development: {
 
-    baseUrl: "http://192.168.1.104:3000",
-    wsUrl: "ws://192.168.1.104:3000",
+    baseUrl: "http://http://YOUR_IP_ADDRESS:3000",
+    wsUrl: "ws://http://YOUR_IP_ADDRESS:3000",
     debug: true,
   },
   production: {
-    baseUrl: "http://192.168.1.104:3000",
-    wsUrl: "ws://192.168.1.104:3000",
+    baseUrl: "http://http://YOUR_IP_ADDRESS:3000",
+    wsUrl: "ws://http://YOUR_IP_ADDRESS:3000",
     debug: false,
   },
 };

@@ -11,6 +11,7 @@ const {
   getUserComments,
   getMyPosts,
   getPopularTags,
+  imageSearch,
 } = require("../controllers/postController");
 const { authenticateToken, optionalAuth } = require("../middleware/auth");
 
@@ -19,6 +20,9 @@ router.get("/", optionalAuth, getPosts);
 
 // 获取热门标签
 router.get("/tags", getPopularTags);
+
+// 图像相似度搜索 - 不需要认证
+router.post("/image-search", imageSearch);
 
 // 获取帖子详情 - 使用可选认证
 router.get("/:id", optionalAuth, getPostById);

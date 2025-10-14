@@ -31,6 +31,10 @@ Page({
     showUserMenuModal: false,
     // 删除了帖子菜单相关数据
     isSearching: false, // 是否在搜索状态
+    // 图像搜索相关
+    searchImage: "", // 搜索图片路径
+    isImageSearchMode: false, // 是否为图像搜索模式
+    searchImageData: null, // 搜索图片的base64数据
   },
 
   // 检查用户是否已登录
@@ -179,6 +183,13 @@ Page({
 
   // 搜索按钮点击
   doSearch: function () {
+    // 如果是图像搜索模式
+    if (this.data.isImageSearchMode) {
+      this.performImageSearch();
+      return;
+    }
+
+    // 文字搜索逻辑
     const keyword = this.data.searchKeyword.trim();
     if (!keyword) {
       wx.showToast({ title: "请输入搜索关键词", icon: "none" });
@@ -327,6 +338,10 @@ Page({
       searchKeyword: "",
       currentPage: 1,
       isSearching: false,
+      // 同时清除图像搜索
+      searchImage: "",
+      searchImageData: null,
+      isImageSearchMode: false,
     });
 
     // 如果有原始数据，直接恢复；否则重新加载
@@ -709,5 +724,157 @@ Page({
     } catch (error) {
       console.error("❌ 发送WebSocket事件失败:", error);
     }
+  },
+
+  // 图像搜索相关方法
+
+  // 开始图像搜索
+  startImageSearch: function () {
+    const self = this;
+
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ["image"],
+      sourceType: ["album", "camera"],
+      sizeType: ["compressed"],
+      success: (res) => {
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        console.log("📷 选择图片成功:", tempFilePath);
+
+        // 显示加载提示
+        wx.showLoading({
+          title: "处理图片中...",
+          mask: true,
+        });
+
+        // 读取图片为base64
+        wx.getFileSystemManager().readFile({
+          filePath: tempFilePath,
+          encoding: "base64",
+          success: (fileRes) => {
+            wx.hideLoading();
+
+            // 设置图像搜索模式
+            self.setData({
+              searchImage: tempFilePath,
+              searchImageData: fileRes.data,
+              isImageSearchMode: true,
+              searchKeyword: "", // 清空文字搜索
+            });
+
+            wx.showToast({
+              title: "图片已选择",
+              icon: "success",
+              duration: 1500,
+            });
+          },
+          fail: (error) => {
+            wx.hideLoading();
+            console.error("读取图片失败:", error);
+            wx.showToast({
+              title: "图片处理失败",
+              icon: "none",
+            });
+          },
+        });
+      },
+      fail: (error) => {
+        console.error("选择图片失败:", error);
+        if (error.errMsg !== "chooseMedia:fail cancel") {
+          wx.showToast({
+            title: "选择图片失败",
+            icon: "none",
+          });
+        }
+      },
+    });
+  },
+
+  // 清除图像搜索
+  clearImageSearch: function () {
+    this.setData({
+      searchImage: "",
+      searchImageData: null,
+      isImageSearchMode: false,
+    });
+
+    // 如果没有文字搜索，恢复原始帖子列表
+    if (!this.data.searchKeyword) {
+      this.setData({
+        postList: this.data.originalPostList,
+        isSearching: false,
+      });
+    }
+  },
+
+  // 执行图像搜索
+  performImageSearch: function () {
+    if (!this.data.searchImageData) {
+      wx.showToast({
+        title: "请先选择图片",
+        icon: "none",
+      });
+      return;
+    }
+
+    wx.showLoading({
+      title: "图像搜索中...",
+      mask: true,
+    });
+
+    const app = getApp();
+
+    // 调用后端图像相似度检测API
+    app
+      .request({
+        url: "/api/posts/image-search",
+        method: "POST",
+        data: {
+          image: this.data.searchImageData,
+          page: 1,
+          limit: this.data.pageSize,
+        },
+        requireAuth: false,
+      })
+      .then((res) => {
+        wx.hideLoading();
+
+        if (res.data && res.data.success) {
+          const posts = res.data.data.posts || [];
+          const processedPosts = this.processPostsData(posts);
+
+          this.setData({
+            postList: processedPosts,
+            hasMore: posts.length === this.data.pageSize,
+            isSearching: true,
+            currentPage: 1,
+          });
+
+          if (posts.length === 0) {
+            wx.showToast({
+              title: "未找到相似图片",
+              icon: "none",
+            });
+          } else {
+            wx.showToast({
+              title: `找到 ${posts.length} 个相似结果`,
+              icon: "none",
+            });
+          }
+        } else {
+          wx.showToast({
+            title: res.data?.message || "搜索失败",
+            icon: "none",
+          });
+        }
+      })
+      .catch((error) => {
+        wx.hideLoading();
+        console.error("图像搜索失败:", error);
+        wx.showToast({
+          title: "搜索失败，请重试",
+          icon: "none",
+        });
+      });
   },
 });
