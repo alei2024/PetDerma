@@ -260,8 +260,8 @@ Page({
 
         // 显示上传中提示
         wx.showLoading({
-          title: "上传中...",
-          mask: true,
+            title: "上传中...",
+            mask: true,
         });
 
         // 上传到服务器
@@ -297,12 +297,16 @@ Page({
     });
   },
 
-  // 上传头像到服务器
+  // 上传头像到服务器（仅改地址，增加线上域名兜底）
   uploadAvatarToServer: function (filePath) {
     const app = getApp();
+    const baseUrl =
+      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
+      "https://petderma.onrender.com";
+
     return new Promise((resolve, reject) => {
       wx.uploadFile({
-        url: `${app.globalData.baseUrl}/api/upload/avatar`,
+        url: `${baseUrl}/api/upload/avatar`,
         filePath: filePath,
         name: "avatar",
         header: {
@@ -352,7 +356,7 @@ Page({
     this.setData({ confirmPassword: e.detail.value });
   },
 
-  // 获取验证码
+  // 获取验证码（仅改地址，增加线上域名兜底）
   getVerificationCode: function () {
     const phone = this.data.phone;
     if (!/^1[3-9]\d{9}$/.test(phone)) {
@@ -370,7 +374,9 @@ Page({
 
     // 调用后端API发送验证码
     const app = getApp();
-    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+    const baseUrl =
+      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
+      "https://petderma.onrender.com";
 
     wx.request({
       url: `${baseUrl}/api/auth/send-verification-code`,
@@ -380,18 +386,18 @@ Page({
       },
       success: (res) => {
         if (res.statusCode === 200 && res.data && res.data.success) {
-          wx.showToast({ 
-            title: "验证码已发送", 
-            icon: "success" 
+          wx.showToast({
+            title: "验证码已发送",
+            icon: "success"
           });
           // 开发环境显示验证码
           if (res.data.data && res.data.data.verificationCode) {
             console.log(`验证码: ${res.data.data.verificationCode}`);
           }
         } else {
-          wx.showToast({ 
-            title: res.data?.message || "发送失败", 
-            icon: "none" 
+          wx.showToast({
+            title: res.data?.message || "发送失败",
+            icon: "none"
           });
           // 重置按钮状态
           this.setData({
@@ -403,9 +409,9 @@ Page({
       },
       fail: (error) => {
         console.error("发送验证码失败:", error);
-        wx.showToast({ 
-          title: "网络错误，请重试", 
-          icon: "none" 
+        wx.showToast({
+          title: "网络错误，请重试",
+          icon: "none"
         });
         // 重置按钮状态
         this.setData({
@@ -476,11 +482,13 @@ Page({
     }
   },
 
-  // 执行登录
+  // 执行登录（仅改地址，增加线上域名兜底）
   performLogin: function () {
     const { phone, password } = this.data;
     const app = getApp();
-    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+    const baseUrl =
+      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
+      "https://petderma.onrender.com";
 
     wx.showLoading({
       title: "登录中...",
@@ -536,11 +544,13 @@ Page({
     });
   },
 
-  // 执行注册
+  // 执行注册（仅改地址，增加线上域名兜底）
   performRegister: function () {
     const { phone, code, nickname, password, confirmPassword } = this.data;
     const app = getApp();
-    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+    const baseUrl =
+      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
+      "https://petderma.onrender.com";
 
     wx.showLoading({
       title: "注册中...",
@@ -768,10 +778,12 @@ Page({
       });
   },
 
-  // 使用真实登录接口获取token
+  // 使用真实登录接口获取token（仅改地址，增加线上域名兜底）
   fetchCommunityToken: function (baseUserInfo) {
     const app = getApp();
-    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+    const baseUrl =
+      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
+      "https://petderma.onrender.com";
 
     return new Promise((resolve, reject) => {
       if (!baseUrl) {

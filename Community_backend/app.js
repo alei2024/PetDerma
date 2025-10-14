@@ -22,10 +22,28 @@ const { handleUploadError } = require("./middleware/upload");
 
 const app = express();
 
-// 连接数据库
+/* ------------------------------------------------------------------
+ ✅ 把 body 解析中间件提前到所有中间件之前
+------------------------------------------------------------------- */
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// 临时调试日志（可在部署后删掉）
+app.use((req, res, next) => {
+  if (req.method === "POST" && req.originalUrl.includes("/api/auth/phone-password-login")) {
+    console.log("🟢 收到登录请求, Content-Type:", req.headers["content-type"]);
+  }
+  next();
+});
+
+/* ------------------------------------------------------------------
+ ✅ 连接数据库
+------------------------------------------------------------------- */
 connectDB();
 
-// 清理旧索引
+/* ------------------------------------------------------------------
+ ✅ 清理旧索引（原样保留）
+------------------------------------------------------------------- */
 setTimeout(async () => {
   try {
     const Like = require("./models/Like");
@@ -35,34 +53,31 @@ setTimeout(async () => {
   } catch (error) {
     console.error("索引清理失败:", error);
   }
-}, 2000); // 等待2秒确保数据库连接完成
+}, 2000);
 
-// 安全中间件
+/* ------------------------------------------------------------------
+ ✅ 安全、CORS、日志、限流中间件（位置保持不变）
+------------------------------------------------------------------- */
 app.use(helmet());
 
-// CORS配置 - 微信小程序兼容
 app.use(
   cors({
-    origin: "*", // 允许所有来源（开发环境）
-    credentials: false, // 图片资源不需要凭证
+    origin: "*", // 开发环境允许所有来源
+    credentials: false,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     exposedHeaders: ["Content-Type", "Content-Length"],
   })
 );
 
-// 请求日志
 app.use(morgan("combined"));
 
-// 请求体解析
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
-// 静态文件服务（用于本地文件存储）
+/* ------------------------------------------------------------------
+ ✅ 静态资源
+------------------------------------------------------------------- */
 app.use(
   "/uploads",
   (req, res, next) => {
-    // 为静态文件添加CORS头
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
     res.header(
@@ -77,11 +92,9 @@ app.use(
   express.static("uploads")
 );
 
-// 静态文件服务 - 处理前端资源文件（默认头像等）
 app.use(
   "/images",
   (req, res, next) => {
-    // 为前端图片资源添加CORS头
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
     res.header(
@@ -93,35 +106,35 @@ app.use(
     res.header("X-Content-Type-Options", "nosniff");
     next();
   },
-  express.static("uploads") // 将/images路径映射到uploads目录
+  express.static("uploads")
 );
 
-// 限流中间件 - 开发环境放宽限制
+/* ------------------------------------------------------------------
+ ✅ 限流
+------------------------------------------------------------------- */
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15分钟
-  max: process.env.NODE_ENV === "production" ? 100 : 1000, // 开发环境1000次，生产环境100次
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === "production" ? 100 : 1000,
   message: {
     success: false,
     message: "请求过于频繁，请稍后再试",
   },
-  skip: (req) => {
-    // 跳过健康检查和开发token请求的限制
-    return req.path === "/health" || req.path === "/api/auth/dev-token";
-  },
+  skip: (req) => req.path === "/health" || req.path === "/api/auth/dev-token",
 });
 app.use(limiter);
 
-// 上传文件限流 - 开发环境放宽限制
 const uploadLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15分钟
-  max: process.env.NODE_ENV === "production" ? 20 : 100, // 开发环境100次，生产环境20次
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === "production" ? 20 : 100,
   message: {
     success: false,
     message: "上传请求过于频繁，请稍后再试",
   },
 });
 
-// 健康检查
+/* ------------------------------------------------------------------
+ ✅ 健康检查 & 路由注册
+------------------------------------------------------------------- */
 app.get("/health", (req, res) => {
   res.json({
     success: true,
@@ -130,7 +143,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API路由
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/interactions", interactionRoutes);
@@ -138,11 +150,10 @@ app.use("/api/upload", uploadLimiter, uploadRoutes);
 app.use("/api/pets", petRoutes);
 app.use("/api/health", healthRoutes);
 
-// 图片路由 - 设置特殊的响应头并注册路由
+// 图片路由
 app.use(
   "/api/images",
   (req, res, next) => {
-    // 为图片请求设置特殊的响应头
     res.set({
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
@@ -156,9 +167,12 @@ app.use(
   },
   imageRoutes
 );
+
 app.use("/api/notifications", require("./routes/notifications"));
 
-// 404处理（Express v5 兼容：使用无路径兜底中间件）
+/* ------------------------------------------------------------------
+ ✅ 404 & 错误处理
+------------------------------------------------------------------- */
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -166,66 +180,43 @@ app.use((req, res) => {
   });
 });
 
-// 错误处理中间件
 app.use((error, req, res, next) => {
   console.error("服务器错误:", error);
 
-  // 处理上传错误
   if (error.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).json({
-      success: false,
-      message: "文件大小超过限制",
-    });
+    return res.status(400).json({ success: false, message: "文件大小超过限制" });
   }
-
   if (error.code === "LIMIT_FILE_COUNT") {
-    return res.status(400).json({
-      success: false,
-      message: "文件数量超过限制",
-    });
+    return res.status(400).json({ success: false, message: "文件数量超过限制" });
   }
-
-  // 处理JWT错误
   if (error.name === "JsonWebTokenError") {
-    return res.status(401).json({
-      success: false,
-      message: "无效的访问令牌",
-    });
+    return res.status(401).json({ success: false, message: "无效的访问令牌" });
   }
-
   if (error.name === "TokenExpiredError") {
-    return res.status(401).json({
-      success: false,
-      message: "访问令牌已过期",
-    });
+    return res.status(401).json({ success: false, message: "访问令牌已过期" });
   }
-
-  // 处理MongoDB错误
   if (error.name === "ValidationError") {
     const errors = Object.values(error.errors).map((err) => err.message);
     return res.status(400).json({
       success: false,
       message: "数据验证失败",
-      errors: errors,
+      errors,
     });
   }
-
   if (error.code === 11000) {
-    return res.status(400).json({
-      success: false,
-      message: "数据已存在",
-    });
+    return res.status(400).json({ success: false, message: "数据已存在" });
   }
 
-  // 默认错误处理
   res.status(500).json({
     success: false,
     message:
-      process.env.NODE_ENV === "production" ? "服务器内部错误" : error.message,
+      process.env.NODE_ENV === "production"
+        ? "服务器内部错误"
+        : error.message,
   });
 });
 
-// 处理上传错误
+// 上传错误
 app.use(handleUploadError);
 
 module.exports = app;

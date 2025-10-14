@@ -9,8 +9,8 @@ App({
     systemInfo: null,
 
     // ✅ 个人配置部分 - 请修改为您的配置
-    baseURL: "http://YOUR_IP_ADDRESS:3000", // 替换为您的IP地址
-    baseUrl: "http://YOUR_IP_ADDRESS:3000",
+    baseURL: "https://petderma.onrender.com", // 生产环境 API 地址
+    baseUrl: "https://petderma.onrender.com",
     token: "", // 存储登录 token
     currentUserId: null, // 当前用户ID
     needRefreshCommunity: false,
@@ -26,8 +26,7 @@ App({
     const baseUrls = [
       this.globalData.baseURL,
       this.globalData.baseUrl,
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
+      "https://petderma.onrender.com",
     ];
 
     let currentUrlIndex = 0;
