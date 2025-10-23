@@ -66,10 +66,6 @@
   </view>
 </scroll-view>
 
-<!-- 右下角悬浮智能问诊按钮 -->
-<view class="circle-btn ai-float-btn" bindtap="goToAIConsult">
-  <text>问诊</text>
-</view>
 
 <!-- 拍摄指南弹窗 -->
 <view wx:if="{{showGuideModal}}" class="modal-mask" bindtap="hideGuide"></view>

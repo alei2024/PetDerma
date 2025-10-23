@@ -1,0 +1,156 @@
+<!--pages/user/diagnosis-list/diagnosis-list.wxml-->
+<navigation-bar title="当前诊断" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+
+<scroll-view class="container" scroll-y="{{true}}" enable-pull-down-refresh="{{true}}" bindpulldownrefresh="onPullDownRefresh" bindscrolltolower="onReachBottom" enhanced="{{true}}" show-scrollbar="{{false}}" scroll-with-animation="{{true}}">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-tabs">
+      <view 
+        class="filter-tab {{filterType === 'all' ? 'active' : ''}}" 
+        bindtap="switchFilter" 
+        data-type="all"
+      >
+        全部记录
+      </view>
+      <view 
+        class="filter-tab {{filterType === 'favorite' ? 'active' : ''}}" 
+        bindtap="switchFilter" 
+        data-type="favorite"
+      >
+        收藏记录
+      </view>
+    </view>
+  </view>
+
+  <!-- 诊断记录列表 -->
+  <view class="diagnosis-list" wx:if="{{diagnosisRecords.length > 0}}">
+    <view 
+      class="diagnosis-item" 
+      wx:for="{{diagnosisRecords}}" 
+      wx:key="_id"
+      bindtap="viewDiagnosisDetail"
+      data-id="{{item._id}}"
+    >
+      <!-- 图片区域 -->
+      <view class="item-images">
+        <image 
+          class="main-image" 
+          src="{{item.images && item.images.length > 0 ? (item.images[0].url || item.images[0]) : '/images/default_pet.png'}}" 
+          mode="aspectFill"
+        ></image>
+        <view class="image-count" wx:if="{{item.images && item.images.length > 1}}">
+          <text>+{{item.images.length - 1}}</text>
+        </view>
+      </view>
+
+      <!-- 内容区域 -->
+      <view class="item-content">
+        <view class="item-header">
+          <text class="pet-name">{{item.petName}}</text>
+          <text class="diagnosis-date">{{formatDate(item.createdAt)}}</text>
+        </view>
+        
+        <view class="disease-info">
+          <text class="disease-name">{{item.diagnosisResult.diseaseName}}</text>
+          <view class="confidence-severity">
+            <text class="confidence">可信度: {{item.diagnosisResult.confidence}}%</text>
+            <text class="severity severity-{{item.diagnosisResult.severity}}">
+              {{getSeverityText(item.diagnosisResult.severity)}}
+            </text>
+          </view>
+          
+          <!-- 前三疾病概率显示 -->
+          <view class="probabilities" wx:if="{{item.diagnosisResult.allProbabilities && item.diagnosisResult.allProbabilities.length > 0}}">
+            <view class="prob-title">诊断可能性（前三）:</view>
+            <view class="prob-blocks">
+              <view 
+                class="prob-block" 
+                wx:for="{{item.diagnosisResult.allProbabilities}}" 
+                wx:key="class"
+                wx:for-item="prob"
+              >
+                <text class="prob-block-name">{{prob.displayName || prob.diseaseName || prob.class}}</text>
+                <text class="prob-block-value">{{prob.probability}}%</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="symptom-desc">
+          <text class="desc-text">{{item.symptomDescription}}</text>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="item-actions" catchtap="stopPropagation">
+          <view 
+            class="action-btn favorite-btn {{item.isFavorite ? 'favorited' : ''}}" 
+            bindtap="toggleFavorite" 
+            data-id="{{item._id}}"
+          >
+            <image 
+              src="{{item.isFavorite ? '/images/collect_click_icon.png' : '/images/collect_icon.png'}}" 
+              mode="aspectFit"
+            ></image>
+            <text>{{item.isFavorite ? '已收藏' : '收藏'}}</text>
+          </view>
+          <view 
+            class="action-btn delete-btn" 
+            bindtap="deleteDiagnosis" 
+            data-id="{{item._id}}"
+          >
+            <image src="/images/delete_icon.png" mode="aspectFit"></image>
+            <text>删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <image class="empty-icon" src="/images/default_pet.png" mode="aspectFit"></image>
+    <text class="empty-title">暂无诊断记录</text>
+    <text class="empty-desc">开始使用智能诊断功能，记录您的宠物健康</text>
+    <view class="empty-action" bindtap="goToDiagnosis">
+      <text>去诊断</text>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+  
+  <view class="no-more" wx:if="{{!hasMore && diagnosisRecords.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</scroll-view>
+
+<!-- 筛选弹窗 -->
+<view wx:if="{{showFilter}}" class="modal-mask" bindtap="hideFilterModal"></view>
+<view wx:if="{{showFilter}}" class="filter-modal">
+  <view class="modal-header">
+    <text class="modal-title">筛选条件</text>
+    <text class="modal-close" bindtap="hideFilterModal">×</text>
+  </view>
+  <view class="modal-body">
+    <view class="filter-options">
+      <view 
+        class="filter-option {{filterType === 'all' ? 'selected' : ''}}" 
+        bindtap="switchFilter" 
+        data-type="all"
+      >
+        <text>全部记录</text>
+        <text class="check-icon" wx:if="{{filterType === 'all'}}">✓</text>
+      </view>
+      <view 
+        class="filter-option {{filterType === 'favorite' ? 'selected' : ''}}" 
+        bindtap="switchFilter" 
+        data-type="favorite"
+      >
+        <text>收藏记录</text>
+        <text class="check-icon" wx:if="{{filterType === 'favorite'}}">✓</text>
+      </view>
+    </view>
+  </view>
+</view>

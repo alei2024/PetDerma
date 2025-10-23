@@ -19,10 +19,8 @@ Page({
   },
 
   onLoad: function(options) {
-    console.log('诊断页面加载，使用独立的宠物数据');
     // 初始化宠物列表
     this.initPetList();
-    this.validateDataIndependence();
   },
 
   onShow: function() {
@@ -30,35 +28,15 @@ Page({
     this.initPetList();
   },
 
-  // 验证数据独立性（开发调试用）
-  validateDataIndependence: function() {
-    setTimeout(() => {
-      console.log('=== 诊断页面数据独立性验证 ===');
-      console.log('诊断页面宠物列表:', this.data.petList);
-      console.log('当前选中宠物ID:', this.data.selectedPetId);
-      
-      // 检查是否有全局数据引用
-      if (app.globalData && app.globalData.petInfo) {
-        console.log('全局宠物数据存在，但诊断页面不使用:', app.globalData.petInfo);
-      }
-      
-      // 验证ID前缀
-      const hasCorrectPrefix = this.data.petList.every(pet => 
-        pet.id && pet.id.startsWith('diagnosis_')
-      );
-      console.log('所有宠物ID都有诊断前缀:', hasCorrectPrefix);
-      console.log('=== 验证完成 ===');
-    }, 100);
-  },
   
   // 初始化宠物列表（与宠物管理页面同步）
   initPetList() {
     // 从宠物管理页面同步数据
     const petList = wx.getStorageSync('petList') || [];
     const processedPets = petList.map((p, idx) => ({ 
-      id: p.id || `p${idx+1}`,
+      id: p.id || p._id || `p${idx+1}`,
       name: p.name || `宠物${idx+1}`,
-      avatar: p.avatar || '/images/default_pet.png',
+      avatar: p.avatar ? (p.avatar.url || p.avatar) : '/images/default_pet.png',
       type: p.type || 'cat',
       lastDiagnosis: p.lastDiagnosis || null,
       healthStatus: p.healthStatus || 'unknown'
@@ -85,16 +63,9 @@ Page({
     
     this.setData({ selectedPetId: petId });
     // 保存用户选择的宠物ID到本地存储
-    try {
-      wx.setStorageSync('lastSelectedPetId', petId);
-    } catch (e) {
-      console.log('保存选中宠物ID失败:', e);
-    }
+    wx.setStorageSync('lastSelectedPetId', petId);
     
     // 可以在这里处理诊断相关的逻辑
-    console.log('诊断页面选择宠物:', selectedPet.name);
-    
-    // 如果需要，可以保存最后选择的宠物到独立的存储中
     try {
       wx.setStorageSync('lastSelectedPetForDiagnosis', {
         id: petId,
@@ -214,7 +185,10 @@ Page({
       
       // 构造诊断数据
       const diagnosisData = {
-        petInfo: selectedPet,
+        petInfo: {
+          ...selectedPet,
+          id: selectedPet.id || selectedPet._id || this.data.selectedPetId
+        },
         imageList: this.data.imageList,
         symptomDescription: this.data.symptomDescription,
         analysisResult: {

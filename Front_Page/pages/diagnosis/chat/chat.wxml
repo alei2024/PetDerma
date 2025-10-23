@@ -6,24 +6,12 @@
     <!-- 欢迎消息 -->
     <view class="message-date">{{currentDate}}</view>
     
-    <view class="message system">
-      <view class="message-content">
-        <text>您好！我是PetDerma智能助手，请问有什么可以帮助您的吗？</text>
-      </view>
-    </view>
-    
-    <view class="message system" wx:if="{{showWelcomeMessage2}}">
-      <view class="message-content">
-        <text>我看到您的{{petType === 'cat' ? '猫咪' : '狗狗'}}被诊断为"{{diseaseName}}"，您可以向我咨询相关问题。</text>
-      </view>
-    </view>
-    
     <!-- 消息列表 -->
     <block wx:for="{{messages}}" wx:key="id">
       <!-- 用户消息 -->
       <view wx:if="{{item.type === 'user'}}" class="message user" id="msg-{{item.id}}">
         <view class="user-avatar">
-          <image src="{{userAvatar || '/images/user_avatar.png'}}" mode="aspectFill"></image>
+          <image src="{{userAvatar || '/images/user_default.png'}}" mode="aspectFill"></image>
         </view>
         <view class="message-content">
           <text>{{item.content}}</text>

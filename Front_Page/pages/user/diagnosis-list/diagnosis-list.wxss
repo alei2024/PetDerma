@@ -1,0 +1,370 @@
+/* pages/user/diagnosis-list/diagnosis-list.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  height: calc(100vh - 88rpx);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 筛选栏 */
+.filter-bar {
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 20rpx;
+}
+
+.filter-tab {
+  padding: 16rpx 32rpx;
+  border-radius: 24rpx;
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 28rpx;
+  transition: all 0.3s ease;
+}
+
+.filter-tab.active {
+  background-color: #A5D7E8;
+  color: white;
+}
+
+/* 诊断记录列表 */
+.diagnosis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding-bottom: 40rpx;
+}
+
+.diagnosis-item {
+  background: white;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 图片区域 */
+.item-images {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  flex-shrink: 0;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+}
+
+.image-count {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+}
+
+/* 内容区域 */
+.item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pet-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.diagnosis-date {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.disease-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.disease-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #A5D7E8;
+}
+
+.confidence-severity {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.confidence {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.severity {
+  padding: 4rpx 4rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  color: white;
+  min-width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.severity-1 { background-color: #52c41a; }
+.severity-2 { background-color: #faad14; }
+.severity-3 { background-color: #fa8c16; }
+.severity-4 { background-color: #f5222d; }
+.severity-5 { background-color: #722ed1; }
+
+/* 概率显示 */
+.probabilities {
+  margin-top: 12rpx;
+  padding: 12rpx;
+  background-color: #f8f9fa;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #A5D7E8;
+}
+
+.prob-title {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.prob-blocks {
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.prob-block {
+  flex: 1;
+  min-width: 0;
+  background-color: #ffffff;
+  border-radius: 8rpx;
+  padding: 8rpx 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid #e8e8e8;
+}
+
+.prob-block-name {
+  font-size: 20rpx;
+  color: #333;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 4rpx;
+  line-height: 1.2;
+  word-break: break-all;
+}
+
+.prob-block-value {
+  font-size: 18rpx;
+  color: #A5D7E8;
+  font-weight: bold;
+  text-align: center;
+}
+
+.symptom-desc {
+  flex: 1;
+}
+
+.desc-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* 操作按钮 */
+.item-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 8rpx;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  transition: all 0.3s ease;
+}
+
+.favorite-btn {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.favorite-btn.favorited {
+  background-color: #A5D7E8;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #fff2f0;
+  color: #ff4d4f;
+}
+
+.action-btn image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 32rpx;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+  margin-bottom: 40rpx;
+}
+
+.empty-action {
+  padding: 20rpx 40rpx;
+  background-color: #A5D7E8;
+  color: white;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+}
+
+/* 加载状态 */
+.load-more, .no-more {
+  text-align: center;
+  padding: 40rpx;
+  color: #999;
+  font-size: 26rpx;
+}
+
+/* 筛选弹窗 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.filter-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 24rpx 24rpx 0 0;
+  z-index: 1001;
+  max-height: 60vh;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-close {
+  font-size: 40rpx;
+  color: #999;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-body {
+  padding: 32rpx;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.filter-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  background-color: #f8f8f8;
+  transition: all 0.3s ease;
+}
+
+.filter-option.selected {
+  background-color: #A5D7E8;
+  color: white;
+}
+
+.check-icon {
+  font-size: 32rpx;
+  font-weight: bold;
+}

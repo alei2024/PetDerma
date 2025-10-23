@@ -160,16 +160,16 @@
 
 .severity-indicators {
   display: flex;
-  gap: 10rpx;
+  gap: 6rpx;
   margin-right: 16rpx;
   align-items: center;
 }
 
 .severity-indicator {
-  width: 30rpx;
-  height: 16rpx;
+  width: 10rpx;
+  height: 12rpx;
   background-color: #ddd; /* 灰色默认状态 */
-  border-radius: 8rpx;
+  border-radius: 6rpx;
 }
 
 .severity-indicator.active {
@@ -324,6 +324,13 @@
   color: #ffffff;
 }
 
+/* 按钮禁用状态 */
+.btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 /* 概率显示样式 */
 .probability-section {
   margin-top: 30rpx;
@@ -343,14 +350,14 @@
 .probability-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 5rpx;
 }
 
 .probability-item {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 12rpx 16rpx;
+  padding: 8rpx 12rpx;
   background-color: #ffffff;
   border-radius: 12rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);

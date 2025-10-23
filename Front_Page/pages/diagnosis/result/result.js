@@ -2,6 +2,7 @@ Page({
   data: {
     petType: 'cat', // 默认为猫咪
     petName: '宠物', // 宠物名称
+    petId: '', // 宠物ID
     imagePath: '', // 上传的图片路径
     allImages: [], // 所有上传的图片
     symptomDescription: '', // 症状描述
@@ -9,6 +10,9 @@ Page({
     markedArea: null, // 标记区域
     // 1. 新增 isSaved 状态（初始默认未收藏）
     isSaved: false,
+    // 2. 新增按钮禁用状态
+    isButtonDisabled: false,
+    diagnosisRecordId: '', // 诊断记录ID
     diagnosisResult: {
       diseaseName: '猫咪皮肤癣', // 示例疾病名称
       confidence: 85, // 可信度百分比
@@ -37,19 +41,17 @@ Page({
   },
 
   onLoad: function(options) {
-    console.log('结果页面接收到的参数:', options);
-    
     // 如果有完整的诊断数据，使用传递的数据
     if (options.data) {
       try {
         const diagnosisData = JSON.parse(decodeURIComponent(options.data));
-        console.log('解析的诊断数据:', diagnosisData);
         
         // 设置宠物信息
         if (diagnosisData.petInfo) {
           this.setData({
             petType: diagnosisData.petInfo.type || 'cat',
-            petName: diagnosisData.petInfo.name || '宠物'
+            petName: diagnosisData.petInfo.name || '宠物',
+            petId: diagnosisData.petInfo.id || diagnosisData.petInfo._id || ''
           });
         }
         
@@ -135,10 +137,17 @@ Page({
   // 格式化概率数据，确保数值正确显示，只显示前三名
   formatProbabilities(probabilities) {
     if (!Array.isArray(probabilities)) {
-      console.log('概率数据不是数组:', probabilities);
       return [];
     }
-    const formatted = probabilities.map(item => {
+    
+    // 按概率从高到低排序
+    const sorted = probabilities.sort((a, b) => {
+      const probA = parseFloat(a.probability) || 0;
+      const probB = parseFloat(b.probability) || 0;
+      return probB - probA;
+    });
+    
+    const formatted = sorted.map(item => {
       const prob = parseFloat(item.probability) || 0;
       return {
         ...item,
@@ -151,7 +160,6 @@ Page({
     
     // 只返回前三名
     const topThree = formatted.slice(0, 3);
-    console.log('格式化后的概率数据（前三名）:', topThree);
     return topThree;
   },
 
@@ -221,27 +229,205 @@ Page({
     });
   },
   
-  // 3. 修改 saveResult 方法：支持“收藏/取消收藏”切换
+  // 3. 修改 saveResult 方法：支持"收藏/取消收藏"切换，使用后端API
   saveResult: function() {
+    const { isSaved, isButtonDisabled, diagnosisResult, petType, petName, allImages, symptomDescription } = this.data;
+    
+    // 检查按钮是否已禁用
+    if (isButtonDisabled) {
+      return;
+    }
+    
+    // 检查是否已登录
+    const token = wx.getStorageSync('token');
+    if (!token) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 立即禁用按钮，防止重复点击
+    this.setData({ isButtonDisabled: true });
+    
+    if (!isSaved) {
+      // 未收藏：创建诊断记录并收藏
+      this.createDiagnosisRecord();
+    } else {
+      // 已收藏：取消收藏（这里需要记录ID，暂时使用本地存储的方式）
+      this.toggleFavoriteStatus();
+    }
+  },
+
+  // 创建诊断记录
+  createDiagnosisRecord: function() {
+    const { diagnosisResult, petType, petName, allImages, symptomDescription } = this.data;
+    const app = getApp();
+    
+    wx.showLoading({
+      title: '保存中...',
+      mask: true
+    });
+    
+    // 准备诊断数据
+    const diagnosisData = {
+      petId: this.data.petId || 'unknown',
+      petName: petName,
+      petType: petType,
+      images: allImages, // 暂时直接使用图片路径
+      symptomDescription: symptomDescription,
+      diagnosisResult: {
+        diseaseName: diagnosisResult.diseaseName,
+        confidence: diagnosisResult.confidence,
+        severity: diagnosisResult.severity,
+        description: diagnosisResult.description,
+        allProbabilities: diagnosisResult.allProbabilities || []
+      }
+    };
+    
+    // 尝试使用后端API
+    app.request({
+      url: '/api/diagnosis',
+      method: 'POST',
+      data: diagnosisData
+    }).then((res) => {
+      wx.hideLoading();
+      if (res.statusCode === 200 && res.data.success) {
+        // 保存记录ID到本地，用于后续操作
+        wx.setStorageSync('currentDiagnosisRecordId', res.data.data._id);
+        this.setData({ 
+          isSaved: true,
+          diagnosisRecordId: res.data.data._id,
+          isButtonDisabled: true // 保持按钮禁用状态
+        });
+        wx.showToast({ 
+          title: '保存成功', 
+          icon: 'success' 
+        });
+      } else {
+        // API失败，使用本地存储
+        this.saveToLocalStorage();
+      }
+    }).catch((error) => {
+      wx.hideLoading();
+      console.error('创建诊断记录失败:', error);
+      // 网络错误，使用本地存储作为备用方案
+      this.saveToLocalStorage();
+    });
+  },
+
+  // 保存到本地存储（备用方案）
+  saveToLocalStorage: function() {
+    const { diagnosisResult, petType, petName, allImages, symptomDescription } = this.data;
+    
+    try {
+      const newResult = {
+        id: new Date().getTime(),
+        petId: this.data.petId || 'unknown',
+        petName: petName,
+        petType: petType,
+        images: allImages,
+        symptomDescription: symptomDescription,
+        result: diagnosisResult,
+        date: new Date().toISOString(),
+        isLocal: true // 标记为本地存储
+      };
+      
+      // 获取已有的收藏记录
+      let savedResults = wx.getStorageSync('savedDiagnosisResults') || [];
+      savedResults.unshift(newResult);
+      
+      // 保存到本地存储
+      wx.setStorageSync('savedDiagnosisResults', savedResults);
+      
+      this.setData({ 
+        isSaved: true,
+        diagnosisRecordId: newResult.id,
+        isButtonDisabled: true // 保持按钮禁用状态
+      });
+      
+      wx.showToast({ 
+        title: '保存成功', 
+        icon: 'success' 
+      });
+    } catch (e) {
+      console.error('存储失败:', e);
+      wx.showToast({
+        title: '保存失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 切换收藏状态
+  toggleFavoriteStatus: function() {
+    const { diagnosisRecordId } = this.data;
+    const app = getApp();
+    
+    if (!diagnosisRecordId) {
+      // 如果没有记录ID，使用本地存储方式
+      this.toggleLocalFavorite();
+      return;
+    }
+    
+    wx.showLoading({
+      title: '处理中...',
+      mask: true
+    });
+    
+    app.request({
+      url: `/api/diagnosis/${diagnosisRecordId}/favorite`,
+      method: 'PATCH'
+    }).then((res) => {
+      wx.hideLoading();
+      if (res.statusCode === 200 && res.data.success) {
+        this.setData({ 
+          isSaved: res.data.data.isFavorite,
+          isButtonDisabled: true // 保持按钮禁用状态
+        });
+        wx.showToast({ 
+          title: res.data.data.isFavorite ? '收藏成功' : '取消收藏成功', 
+          icon: 'success' 
+        });
+      } else {
+        // 操作失败时重新启用按钮
+        this.setData({ isButtonDisabled: false });
+        wx.showToast({
+          title: res.data?.message || '操作失败',
+          icon: 'none'
+        });
+      }
+    }).catch((error) => {
+      wx.hideLoading();
+      console.error('切换收藏状态失败:', error);
+      // 网络错误时重新启用按钮
+      this.setData({ isButtonDisabled: false });
+      wx.showToast({
+        title: '网络错误，请重试',
+        icon: 'none'
+      });
+    });
+  },
+
+  // 本地收藏切换（备用方案）
+  toggleLocalFavorite: function() {
     const { isSaved, diagnosisResult, petType, imagePath } = this.data;
     
     try {
-      // 获取已有的收藏记录
       let savedResults = wx.getStorageSync('savedDiagnosisResults') || [];
       
       if (!isSaved) {
-        // 未收藏：添加到收藏列表
         const newResult = {
-          id: new Date().getTime(), // 用时间戳作为唯一ID
+          id: new Date().getTime(),
           petType,
           imagePath,
           result: diagnosisResult,
           date: new Date().toISOString()
         };
-        savedResults.unshift(newResult); // 新增收藏放在列表最前面
+        savedResults.unshift(newResult);
         wx.showToast({ title: '收藏成功', icon: 'success' });
       } else {
-        // 已收藏：从列表中删除（取消收藏）
         savedResults = savedResults.filter(item => 
           !(item.result.diseaseName === diagnosisResult.diseaseName && 
             item.petType === petType && 
@@ -250,14 +436,16 @@ Page({
         wx.showToast({ title: '取消收藏成功', icon: 'success' });
       }
       
-      // 保存更新后的收藏记录到本地
       wx.setStorageSync('savedDiagnosisResults', savedResults);
-      
-      // 关键：切换 isSaved 状态（同步更新图标/文字）
-      this.setData({ isSaved: !isSaved });
+      this.setData({ 
+        isSaved: !isSaved,
+        isButtonDisabled: true // 保持按钮禁用状态
+      });
       
     } catch (e) {
-      console.error('收藏操作失败', e);
+      console.error('本地收藏操作失败', e);
+      // 操作失败时重新启用按钮
+      this.setData({ isButtonDisabled: false });
       wx.showToast({
         title: isSaved ? '取消收藏失败' : '收藏失败',
         icon: 'none'
@@ -268,8 +456,22 @@ Page({
   // 开始智能问诊
   startChat: function() {
     // 跳转到智能问诊页面，并传递相关参数
+    const params = {
+      petType: this.data.petType,
+      diseaseName: this.data.diagnosisResult.diseaseName,
+      petId: this.data.petId,
+      petName: this.data.petName,
+      from: 'result'
+    };
+    
+    // 构建URL参数
+    const queryString = Object.keys(params)
+      .map(key => `${key}=${encodeURIComponent(params[key] || '')}`)
+      .join('&');
+    
     wx.navigateTo({
-      url: `/pages/diagnosis/chat/chat?petType=${this.data.petType}&diseaseName=${this.data.diagnosisResult.diseaseName}&from=result` // 添加from参数标识结果页跳转
+      url: `/pages/diagnosis/chat/chat?${queryString}`
     });
   }
 })
+

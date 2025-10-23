@@ -76,30 +76,126 @@ Page({
         isLoggedIn: false,
         userInfo: {},
         avatarUrl: "/images/user_default.png",
+        // 未登录时重置统计数据为0
+        statistics: {
+          petCount: 0,
+          recordCount: 0,
+          reminderCount: 0,
+        },
       });
     }
   },
 
   // 加载统计数据
   loadStatistics: function () {
-    // 获取宠物数量
-    const petList = wx.getStorageSync("petList") || [];
-    const petCount = petList.length;
+    // 只有在用户已登录时才加载统计数据
+    if (!this.data.isLoggedIn) {
+      this.setData({
+        statistics: {
+          petCount: 0,
+          recordCount: 0,
+          reminderCount: 0,
+        },
+      });
+      return;
+    }
 
-    // 获取健康记录数量（模拟数据）
-    const healthRecords = wx.getStorageSync("healthRecords") || [];
-    const recordCount = healthRecords.length;
+    const token = wx.getStorageSync('token');
+    if (!token || token === 'test-token') {
+      // 未登录时使用本地存储数据
+      const petList = wx.getStorageSync("petList") || [];
+      const petCount = petList.length;
+      
+      // 使用本地存储的诊断记录数量
+      const diagnosisRecords = wx.getStorageSync("savedDiagnosisResults") || [];
+      const recordCount = diagnosisRecords.length;
+      
+      // 使用本地存储的提醒数量
+      const reminders = wx.getStorageSync("reminders") || [];
+      const reminderCount = reminders.length;
 
-    // 获取提醒数量（模拟数据）
-    const reminders = wx.getStorageSync("reminders") || [];
-    const reminderCount = reminders.length;
+      this.setData({
+        statistics: {
+          petCount: petCount,
+          recordCount: recordCount,
+          reminderCount: reminderCount,
+        },
+      });
+      return;
+    }
 
-    this.setData({
-      statistics: {
-        petCount: petCount,
-        recordCount: recordCount,
-        reminderCount: reminderCount,
-      },
+    // 已登录时从后端获取真实数据
+    this.loadPetCount();
+    this.loadDiagnosisCount();
+    this.loadUnreadMessageCount();
+  },
+
+  // 获取宠物数量
+  loadPetCount: function() {
+    const app = getApp();
+    app.request({
+      url: '/api/pets',
+      method: 'GET'
+    }).then((res) => {
+      if (res.statusCode === 200 && res.data.success) {
+        const petCount = res.data.data ? res.data.data.length : 0;
+        this.setData({
+          'statistics.petCount': petCount
+        });
+      }
+    }).catch((error) => {
+      console.error('获取宠物数量失败:', error);
+      // 失败时使用本地存储数据
+      const petList = wx.getStorageSync("petList") || [];
+      this.setData({
+        'statistics.petCount': petList.length
+      });
+    });
+  },
+
+  // 获取诊断记录数量
+  loadDiagnosisCount: function() {
+    const app = getApp();
+    app.request({
+      url: '/api/diagnosis/stats',
+      method: 'GET'
+    }).then((res) => {
+      if (res.statusCode === 200 && res.data.success) {
+        const recordCount = res.data.data ? res.data.data.totalRecords : 0;
+        this.setData({
+          'statistics.recordCount': recordCount
+        });
+      }
+    }).catch((error) => {
+      console.error('获取诊断记录数量失败:', error);
+      // 失败时使用本地存储数据
+      const diagnosisRecords = wx.getStorageSync("savedDiagnosisResults") || [];
+      this.setData({
+        'statistics.recordCount': diagnosisRecords.length
+      });
+    });
+  },
+
+  // 获取未读消息数量
+  loadUnreadMessageCount: function() {
+    const app = getApp();
+    app.request({
+      url: '/api/notifications/unread-count',
+      method: 'GET'
+    }).then((res) => {
+      if (res.statusCode === 200 && res.data.success) {
+        const reminderCount = res.data.data ? res.data.data.unreadCount : 0;
+        this.setData({
+          'statistics.reminderCount': reminderCount
+        });
+      }
+    }).catch((error) => {
+      console.error('获取未读消息数量失败:', error);
+      // 失败时使用本地存储数据
+      const reminders = wx.getStorageSync("reminders") || [];
+      this.setData({
+        'statistics.reminderCount': reminders.length
+      });
     });
   },
 
@@ -1088,7 +1184,7 @@ Page({
           // 调用全局退出登录
           getApp().logout();
 
-          // 重置页面状态，包括头像
+          // 重置页面状态，包括头像和统计数据
           this.setData({
             isLoggedIn: false,
             userInfo: {
@@ -1099,6 +1195,12 @@ Page({
               userId: "",
             },
             avatarUrl: "/images/user_default.png", // 重置为默认头像
+            // 重置统计数据为0
+            statistics: {
+              petCount: 0,
+              recordCount: 0,
+              reminderCount: 0,
+            },
           });
 
           wx.showToast({
@@ -1180,6 +1282,13 @@ Page({
   navigateToDiagnosis: function () {
     wx.navigateTo({
       url: "/pages/diagnosis/diagnosis",
+    });
+  },
+
+  // 跳转到当前诊断页面
+  navigateToCurrentDiagnosis: function () {
+    wx.navigateTo({
+      url: "/pages/user/diagnosis-list/diagnosis-list",
     });
   },
 

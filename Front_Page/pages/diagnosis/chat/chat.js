@@ -1,19 +1,25 @@
 const app = getApp();
+const config = require('../../../config/environment.js');
 
 Page({
   data: {
     petType: 'cat', // 默认为猫咪
     diseaseName: '', // 疾病名称
+    petId: '', // 宠物ID
+    petName: '', // 宠物名称
     currentDate: '', // 当前日期
     messages: [], // 聊天消息列表
-    showWelcomeMessage2: true, // 是否显示第二句欢迎消息
     showQuickQuestions: true, // 是否显示快捷问题
     inputMessage: '', // 输入框内容
     isTyping: false, // 是否显示正在输入
     scrollToMessage: '', // 滚动到指定消息
     userAvatar: '', // 用户头像
     messageId: 0, // 消息ID计数器
-    quickQuestions: [] // 快捷问题列表
+    quickQuestions: [], // 快捷问题列表
+    chatId: '', // 会话ID（Coze格式）
+    isConnected: false, // 是否已连接到智能体
+    isLoading: false, // 是否正在加载
+    hasInitialized: false // 是否已经初始化（发送了你好）
   },
 
   onLoad: function(options) {
@@ -29,12 +35,23 @@ Page({
         diseaseName: options.diseaseName
       });
     }
+
+    if (options.petId) {
+      this.setData({
+        petId: options.petId
+      });
+    }
+
+    if (options.petName) {
+      this.setData({
+        petName: options.petName
+      });
+    }
     
     // 根据跳转来源控制显示（from='diagnose'为智能诊断页跳转，from='result'为诊断结果页跳转）
     const from = (options.from || '').trim().toLowerCase(); // 处理空格和大小写问题
     console.log('跳转来源from:', from); // 添加日志便于调试
     this.setData({
-      showWelcomeMessage2: from === 'result' || from === 'diagnose_result', // 兼容可能的参数值
       showQuickQuestions: from === 'result' // 修正后严格匹配小写无空格的'result'
     });
     
@@ -49,22 +66,59 @@ Page({
     
     // 获取用户头像
     if (app.globalData.userInfo && app.globalData.userInfo.avatar) {
+      let avatarUrl = app.globalData.userInfo.avatar;
+      // 如果avatar是对象，尝试获取url属性
+      if (typeof avatarUrl === 'object' && avatarUrl.url) {
+        avatarUrl = avatarUrl.url;
+      }
+      // 确保avatarUrl是字符串且不是图片ID
+      if (typeof avatarUrl === 'string' && avatarUrl.trim()) {
+        // 如果是图片ID格式（24位十六进制），转换为完整URL
+        if (/^[0-9a-fA-F]{24}$/.test(avatarUrl)) {
+          avatarUrl = `${config.baseUrl}/api/images/${avatarUrl}`;
+        }
+        // 如果是相对路径，确保以/开头
+        else if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('/')) {
+          avatarUrl = '/' + avatarUrl;
+        }
+        
       this.setData({
-        userAvatar: app.globalData.userInfo.avatar
+          userAvatar: avatarUrl
       });
+      }
     }
     
     // 设置快捷问题
     this.setQuickQuestions();
+
+    // 初始化智能体连接并自动发送"你好"
+    this.initCozeConnection();
   },
   
   // 页面显示时更新用户头像
   onShow: function() {
     // 每次页面显示时重新获取用户头像，确保头像信息是最新的
     if (app.globalData.userInfo && app.globalData.userInfo.avatar) {
-      this.setData({
-        userAvatar: app.globalData.userInfo.avatar
-      });
+      let avatarUrl = app.globalData.userInfo.avatar;
+      // 如果avatar是对象，尝试获取url属性
+      if (typeof avatarUrl === 'object' && avatarUrl.url) {
+        avatarUrl = avatarUrl.url;
+      }
+      // 确保avatarUrl是字符串且不是图片ID
+      if (typeof avatarUrl === 'string' && avatarUrl.trim()) {
+        // 如果是图片ID格式（24位十六进制），转换为完整URL
+        if (/^[0-9a-fA-F]{24}$/.test(avatarUrl)) {
+          avatarUrl = `${config.baseUrl}/api/images/${avatarUrl}`;
+        }
+        // 如果是相对路径，确保以/开头
+        else if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('/')) {
+          avatarUrl = '/' + avatarUrl;
+        }
+        
+        this.setData({
+          userAvatar: avatarUrl
+        });
+      }
     }
   },
   
@@ -114,6 +168,117 @@ Page({
     this.sendMessage();
   },
   
+  // 初始化Coze智能体连接并自动发送"你好"
+  initCozeConnection: function() {
+    const token = wx.getStorageSync('token');
+    if (!token) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 检查是否有宠物ID
+    if (!this.data.petId) {
+      console.warn('没有宠物ID，将使用模拟模式');
+      return;
+    }
+
+    // 如果已经初始化过，不再重复
+    if (this.data.hasInitialized) {
+      return;
+    }
+
+    // 自动发送"你好"消息
+    this.sendInitialHello();
+  },
+
+  // 发送初始"你好"消息
+  sendInitialHello: function() {
+    const token = wx.getStorageSync('token');
+    const { petId } = this.data;
+
+    // 显示正在加载
+    this.setData({
+      isLoading: true,
+      isTyping: true
+    });
+
+    // 发送宠物问诊请求（首次对话，自动发送"你好"）
+    wx.request({
+      url: `${config.baseUrl}/api/consultation/pet-consultation`,
+      method: 'POST',
+      header: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        petId: petId,
+        question: '你好'
+      },
+      success: (res) => {
+        console.log('初始问诊响应:', res.data);
+        
+        // 检查是否需要先进行诊断
+        if (!res.data.success && res.data.error === 'NO_DIAGNOSIS_RECORD') {
+          this.handleNoDiagnosisRecord();
+          return;
+        }
+        
+        this.handleInitialResponse(res.data);
+      },
+      fail: (error) => {
+        console.error('初始问诊失败:', error);
+        this.handleCozeError(error);
+      }
+    });
+  },
+
+  // 处理初始响应
+  handleInitialResponse: function(response) {
+    this.setData({ 
+      isLoading: false,
+      isTyping: false,
+      hasInitialized: true
+    });
+
+    if (response.success && response.data) {
+      // 保存chatId
+      if (response.data.chatId) {
+        this.setData({ chatId: response.data.chatId });
+        console.log('保存chatId:', response.data.chatId);
+      }
+
+      // 提取智能体回复内容
+      let replyContent = response.data.response || '';
+      
+      if (!replyContent) {
+        replyContent = '您好！我是PetDerma智能助手，很高兴为您服务！';
+      }
+
+      // 添加AI回复到消息列表
+      const messageId = this.data.messageId + 1;
+      const aiMessage = {
+        id: messageId,
+        type: 'system',
+        content: replyContent,
+        time: new Date().getTime()
+      };
+
+      this.setData({
+        messages: [...this.data.messages, aiMessage],
+        messageId: messageId,
+        scrollToMessage: `msg-${messageId}`,
+        isConnected: true
+      });
+
+      console.log('✅ 智能体初始化成功，已显示欢迎消息');
+    } else {
+      this.handleCozeError(response);
+    }
+  },
+  
   // 发送消息
   sendMessage: function() {
     const content = this.data.inputMessage.trim();
@@ -141,32 +306,145 @@ Page({
       isTyping: true
     });
     
-    // 模拟AI回复（实际应用中这里应该调用AI接口）
-    setTimeout(() => {
-      this.aiReply(content);
-    }, 1000);
+    // 发送到Coze智能体
+    this.sendToCoze(content);
   },
-  
-  // AI回复
-  aiReply: function(userMessage) {
-    // 这里应该是调用AI接口获取回复
-    // 这里使用简单的模拟回复
-    let reply = this.getSimulatedReply(userMessage);
+
+  // 发送消息到Coze智能体
+  sendToCoze: function(message) {
+    const token = wx.getStorageSync('token');
+    const { petId, chatId } = this.data;
+
+    // 发送消息
+    wx.request({
+      url: `${config.baseUrl}/api/consultation/send-message`,
+      method: 'POST',
+      header: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        chatId: chatId,
+        message: message,
+        petId: petId
+      },
+      success: (res) => {
+        console.log('Coze智能体响应:', res.data);
+        this.handleCozeResponse(res.data);
+      },
+      fail: (error) => {
+        console.error('发送到Coze失败:', error);
+        this.handleCozeError(error);
+      }
+    });
+  },
+
+
+  // 处理Coze智能体响应
+  handleCozeResponse: function(response) {
+    this.setData({ isTyping: false });
+
+    if (response.success && response.data) {
+      // 更新chatId（如果有新的）
+      if (response.data.chatId && response.data.chatId !== this.data.chatId) {
+        this.setData({ chatId: response.data.chatId });
+        console.log('更新chatId:', response.data.chatId);
+      }
+
+      // 提取智能体回复内容
+      let replyContent = '';
+      
+      // 新的响应格式：直接从data.reply获取
+      if (response.data.reply) {
+        replyContent = response.data.reply;
+      } else if (response.data.response) {
+        replyContent = response.data.response;
+      } else {
+        // 调试信息
+        console.log('无法解析的响应结构:', response.data);
+        replyContent = '抱歉，我暂时无法理解您的问题，请尝试重新描述。';
+      }
+
+      // 添加AI回复到消息列表
+      const messageId = this.data.messageId + 1;
+      const aiMessage = {
+        id: messageId,
+        type: 'system',
+        content: replyContent,
+        time: new Date().getTime()
+      };
+
+      this.setData({
+        messages: [...this.data.messages, aiMessage],
+        messageId: messageId,
+        scrollToMessage: `msg-${messageId}`
+      });
+    } else {
+      this.handleCozeError(response);
+    }
+  },
+
+  // 处理没有诊断记录的情况
+  handleNoDiagnosisRecord: function() {
+    this.setData({ isTyping: false });
+
+    const messageId = this.data.messageId + 1;
+    const aiMessage = {
+      id: messageId,
+      type: 'system',
+      content: '您好！我注意到您还没有为宠物进行皮肤病诊断。为了给您提供更准确的健康建议，建议您先进行皮肤病诊断，然后再进行智能问诊。\n\n请返回诊断页面，上传宠物图片进行诊断。',
+      time: new Date().getTime()
+    };
+    
+    this.setData({
+      messages: [...this.data.messages, aiMessage],
+      messageId: messageId,
+      scrollToMessage: `msg-${messageId}`
+    });
+
+    wx.showModal({
+      title: '提示',
+      content: '请先进行皮肤病诊断，然后再进行智能问诊。是否返回诊断页面？',
+      confirmText: '去诊断',
+      cancelText: '继续问诊',
+      success: (res) => {
+        if (res.confirm) {
+          // 返回诊断页面
+          wx.navigateBack({
+            delta: 2 // 返回两级页面
+          });
+        }
+      }
+    });
+  },
+
+  // 处理Coze智能体错误
+  handleCozeError: function(error) {
+    this.setData({ isTyping: false });
+
+    console.error('Coze智能体错误:', error);
+    
+    // 使用模拟回复作为备用
+    const fallbackReply = this.getSimulatedReply(this.data.inputMessage || '');
     
     const messageId = this.data.messageId + 1;
     const aiMessage = {
       id: messageId,
       type: 'system',
-      content: reply,
+      content: fallbackReply + '\n\n（当前使用模拟回复，智能体连接异常）',
       time: new Date().getTime()
     };
     
-    // 隐藏正在输入，添加AI回复
     this.setData({
-      isTyping: false,
       messages: [...this.data.messages, aiMessage],
       messageId: messageId,
       scrollToMessage: `msg-${messageId}`
+    });
+
+    wx.showToast({
+      title: '智能体连接异常，已切换到模拟模式',
+      icon: 'none',
+      duration: 2000
     });
   },
   

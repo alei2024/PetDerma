@@ -16,6 +16,8 @@ const uploadRoutes = require("./routes/upload");
 const imageRoutes = require("./routes/images");
 const petRoutes = require("./routes/pets");
 const healthRoutes = require("./routes/health");
+const diagnosisRoutes = require("./routes/diagnosis");
+const consultationRoutes = require("./routes/consultation");
 
 // 导入中间件
 const { handleUploadError } = require("./middleware/upload");
@@ -130,6 +132,107 @@ app.get("/health", (req, res) => {
   });
 });
 
+// 诊断API（使用数据库和正确的用户认证）
+const DiagnosisRecord = require("./models/DiagnosisRecord");
+const Pet = require("./models/Pet");
+const mongoose = require("mongoose");
+const { authenticateToken } = require("./middleware/auth");
+
+// 创建诊断记录（使用正确的用户认证）
+app.post("/api/diagnosis", authenticateToken, async (req, res) => {
+  try {
+    console.log("创建诊断记录请求");
+    
+    const {
+      petId,
+      petName,
+      petType,
+      images,
+      symptomDescription,
+      diagnosisResult,
+      isFavorite, // 明确提取isFavorite字段，防止前端传递
+    } = req.body;
+
+    const userId = req.user.userId; // 使用认证中间件提供的真实用户ID
+
+    // 调试日志：检查isFavorite字段
+    console.log("请求体中的isFavorite:", isFavorite);
+    console.log("强制设置isFavorite为true");
+
+    // 验证必填字段
+    if (!petId || !petName || !petType || !symptomDescription || !diagnosisResult) {
+      return res.status(400).json({
+        success: false,
+        message: "缺少必填字段",
+      });
+    }
+
+    // 验证宠物是否属于当前用户
+    const pet = await Pet.findByUserAndId(userId, petId);
+    if (!pet) {
+      return res.status(404).json({
+        success: false,
+        message: "宠物不存在或不属于当前用户",
+      });
+    }
+
+    // 处理图片上传（简化版本，暂时跳过图片处理）
+    let imageIds = [];
+    if (images && images.length > 0) {
+      console.log(`收到 ${images.length} 张图片，暂时跳过图片处理`);
+      // 暂时不处理图片，直接创建诊断记录
+    }
+
+    // 创建诊断记录
+    const diagnosisRecord = new DiagnosisRecord({
+      userId, // 使用真实的用户ID
+      petId,
+      petName,
+      petType,
+      images: imageIds,
+      symptomDescription,
+      diagnosisResult: {
+        diseaseName: diagnosisResult?.diseaseName || "未知疾病",
+        confidence: diagnosisResult?.confidence || 80,
+        severity: diagnosisResult?.severity || 3,
+        description: diagnosisResult?.description || "诊断结果描述",
+        suggestions: {
+          homeAdvice: diagnosisResult?.homeAdvice || diagnosisResult?.suggestions?.homeAdvice || ["保持清洁"],
+          medicalAdvice: diagnosisResult?.medicalAdvice || diagnosisResult?.suggestions?.medicalAdvice || ["建议就医"],
+          preventAdvice: diagnosisResult?.preventAdvice || diagnosisResult?.suggestions?.preventAdvice || ["注意预防"]
+        },
+        warning: diagnosisResult?.warning || "此结果仅供参考，请以专业兽医诊断为准。",
+        // 保存分类模型的详细预测信息
+        predictedClass: diagnosisResult?.predictedClass || diagnosisResult?.diseaseName || "未知疾病",
+        allProbabilities: diagnosisResult?.allProbabilities || [],
+        imageCount: images?.length || 1
+      },
+      isFavorite: true // 修复：新创建的记录默认被收藏
+    });
+
+    const savedRecord = await diagnosisRecord.save();
+    await savedRecord.populate("images");
+    console.log("诊断记录已保存:", savedRecord._id);
+    console.log("保存的记录isFavorite值:", savedRecord.isFavorite);
+
+    res.status(200).json({
+      success: true,
+      message: "诊断记录创建成功",
+      data: savedRecord
+    });
+  } catch (error) {
+    console.error("创建诊断记录失败:", error);
+    res.status(500).json({
+      success: false,
+      message: "服务器内部错误",
+      error: error.message
+    });
+  }
+});
+
+// 注意：诊断记录列表的GET路由已移至 routes/diagnosis.js 中
+// 这里不再需要重复定义，避免覆盖正确的用户认证逻辑
+
 // API路由
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
@@ -137,6 +240,8 @@ app.use("/api/interactions", interactionRoutes);
 app.use("/api/upload", uploadLimiter, uploadRoutes);
 app.use("/api/pets", petRoutes);
 app.use("/api/health", healthRoutes);
+app.use("/api/diagnosis", diagnosisRoutes);
+app.use("/api/consultation", consultationRoutes);
 
 // 图片路由 - 设置特殊的响应头并注册路由
 app.use(

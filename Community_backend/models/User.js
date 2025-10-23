@@ -80,31 +80,7 @@ const userSchema = new mongoose.Schema(
       default: "active",
     },
 
-    // 宠物信息
-    pets: [
-      {
-        name: {
-          type: String,
-          required: true,
-        },
-        species: {
-          type: String,
-          required: true,
-        },
-        breed: {
-          type: String,
-          default: "",
-        },
-        age: {
-          type: Number,
-          default: 0,
-        },
-        avatar: {
-          type: String,
-          default: "",
-        },
-      },
-    ],
+    // 注意：宠物信息现在通过独立的Pet模型管理，不再在此处存储
 
     // 用户设置
     settings: {

@@ -15,6 +15,7 @@
     "pages/user/user",
     "pages/user/pet/pet",
     "pages/user/health/health",
+    "pages/user/diagnosis-list/diagnosis-list",
     "pages/message/message"
   ],
   "window": {

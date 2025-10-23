@@ -271,7 +271,8 @@
 .analysis-section {
   margin-bottom: 30rpx;
   text-align: center;
-  margin-left: -495rpx;
+  display: flex;
+  justify-content: center;
 }
 
 .analysis-btn {

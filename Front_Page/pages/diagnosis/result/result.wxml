@@ -106,12 +106,12 @@
   
     <!-- 操作按钮区域 -->
     <view class="actions-section">
-    <view class="btn btn-outline" bindtap="saveResult">
+    <view class="btn btn-outline {{isButtonDisabled ? 'btn-disabled' : ''}}" bindtap="saveResult">
       <image class="btn-icon" 
              src="{{isSaved ? '/images/saved_icon.png' : '/images/save_icon.png'}}" 
             
              mode="aspectFit"></image>
-      <text>{{isSaved ? '已收藏' : '收藏结果'}}</text>
+      <text>{{isSaved ? '已保存' : '保存结果'}}</text>
     </view>
     <view class="btn btn-primary" bindtap="startChat">
       <image class="btn-icon" src="/images/chat_icon.png" mode="aspectFit"></image>
