@@ -1,11 +1,11 @@
-/** 
+﻿/** 
  * 真实模型预测服务 
  * 调用服务器端API进行皮肤病分类
  */
 
 // API配置
 const API_CONFIG = {
-  // 开发环境使用本地地址，生产环境需要配置合法域名
+  // 开发期将模型服务跑在本地
   BASE_URL: 'http://127.0.0.1:5000',
   // 备用地址（如果主地址不可用）
   BACKUP_URL: 'http://localhost:5000',
@@ -338,3 +338,4 @@ module.exports = {
   DISEASE_CLASSES,
   DISEASE_NAMES_CN
 };
+

@@ -173,6 +173,15 @@ Page({
   async performDiagnosis() {
     try {
       const selectedPet = this.data.petList.find(pet => pet.id === this.data.selectedPetId);
+
+      if (!selectedPet) {
+        this.setData({ isLoading: false });
+        wx.showToast({
+          title: "请先添加宠物信息",
+          icon: "none",
+        });
+        return;
+      }
       
       // 检查服务器健康状态
       const isHealthy = await modelService.checkServerHealth();

@@ -3,13 +3,13 @@
 const ENV = {
   development: {
 
-    baseUrl: "http://192.168.1.104:3000",
-    wsUrl: "ws://192.168.1.104:3000",
+    baseUrl: "https://petderma.onrender.com",
+    wsUrl: "wss://petderma.onrender.com",
     debug: true,
   },
   production: {
-    baseUrl: "http://192.168.1.104:3000",
-    wsUrl: "ws://192.168.1.104:3000",
+    baseUrl: "https://petderma.onrender.com",
+    wsUrl: "wss://petderma.onrender.com",
     debug: false,
   },
 };
