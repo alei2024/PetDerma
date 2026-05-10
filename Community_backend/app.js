@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -59,7 +60,7 @@ setTimeout(async () => {
 /* ------------------------------------------------------------------
  ✅ 安全、CORS、日志、限流中间件（位置保持不变）
 ------------------------------------------------------------------- */
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(
   cors({
@@ -142,6 +143,17 @@ app.get("/health", (req, res) => {
     message: "服务运行正常",
     timestamp: new Date().toISOString(),
   });
+});
+
+// B 端预览页面
+app.get("/doctor-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "doctor-preview.html"));
+});
+app.get("/doctor-preview.css", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "doctor-preview.css"));
+});
+app.get("/doctor-preview.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "doctor-preview.js"));
 });
 
 app.use("/api/auth", authRoutes);
