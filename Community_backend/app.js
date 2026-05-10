@@ -16,6 +16,7 @@ const uploadRoutes = require("./routes/upload");
 const imageRoutes = require("./routes/images");
 const petRoutes = require("./routes/pets");
 const healthRoutes = require("./routes/health");
+const doctorRoutes = require("./routes/doctor");
 
 // 导入中间件
 const { handleUploadError } = require("./middleware/upload");
@@ -149,6 +150,9 @@ app.use("/api/interactions", interactionRoutes);
 app.use("/api/upload", uploadLimiter, uploadRoutes);
 app.use("/api/pets", petRoutes);
 app.use("/api/health", healthRoutes);
+
+// 医生/机构端 API
+app.use("/api/doctor", doctorRoutes);
 
 // 图片路由
 app.use(

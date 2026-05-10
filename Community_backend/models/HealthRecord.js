@@ -94,6 +94,54 @@ const healthRecordSchema = new mongoose.Schema(
       },
     ],
 
+    // 诊断图片（来自诊断流程）
+    images: [{
+      url: { type: String, default: '' },
+      uploadedAt: { type: Date, default: Date.now },
+    }],
+
+    // 症状描述（来自诊断流程）
+    symptoms: {
+      type: String,
+      default: '',
+      maxlength: 1000,
+    },
+
+    // B 端医生可见性（授权共享）
+    sharedWith: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    }],
+
+    // AI 病例摘要（B 端自动生成）
+    aiSummary: {
+      type: String,
+      default: '',
+      maxlength: 2000,
+    },
+
+    // 严重程度（医生评定）
+    severity: {
+      type: String,
+      enum: ['', '轻', '中', '重'],
+      default: '',
+    },
+
+    // 病情趋势（AI/医生分析）
+    trend: {
+      type: String,
+      default: '',
+      maxlength: 500,
+    },
+
+    // 复诊跟踪
+    followUp: {
+      needed: { type: Boolean, default: false },
+      date: { type: Date },
+      note: { type: String, default: '', maxlength: 500 },
+      completed: { type: Boolean, default: false },
+    },
+
     // 状态
     status: {
       type: String,
@@ -122,6 +170,7 @@ const healthRecordSchema = new mongoose.Schema(
 healthRecordSchema.index({ userId: 1, petId: 1, status: 1 });
 healthRecordSchema.index({ petId: 1, status: 1 });
 healthRecordSchema.index({ createdAt: -1 });
+healthRecordSchema.index({ sharedWith: 1, createdAt: -1 });
 
 // 中间件：更新时自动设置updatedAt
 healthRecordSchema.pre("save", function (next) {

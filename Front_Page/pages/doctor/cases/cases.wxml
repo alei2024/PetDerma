@@ -1,0 +1,39 @@
+<navigation-bar title="授权病例" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="page">
+  <!-- 筛选标签 -->
+  <view class="filter-tabs">
+    <view class="filter-tab {{currentFilter === 'all' ? 'active' : ''}}" bindtap="switchFilter" data-filter="all">全部</view>
+    <view class="filter-tab {{currentFilter === 'pending' ? 'active' : ''}}" bindtap="switchFilter" data-filter="pending">待处理</view>
+    <view class="filter-tab {{currentFilter === 'followup' ? 'active' : ''}}" bindtap="switchFilter" data-filter="followup">需复诊</view>
+  </view>
+
+  <!-- 病例列表 -->
+  <scroll-view class="list-scroll" scroll-y>
+    <view class="case-list">
+      <view class="case-card" wx:for="{{filteredCases}}" wx:key="_id" bindtap="viewDetail" data-id="{{item._id}}">
+        <view class="case-header">
+          <image class="case-avatar" src="{{item.petId?.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
+          <view class="case-meta">
+            <text class="case-pet">{{item.petId?.name || '未知宠物'}}</text>
+            <text class="case-owner">{{item.userId?.nickName || '未知宠主'}}</text>
+          </view>
+          <view class="case-severity {{severityClass(item.severity)}}">{{item.severity || '待评估'}}</view>
+        </view>
+        <view class="case-info">
+          <text class="case-disease">{{item.skinDiseaseHistory?.[item.skinDiseaseHistory.length - 1]?.diseaseName || '暂无诊断记录'}}</text>
+          <text class="case-date">{{formatTime(item.createdAt)}}</text>
+        </view>
+        <view class="case-tags">
+          <text class="tag summary-done" wx:if="{{item.aiSummary}}">AI 摘要已生成</text>
+          <text class="tag summary-pending" wx:if="{{!item.aiSummary}}">待生成摘要</text>
+          <text class="tag need-followup" wx:if="{{item.followUp?.needed && !item.followUp?.completed}}">待复诊</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{filteredCases.length === 0}}">
+      <text class="empty-text">暂无病例</text>
+      <text class="empty-hint">暂无符合条件的授权病例</text>
+    </view>
+  </scroll-view>
+</view>

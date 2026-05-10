@@ -1,0 +1,83 @@
+<navigation-bar title="宠医辅助台" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 医生信息 -->
+    <view class="doctor-header">
+      <image class="doctor-avatar" src="{{doctorAvatar}}" mode="aspectFill" binderror="onAvatarError"></image>
+      <view class="doctor-info">
+        <text class="doctor-name">{{doctorName || '合作医生'}}</text>
+        <text class="doctor-title">PetDerma 机构端工作台</text>
+      </view>
+    </view>
+
+    <!-- 数据概览 -->
+    <view class="stats-grid">
+      <view class="stat-card" bindtap="viewCases">
+        <text class="stat-number">{{stats.total}}</text>
+        <text class="stat-label">全部病例</text>
+      </view>
+      <view class="stat-card pending" bindtap="viewPendingCases">
+        <text class="stat-number">{{stats.pendingReview}}</text>
+        <text class="stat-label">待处理</text>
+      </view>
+      <view class="stat-card followup" bindtap="viewFollowUpCases">
+        <text class="stat-number">{{stats.followUpNeeded}}</text>
+        <text class="stat-label">需复诊</text>
+      </view>
+    </view>
+
+    <!-- 快捷操作 -->
+    <view class="section">
+      <text class="section-title">快捷操作</text>
+      <view class="action-grid">
+        <view class="action-item" bindtap="viewCases">
+          <view class="action-icon blue">📋</view>
+          <text class="action-name">病例列表</text>
+          <text class="action-desc">查看授权病例</text>
+        </view>
+        <view class="action-item" bindtap="refreshData">
+          <view class="action-icon green">🔄</view>
+          <text class="action-name">刷新数据</text>
+          <text class="action-desc">同步最新病例</text>
+        </view>
+        <view class="action-item" bindtap="generateMockData">
+          <view class="action-icon orange">📊</view>
+          <text class="action-name">导入测试数据</text>
+          <text class="action-desc">生成演示病例</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 最近病例 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">最近病例</text>
+        <text class="section-more" bindtap="viewCases">查看全部 ></text>
+      </view>
+      <view class="case-list">
+        <view class="case-card" wx:for="{{recentCases}}" wx:key="_id" bindtap="viewCaseDetail" data-id="{{item._id}}">
+          <view class="case-header">
+            <image class="case-pet-avatar" src="{{item.petId?.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
+            <view class="case-pet-info">
+              <text class="case-pet-name">{{item.petId?.name || '未知宠物'}}</text>
+              <text class="case-owner">{{item.userId?.nickName || '未知宠主'}}</text>
+            </view>
+            <view class="case-severity {{severityClass(item.severity)}}">{{item.severity || '待评估'}}</view>
+          </view>
+          <view class="case-body">
+            <text class="case-disease">{{item.skinDiseaseHistory?.[item.skinDiseaseHistory.length - 1]?.diseaseName || '暂无诊断'}}</text>
+            <text class="case-date">建档：{{formatTime(item.createdAt)}}</text>
+          </view>
+          <view class="case-footer">
+            <view class="case-tag" wx:if="{{item.aiSummary}}">已生成摘要</view>
+            <view class="case-tag followup" wx:if="{{item.followUp?.needed && !item.followUp?.completed}}">待复诊</view>
+          </view>
+        </view>
+        <view wx:if="{{recentCases.length === 0}}" class="empty-state">
+          <text class="empty-text">暂无授权病例</text>
+          <text class="empty-hint">等待宠主授权后，病例将显示在此处</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

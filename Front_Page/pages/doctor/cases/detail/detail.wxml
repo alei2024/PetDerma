@@ -1,0 +1,155 @@
+<navigation-bar title="病例详情" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 宠物和宠主信息 -->
+    <view class="info-card">
+      <view class="info-header">
+        <image class="info-avatar" src="{{caseData.petId?.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
+        <view class="info-meta">
+          <text class="info-name">{{caseData.petId?.name || '未知宠物'}}</text>
+          <text class="info-breed">{{caseData.petId?.species || ''}} {{caseData.petId?.breed || ''}}</text>
+        </view>
+        <view class="severity-badge {{severityClass(caseData.severity)}}">
+          {{caseData.severity || '待评估'}}
+        </view>
+      </view>
+      <view class="info-row">
+        <text class="info-label">宠主</text>
+        <text class="info-value">{{caseData.userId?.nickName || '未知'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">联系电话</text>
+        <text class="info-value">{{caseData.userId?.phoneNumber || '未提供'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">建档日期</text>
+        <text class="info-value">{{formatTime(caseData.createdAt)}}</text>
+      </view>
+      <view class="info-row" wx:if="{{caseData.weight}}">
+        <text class="info-label">体重</text>
+        <text class="info-value">{{caseData.weight}}kg</text>
+      </view>
+    </view>
+
+    <!-- 诊断记录 -->
+    <view class="section-card">
+      <text class="section-title">诊断记录</text>
+      <view wx:if="{{caseData.skinDiseaseHistory && caseData.skinDiseaseHistory.length > 0}}">
+        <view class="disease-item" wx:for="{{caseData.skinDiseaseHistory}}" wx:key="_id">
+          <view class="disease-header">
+            <text class="disease-name">{{item.diseaseName}}</text>
+            <text class="disease-status {{item.isCured === '是' ? 'cured' : 'uncured'}}">
+              {{item.isCured === '是' ? '已痊愈' : '治疗中'}}
+            </text>
+          </view>
+          <view class="disease-detail" wx:if="{{item.symptoms && item.symptoms.length > 0}}">
+            <text class="detail-label">症状：</text>
+            <text class="detail-text">{{item.symptoms.join('、')}}</text>
+          </view>
+          <view class="disease-detail" wx:if="{{item.affectedAreas && item.affectedAreas.length > 0}}">
+            <text class="detail-label">部位：</text>
+            <text class="detail-text">{{item.affectedAreas.join('、')}}</text>
+          </view>
+          <view class="disease-detail" wx:if="{{item.medication}}">
+            <text class="detail-label">用药：</text>
+            <text class="detail-text">{{item.medication}}</text>
+          </view>
+          <view class="disease-date">{{formatTime(item.startDate)}}</view>
+        </view>
+      </view>
+      <view wx:else class="empty-section">
+        <text>暂无诊断记录</text>
+      </view>
+    </view>
+
+    <!-- 检查图片 -->
+    <view class="section-card" wx:if="{{caseData.images && caseData.images.length > 0}}">
+      <text class="section-title">检查图片</text>
+      <view class="image-grid">
+        <image class="case-image" wx:for="{{caseData.images}}" wx:key="index"
+          src="{{item.url}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.url}}"></image>
+      </view>
+    </view>
+
+    <!-- 过敏史与日常 -->
+    <view class="section-card" wx:if="{{caseData.allergies && caseData.allergies !== '无' || caseData.recentContact}}">
+      <text class="section-title">补充信息</text>
+      <view class="info-row" wx:if="{{caseData.allergies && caseData.allergies !== '无'}}">
+        <text class="info-label">过敏史</text>
+        <text class="info-value">{{caseData.allergies}}</text>
+      </view>
+      <view class="info-row" wx:if="{{caseData.recentContact}}">
+        <text class="info-label">近期接触</text>
+        <text class="info-value">{{caseData.recentContact}}</text>
+      </view>
+      <view class="info-row" wx:if="{{caseData.sterilized}}">
+        <text class="info-label">绝育状态</text>
+        <text class="info-value">{{caseData.sterilized}}</text>
+      </view>
+    </view>
+
+    <!-- AI 病例摘要 -->
+    <view class="section-card summary-card">
+      <view class="summary-header">
+        <text class="section-title">AI 病例摘要</text>
+        <button class="generate-btn" wx:if="{{!caseData.aiSummary}}" bindtap="generateSummary" loading="{{generating}}">
+          {{generating ? '生成中...' : '生成摘要'}}
+        </button>
+      </view>
+      <view wx:if="{{caseData.aiSummary}}" class="summary-content">
+        <text class="summary-text">{{caseData.aiSummary}}</text>
+      </view>
+      <view wx:if="{{caseData.trend}}" class="trend-section">
+        <text class="trend-label">病情趋势</text>
+        <text class="trend-text">{{caseData.trend}}</text>
+      </view>
+      <view wx:if="{{!caseData.aiSummary && !generating}}" class="empty-section">
+        <text>点击「生成摘要」自动分析病例数据</text>
+      </view>
+    </view>
+
+    <!-- 复诊管理 -->
+    <view class="section-card">
+      <text class="section-title">复诊管理</text>
+
+      <view wx:if="{{!showFollowUpForm}}" class="followup-status" bindtap="showFollowUpFormAction">
+        <view class="followup-info">
+          <text wx:if="{{caseData.followUp?.needed && !caseData.followUp?.completed}}"
+            class="followup-badge active">待复诊</text>
+          <text wx:if="{{caseData.followUp?.completed}}" class="followup-badge done">已完成</text>
+          <text wx:if="{{!caseData.followUp?.needed}}" class="followup-badge none">未设置</text>
+          <text class="followup-note" wx:if="{{caseData.followUp?.note}}">
+            {{caseData.followUp.note}}
+          </text>
+        </view>
+        <text class="followup-edit">点击设置 ></text>
+      </view>
+
+      <view wx:if="{{showFollowUpForm}}" class="followup-form">
+        <view class="form-row">
+          <text class="form-label">需要复诊</text>
+          <switch checked="{{formNeeded}}" color="#A5D7E8" bindchange="toggleNeeded"></switch>
+        </view>
+        <view class="form-row" wx:if="{{formNeeded}}">
+          <text class="form-label">复诊日期</text>
+          <picker mode="date" value="{{formDate}}" bindchange="chooseDate">
+            <text class="form-value">{{formDate || '选择日期'}}</text>
+          </picker>
+        </view>
+        <view class="form-row" wx:if="{{formNeeded}}">
+          <text class="form-label">备注</text>
+          <input class="form-input" placeholder="复诊备注（可选）" value="{{formNote}}" bindinput="inputNote" />
+        </view>
+        <view class="form-actions">
+          <button class="form-btn cancel" bindtap="cancelFollowUp">取消</button>
+          <button class="form-btn save" bindtap="saveFollowUp" wx:if="{{formNeeded}}">保存</button>
+          <button class="form-btn remove" bindtap="removeFollowUp" wx:if="{{!formNeeded && caseData.followUp?.needed}}">取消复诊</button>
+        </view>
+      </view>
+
+      <view class="complete-section" wx:if="{{caseData.followUp?.needed && !caseData.followUp?.completed}}">
+        <button class="complete-btn" bindtap="completeFollowUp">标记复诊已完成</button>
+      </view>
+    </view>
+  </view>
+</scroll-view>

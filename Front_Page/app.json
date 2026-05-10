@@ -15,7 +15,10 @@
     "pages/user/user",
     "pages/user/pet/pet",
     "pages/user/health/health",
-    "pages/message/message"
+    "pages/message/message",
+    "pages/doctor/doctor",
+    "pages/doctor/cases/cases",
+    "pages/doctor/cases/detail/detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

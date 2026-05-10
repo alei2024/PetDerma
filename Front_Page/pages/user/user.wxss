@@ -386,7 +386,8 @@ page {
 .functions-grid {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 15rpx;
   width: 100%;
   box-sizing: border-box;
@@ -927,6 +928,17 @@ page {
 
 .auth-confirm-btn:active {
   background-color: #06ad56;
+}
+
+/* 医生工作台入口 */
+.doctor-entry {
+  background: linear-gradient(135deg, #e8f4f8, #f0f9ff) !important;
+  border-color: #A5D7E8 !important;
+}
+
+.doctor-icon {
+  border-color: #A5D7E8 !important;
+  background: white !important;
 }
 
 /* 响应式适配 */

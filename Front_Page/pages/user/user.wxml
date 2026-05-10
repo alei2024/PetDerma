@@ -129,6 +129,14 @@
           </view>
           <text class="function-name">反馈建议</text>
         </view>
+
+        <!-- B 端入口：医生工作台 -->
+        <view class="function-item doctor-entry" bindtap="navigateToDoctor">
+          <view class="function-icon-container doctor-icon">
+            <text class="function-emoji">🏥</text>
+          </view>
+          <text class="function-name">医生工作台</text>
+        </view>
       </view>
     </view>
   </view>
