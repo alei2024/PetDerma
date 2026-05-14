@@ -61,3 +61,6 @@ Front_Page/utils/network-debug.js
 *.bak
 *.backup
 *.orig
+
+# 团队内部需求清单(不入库)
+大创完善清单.md
