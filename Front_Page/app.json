@@ -16,6 +16,13 @@
     "pages/user/pet/pet",
     "pages/user/health/health",
     "pages/user/diagnosis-list/diagnosis-list",
+    "pages/user/tracking/tracking",
+    "pages/user/tracking/detail/detail",
+    "pages/user/tracking/new-entry/new-entry",
+    "pages/user/risk/risk",
+    "pages/hospital/hospital",
+    "pages/hospital/detail/detail",
+    "pages/dashboard/dashboard",
     "pages/message/message"
   ],
   "window": {

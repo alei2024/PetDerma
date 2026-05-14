@@ -1,0 +1,92 @@
+<navigation-bar title="病灶跟踪" back="{{true}}" color="white" background="#4a90b8"></navigation-bar>
+
+<scroll-view class="page" scroll-y enhanced="{{true}}">
+  <view class="hero">
+    <view class="hero-decor d1"></view>
+    <view class="hero-decor d2"></view>
+    <text class="hero-eyebrow">RECOVERY TRACKING</text>
+    <text class="hero-title">病灶愈合追踪</text>
+    <text class="hero-subtitle">每一次记录,都让恢复更可见</text>
+    <view class="hero-stats">
+      <view class="hero-stat">
+        <text class="hs-num">{{list.length}}</text>
+        <text class="hs-label">跟踪档案</text>
+      </view>
+      <view class="hero-stat-divider"></view>
+      <view class="hero-stat">
+        <text class="hs-num">AI</text>
+        <text class="hs-label">趋势分析</text>
+      </view>
+      <view class="hero-stat-divider"></view>
+      <view class="hero-stat">
+        <text class="hs-num">7+</text>
+        <text class="hs-label">数字医疗</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="list-section">
+    <view class="section-header">
+      <text class="section-title">我的档案</text>
+      <text class="section-action" bindtap="goNewEntry">+ 新增记录</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="state state-loading">
+      <text>加载中...</text>
+    </view>
+
+    <view wx:elif="{{empty}}" class="state state-empty">
+      <text class="empty-icon">📋</text>
+      <text class="empty-title">还没有跟踪档案</text>
+      <text class="empty-desc">在诊断结果页点击「加入跟踪」即可建立档案</text>
+    </view>
+
+    <block wx:else>
+      <block wx:for="{{list}}" wx:key="_id">
+        <view class="track-card track-{{item.trendType}}" bindtap="onTapItem" data-id="{{item._id}}">
+          <view class="track-card-bg"></view>
+
+          <image class="track-img" src="{{item.latestImage}}" mode="aspectFill"></image>
+
+          <view class="track-body">
+            <view class="track-row1">
+              <text class="track-name">{{item.lesionName}}</text>
+              <view class="track-trend-pill">
+                <text class="trend-icon">{{item.trendIcon}}</text>
+                <text>{{item.trend}}</text>
+              </view>
+            </view>
+
+            <view class="track-meta">
+              <text class="meta-item">{{item.petName}}</text>
+              <text class="meta-dot">·</text>
+              <text class="meta-item">{{item.bodyPart}}</text>
+              <text class="meta-dot">·</text>
+              <text class="meta-item">{{item.diagnosisName}}</text>
+            </view>
+
+            <view class="track-score-row">
+              <view class="score-block">
+                <text class="score-num">{{item.currentScore}}</text>
+                <text class="score-unit">/100</text>
+              </view>
+              <view class="score-bar">
+                <view class="score-bar-fill" style="width: {{item.currentScore}}%;"></view>
+              </view>
+            </view>
+
+            <view class="track-footer">
+              <text class="footer-info">{{item.entryCount}} 次记录</text>
+              <text wx:if="{{item.daysToHeal}}" class="footer-predict">预计 {{item.daysToHeal}} 天愈合 ›</text>
+              <text wx:else class="footer-info">查看详情 ›</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+  </view>
+</scroll-view>
+
+<view class="fab" bindtap="goNewEntry">
+  <text>+</text>
+</view>

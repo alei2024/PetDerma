@@ -22,7 +22,9 @@
     "disableUseStrict": false,
     "condition": false,
     "swc": false,
-    "disableSWC": true
+    "disableSWC": true,
+    "urlCheck": false,
+    "checkSiteMap": false
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},

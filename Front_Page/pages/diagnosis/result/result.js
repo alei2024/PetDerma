@@ -453,6 +453,125 @@ Page({
     }
   },
   
+  // 跳到附近医院页(带诊断作为推荐过滤)
+  findHospital: function () {
+    const disease = this.data.diagnosisResult?.diseaseName || "";
+    wx.navigateTo({
+      url: `/pages/hospital/hospital?disease=${encodeURIComponent(disease)}`,
+    });
+  },
+
+  // 上传单张本地临时图,返回服务器 URL;已是远程/静态路径则原样返回
+  _uploadOne(filePath) {
+    const app = getApp();
+    const baseUrl = app.globalData.baseURL || app.globalData.baseUrl;
+    const token = wx.getStorageSync("token");
+    if (!filePath || /^https?:\/\//.test(filePath) || filePath.startsWith("/images/")) {
+      return Promise.resolve(filePath);
+    }
+    return new Promise((resolve, reject) => {
+      wx.uploadFile({
+        url: `${baseUrl}/api/upload/image`,
+        filePath,
+        name: "file",
+        header: token ? { Authorization: `Bearer ${token}` } : {},
+        success: (res) => {
+          try {
+            const body = JSON.parse(res.data || "{}");
+            if (res.statusCode >= 200 && res.statusCode < 300 && body.success && body.data?.url) {
+              resolve(body.data.url);
+            } else {
+              reject(new Error(body.message || "上传失败"));
+            }
+          } catch (e) {
+            reject(new Error("响应解析失败"));
+          }
+        },
+        fail: (err) => reject(new Error(err.errMsg || "网络错误")),
+      });
+    });
+  },
+
+  // 加入病灶跟踪
+  addToTracking: function () {
+    const token = wx.getStorageSync("token");
+    if (!token) {
+      wx.showToast({ title: "请先登录", icon: "none" });
+      return;
+    }
+    const { petId, petName, petType, allImages, diagnosisResult, diagnosisRecordId } = this.data;
+    if (!petId) {
+      wx.showToast({ title: "缺少宠物信息", icon: "none" });
+      return;
+    }
+    wx.showModal({
+      title: "建立跟踪档案",
+      content: "为这个患处起个名字(例如:背部红斑)",
+      editable: true,
+      placeholderText: "背部红斑",
+      success: async (mres) => {
+        if (!mres.confirm) return;
+        const lesionName = (mres.content || "").trim() || "未命名患处";
+        const app = getApp();
+        wx.showLoading({ title: "上传中...", mask: true });
+
+        // 1. 把本地临时图先上传成永久 URL
+        let uploadedImages = [];
+        try {
+          for (const p of allImages || []) {
+            const url = await this._uploadOne(p);
+            uploadedImages.push(url);
+          }
+        } catch (err) {
+          wx.hideLoading();
+          wx.showToast({ title: `图片上传失败:${err.message}`, icon: "none" });
+          return;
+        }
+
+        wx.showLoading({ title: "创建中...", mask: true });
+        app
+          .request({
+            url: "/api/tracking",
+            method: "POST",
+            data: {
+              petId,
+              petName,
+              petType,
+              lesionName,
+              bodyPart: "未指定",
+              diagnosisName: diagnosisResult.diseaseName,
+              firstEntry: {
+                imageList: uploadedImages,
+                severity: diagnosisResult.severity || 3,
+                confidence: diagnosisResult.confidence || 0,
+                rednessScore: 50,
+                areaScore: 50,
+                notes: "首次记录(诊断结果自动导入)",
+                diagnosisRecordId: diagnosisRecordId || null,
+              },
+            },
+          })
+          .then((res) => {
+            wx.hideLoading();
+            if (res.statusCode === 201 && res.data.success) {
+              wx.showToast({ title: "已加入跟踪", icon: "success" });
+              setTimeout(() => {
+                wx.navigateTo({
+                  url: `/pages/user/tracking/detail/detail?id=${res.data.data._id}`,
+                });
+              }, 600);
+            } else {
+              wx.showToast({ title: res.data?.message || "创建失败", icon: "none" });
+            }
+          })
+          .catch(() => {
+            wx.hideLoading();
+            wx.showToast({ title: "网络错误", icon: "none" });
+          });
+      },
+    });
+  },
+
   // 开始智能问诊
   startChat: function() {
     // 跳转到智能问诊页面，并传递相关参数

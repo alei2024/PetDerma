@@ -1,0 +1,455 @@
+page {
+  --accent-deep: #2c5f7c;
+  --accent-mid: #4a90b8;
+  --accent-soft: #a5d7e8;
+  --accent-mint: #a8e6cf;
+  --accent-green: #5dd39e;
+  --accent-warn: #ee6c4d;
+  --bg-page: #f4f7fa;
+  --text-dark: #1f2d3a;
+  --text-gray: #6b7886;
+  --text-light: #9aa6b2;
+  background: linear-gradient(180deg, #d4ebf4 0%, #f4f7fa 28%, #f4f7fa 100%);
+}
+
+/* 强制 border-box——项目 app.json 设了 defaultContentBox:true,
+   不显式覆盖会让 padding 加在 width 之外导致整体溢出右侧 */
+view, scroll-view, image, text, canvas {
+  box-sizing: border-box;
+}
+
+.page {
+  height: 100vh;
+  width: 100%;
+  padding: 16rpx 22rpx 200rpx;
+  box-sizing: border-box;
+}
+
+.loading {
+  text-align: center;
+  padding: 200rpx 0;
+  color: var(--text-light);
+}
+
+/* ===== Hero ===== */
+.hero {
+  position: relative;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 28rpx;
+  color: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 12rpx 36rpx rgba(44, 95, 124, 0.22);
+}
+.hero-improving {
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #4a90b8 0%, #2c5f7c 100%);
+}
+.hero-stable {
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #6dd5ed 0%, #2980b9 100%);
+}
+.hero-worsening {
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #f6a96b 0%, #ee6c4d 100%);
+}
+.hero-healed {
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #56ccaf 0%, #1d8a5b 100%);
+}
+.hero-decor {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero-decor.d1 {
+  width: 240rpx;
+  height: 240rpx;
+  top: -90rpx;
+  right: -70rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 70%);
+}
+.hero-decor.d2 {
+  width: 160rpx;
+  height: 160rpx;
+  bottom: -50rpx;
+  left: 30rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 70%);
+}
+
+.meta-pill {
+  position: relative;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2rpx solid rgba(255, 255, 255, 0.35);
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  margin-bottom: 16rpx;
+  z-index: 2;
+}
+
+.lesion-name {
+  position: relative;
+  display: block;
+  font-size: 50rpx;
+  font-weight: 800;
+  letter-spacing: 1rpx;
+  margin-bottom: 4rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+.diagnosis {
+  position: relative;
+  display: block;
+  font-size: 26rpx;
+  opacity: 0.9;
+  margin-bottom: 28rpx;
+  z-index: 2;
+}
+
+.hero-meters {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  z-index: 2;
+}
+
+.big-score {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+  padding: 18rpx 26rpx 14rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 180rpx;
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.12);
+}
+.big-score-row {
+  display: flex;
+  align-items: baseline;
+}
+.big-score-num {
+  font-size: 64rpx;
+  font-weight: 800;
+  color: var(--accent-deep);
+  line-height: 1;
+  letter-spacing: -2rpx;
+}
+.big-score-unit {
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.big-score-label {
+  font-size: 22rpx;
+  color: var(--text-gray);
+  margin-top: 4rpx;
+  letter-spacing: 2rpx;
+}
+
+.trend-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.trend-line {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.trend-icon-big {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+.trend-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  flex: 1;
+}
+.trend-predict {
+  font-size: 24rpx;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2rpx solid rgba(255, 255, 255, 0.35);
+  padding: 10rpx 16rpx;
+  border-radius: 18rpx;
+  line-height: 1.4;
+}
+.trend-predict.warn {
+  background: rgba(0, 0, 0, 0.2);
+}
+.predict-num {
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+/* ===== 通用卡 ===== */
+.card {
+  background: #ffffff;
+  border-radius: 28rpx;
+  padding: 24rpx 22rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 6rpx 20rpx rgba(74, 144, 184, 0.06);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.card-title::before {
+  content: "";
+  width: 8rpx;
+  height: 26rpx;
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent-mid));
+  border-radius: 4rpx;
+}
+.card-sub {
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+
+/* ===== Chart ===== */
+.chart-wrap {
+  width: 100%;
+  margin-bottom: 14rpx;
+}
+.chart-canvas {
+  width: 100%;
+  display: block;
+  /* image 的 mode=widthFix 会自动按宽度等比缩放高度,不会出现原生 canvas 不跟滚问题 */
+}
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 32rpx;
+  font-size: 22rpx;
+  color: var(--text-gray);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.legend-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+}
+.legend-dot.l1 {
+  background: var(--accent-mid);
+  box-shadow: 0 0 0 3rpx #ffffff, 0 0 0 4rpx var(--accent-mid);
+}
+.legend-dot.l2 {
+  background: var(--accent-warn);
+  box-shadow: 0 0 0 3rpx #ffffff, 0 0 0 4rpx var(--accent-warn);
+}
+
+/* ===== Alert ===== */
+.alert-card {
+  background: linear-gradient(135deg, rgba(255, 229, 168, 0.6), rgba(255, 200, 112, 0.25));
+  border: 2rpx solid rgba(240, 168, 104, 0.5);
+  border-radius: 24rpx;
+  padding: 20rpx 22rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.alert-text {
+  font-size: 24rpx;
+  color: #8a5a2b;
+  line-height: 1.6;
+}
+.alert-icon {
+  margin-right: 6rpx;
+}
+
+/* ===== Timeline ===== */
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+.tl-item {
+  display: flex;
+  gap: 16rpx;
+  padding-bottom: 22rpx;
+}
+.tl-dot-col {
+  width: 28rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 8rpx;
+}
+.tl-line {
+  position: absolute;
+  top: -22rpx;
+  width: 3rpx;
+  height: 26rpx;
+  background: linear-gradient(180deg, transparent, rgba(74, 144, 184, 0.3));
+  left: 50%;
+  transform: translateX(-50%);
+}
+.tl-dot {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+  background: var(--accent-mid);
+  border: 4rpx solid #ffffff;
+  box-shadow: 0 0 0 2rpx var(--accent-mid);
+  flex-shrink: 0;
+  z-index: 2;
+}
+.tl-dot-active {
+  background: var(--accent-warn);
+  box-shadow: 0 0 0 2rpx var(--accent-warn);
+  width: 22rpx;
+  height: 22rpx;
+}
+.tl-body {
+  flex: 1;
+  min-width: 0;
+  background: #f7fafc;
+  border-radius: 20rpx;
+  padding: 16rpx 14rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+.tl-row1 {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.tl-day {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--accent-deep);
+}
+.tl-date {
+  font-size: 22rpx;
+  color: var(--text-light);
+  flex: 1;
+}
+.tl-score-pill {
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent-mid));
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 4rpx 14rpx;
+  border-radius: 18rpx;
+}
+.tl-images {
+  display: flex;
+  gap: 10rpx;
+  flex-wrap: wrap;
+}
+.tl-img {
+  width: 130rpx;
+  height: 130rpx;
+  border-radius: 14rpx;
+  background: #eef3f7;
+}
+.tl-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  width: 100%;
+}
+.tl-meter {
+  display: grid;
+  grid-template-columns: 70rpx 1fr 70rpx;
+  column-gap: 10rpx;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+.tl-meter-label {
+  font-size: 22rpx;
+  color: var(--text-gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tl-meter-bar {
+  height: 10rpx;
+  background: #e9eef3;
+  border-radius: 6rpx;
+  overflow: hidden;
+  width: 100%;
+}
+.tl-meter-fill {
+  height: 100%;
+  border-radius: 6rpx;
+}
+.mtr-sev {
+  background: linear-gradient(90deg, #ffd76a, #ee6c4d);
+}
+.mtr-red {
+  background: linear-gradient(90deg, #ffb3c1, #ee5a6f);
+}
+.mtr-area {
+  background: linear-gradient(90deg, #a8e6cf, #4a90b8);
+}
+.tl-meter-num {
+  font-size: 22rpx;
+  color: var(--text-gray);
+  text-align: right;
+  white-space: nowrap;
+  overflow: visible;
+}
+.tl-notes {
+  font-size: 24rpx;
+  color: var(--text-dark);
+  background: rgba(165, 215, 232, 0.18);
+  padding: 10rpx 14rpx;
+  border-radius: 12rpx;
+  line-height: 1.5;
+  border-left: 4rpx solid var(--accent-soft);
+}
+
+/* ===== Action bar ===== */
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  padding: 24rpx 28rpx calc(24rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(244, 247, 250, 1) 0%, rgba(244, 247, 250, 0.92) 60%, rgba(244, 247, 250, 0) 100%);
+}
+.action-bar .btn {
+  width: 100%;
+  height: 96rpx;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #4a90b8, #2c5f7c);
+  color: #ffffff;
+  box-shadow: 0 8rpx 22rpx rgba(44, 95, 124, 0.35);
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}

@@ -1,0 +1,201 @@
+page {
+  --accent-deep: #2c5f7c;
+  --accent-mid: #4a90b8;
+  --accent-soft: #a5d7e8;
+  --accent-warn: #ee6c4d;
+  --text-dark: #1f2d3a;
+  --text-gray: #6b7886;
+  --text-light: #9aa6b2;
+  background: linear-gradient(180deg, #d4ebf4 0%, #f4f7fa 28%, #f4f7fa 100%);
+}
+
+view, scroll-view, image, text, map {
+  box-sizing: border-box;
+}
+
+.page {
+  height: 100vh;
+  width: 100%;
+  padding: 16rpx 22rpx 200rpx;
+}
+
+.loading {
+  text-align: center;
+  padding: 200rpx 0;
+  color: var(--text-light);
+}
+
+.hero {
+  position: relative;
+  border-radius: 28rpx;
+  padding: 28rpx;
+  color: #ffffff;
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #4a90b8 0%, #2c5f7c 100%);
+  margin-bottom: 22rpx;
+  overflow: hidden;
+  box-shadow: 0 10rpx 28rpx rgba(44, 95, 124, 0.2);
+}
+.hero-decor {
+  position: absolute;
+  width: 200rpx;
+  height: 200rpx;
+  top: -70rpx;
+  right: -50rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 70%);
+}
+.rec-pill {
+  position: relative;
+  display: inline-block;
+  background: rgba(255, 229, 168, 0.32);
+  border: 2rpx solid rgba(255, 229, 168, 0.5);
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  margin-bottom: 14rpx;
+  color: #ffe5a8;
+  font-weight: 700;
+}
+.hosp-name {
+  position: relative;
+  font-size: 44rpx;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 12rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.16);
+}
+.hosp-meta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  opacity: 0.94;
+}
+.meta-divider { opacity: 0.6; }
+.meta-warn {
+  background: rgba(238, 108, 77, 0.3);
+  padding: 2rpx 10rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 22rpx;
+  margin-bottom: 18rpx;
+  box-shadow: 0 4rpx 16rpx rgba(74, 144, 184, 0.06);
+}
+.map-card {
+  padding: 0;
+  overflow: hidden;
+  height: 320rpx;
+}
+.mini-map {
+  width: 100%;
+  height: 100%;
+}
+.card-header {
+  margin-bottom: 14rpx;
+}
+.card-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.card-title::before {
+  content: "";
+  width: 6rpx;
+  height: 22rpx;
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent-mid));
+  border-radius: 4rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  padding: 8rpx 0;
+}
+.info-icon {
+  font-size: 28rpx;
+  width: 40rpx;
+}
+.info-body {
+  flex: 1;
+}
+.info-label {
+  font-size: 22rpx;
+  color: var(--text-light);
+  display: block;
+  margin-bottom: 2rpx;
+}
+.info-value {
+  font-size: 26rpx;
+  color: var(--text-dark);
+  display: block;
+  line-height: 1.4;
+}
+.divider {
+  height: 1rpx;
+  background: rgba(165, 215, 232, 0.3);
+  margin: 6rpx 0;
+}
+
+.spec-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+.spec-tag {
+  font-size: 22rpx;
+  background: rgba(165, 215, 232, 0.22);
+  color: var(--accent-mid);
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+  font-weight: 600;
+}
+
+.desc {
+  font-size: 26rpx;
+  color: var(--text-gray);
+  line-height: 1.7;
+}
+
+.action-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 100;
+  padding: 24rpx 28rpx calc(24rpx + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 16rpx;
+  background: linear-gradient(to top, rgba(244, 247, 250, 1) 0%, rgba(244, 247, 250, 0.92) 60%, rgba(244, 247, 250, 0) 100%);
+}
+.action-bar .btn {
+  flex: 1;
+  height: 92rpx;
+  border-radius: 46rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  gap: 8rpx;
+}
+.btn-secondary {
+  background: #ffffff;
+  color: var(--accent-mid);
+  border: 2rpx solid rgba(74, 144, 184, 0.3);
+}
+.btn-primary {
+  background: linear-gradient(135deg, #4a90b8, #2c5f7c);
+  color: #ffffff;
+  box-shadow: 0 8rpx 22rpx rgba(44, 95, 124, 0.3);
+}
+.btn-primary:active, .btn-secondary:active { transform: scale(0.97); }

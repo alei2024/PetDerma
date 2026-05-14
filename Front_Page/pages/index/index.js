@@ -7,6 +7,7 @@ Page({
     petList: [],
     hasNewPost: false,
     hasNewArticle: true,
+    greeting: "你好",
     healthTip: "定期为宠物检查皮肤状况，发现异常及时就诊",
     // 通知相关
     unreadCount: 0,
@@ -175,6 +176,7 @@ Page({
   },
 
   onLoad: function () {
+    this.updateGreeting();
     this.randomTip();
     this.initPetList();
     this.initDailyKnowledge();
@@ -184,12 +186,35 @@ Page({
   },
 
   onShow: function () {
-    // 每次页面显示时随机更换健康提示
+    // 每次页面显示时刷新问候语和健康提示
+    this.updateGreeting();
     this.randomTip();
     // 同步宠物列表（避免其他页面更新未反映）
     this.initPetList();
     // 刷新未读数量
     this.loadUnreadCount();
+  },
+
+  // 根据时间生成问候语
+  updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = "你好";
+    if (hour >= 5 && hour < 11) greeting = "早上好";
+    else if (hour >= 11 && hour < 13) greeting = "中午好";
+    else if (hour >= 13 && hour < 18) greeting = "下午好";
+    else if (hour >= 18 && hour < 23) greeting = "晚上好";
+    else greeting = "夜深啦";
+    this.setData({ greeting });
+  },
+
+  // 跳转到宠物管理页
+  navigateToPets() {
+    wx.navigateTo({ url: "/pages/user/pet/pet" });
+  },
+
+  // 跳转到宠物管理页(添加)
+  navigateToAddPet() {
+    wx.navigateTo({ url: "/pages/user/pet/pet?action=add" });
   },
 
   initPetList() {

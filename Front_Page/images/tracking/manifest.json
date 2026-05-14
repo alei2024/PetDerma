@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-05-11T03:03:32.165Z",
+  "records": [
+    {
+      "day": 1,
+      "title": "File:Sarcoptes-Mange-Dog.JPG",
+      "license": "CC BY 3.0",
+      "path": "/images/tracking/day1.jpg",
+      "size": 169187,
+      "width": 2454,
+      "height": 1706,
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Sarcoptes-Mange-Dog.JPG/960px-Sarcoptes-Mange-Dog.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+    },
+    {
+      "day": 2,
+      "title": "File:Eosinophilic plaque.jpg",
+      "license": "CC BY-SA 3.0",
+      "path": "/images/tracking/day2.jpg",
+      "size": 78402,
+      "width": 400,
+      "height": 315,
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/69/Eosinophilic_plaque.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+    },
+    {
+      "day": 3,
+      "title": "File:Dogmangeeee.jpg",
+      "license": "Public domain",
+      "path": "/images/tracking/day3.jpg",
+      "size": 50903,
+      "width": 597,
+      "height": 444,
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/46/Dogmangeeee.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+    },
+    {
+      "day": 4,
+      "title": "File:Hot spot.jpg",
+      "license": "CC BY-SA 4.0",
+      "path": "/images/tracking/day4.jpg",
+      "size": 186841,
+      "width": 4608,
+      "height": 3456,
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Hot_spot.jpg/960px-Hot_spot.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+    },
+    {
+      "day": 5,
+      "title": "File:AlopeciaX.jpg",
+      "license": "CC BY 3.0",
+      "path": "/images/tracking/day5.jpg",
+      "size": 142912,
+      "width": 3004,
+      "height": 2112,
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/AlopeciaX.jpg/960px-AlopeciaX.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+    },
+    {
+      "day": 6,
+      "title": "File:Chipin Puppy (10 months old).jpg",
+      "license": "CC BY 4.0",
+      "path": "/images/tracking/day6.jpg",
+      "size": 352601,
+      "width": 3347,
+      "height": 4462,
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Chipin_Puppy_%2810_months_old%29.jpg/960px-Chipin_Puppy_%2810_months_old%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+    }
+  ],
+  "source": "curated"
+}

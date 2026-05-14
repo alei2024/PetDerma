@@ -95,6 +95,46 @@
             <text class="function-desc">查看诊断记录</text>
           </view>
         </view>
+
+        <view class="plan-function-item" bindtap="navigateToTracking">
+          <view class="function-icon">
+            <text class="icon-text">📈</text>
+          </view>
+          <view class="function-content">
+            <text class="function-title">病灶跟踪</text>
+            <text class="function-desc">愈合曲线 · 趋势预测</text>
+          </view>
+        </view>
+
+        <view class="plan-function-item" bindtap="navigateToHospital">
+          <view class="function-icon">
+            <text class="icon-text">🏥</text>
+          </view>
+          <view class="function-content">
+            <text class="function-title">附近宠物医院</text>
+            <text class="function-desc">地图导航 · 一键拨号</text>
+          </view>
+        </view>
+
+        <view class="plan-function-item" bindtap="navigateToRisk">
+          <view class="function-icon">
+            <text class="icon-text">🎯</text>
+          </view>
+          <view class="function-content">
+            <text class="function-title">风险评估</text>
+            <text class="function-desc">5 维雷达 · 个性化建议</text>
+          </view>
+        </view>
+
+        <view class="plan-function-item" bindtap="navigateToDashboard">
+          <view class="function-icon">
+            <text class="icon-text">📊</text>
+          </view>
+          <view class="function-content">
+            <text class="function-title">数据大屏</text>
+            <text class="function-desc">实时聚合 · 答辩可视化</text>
+          </view>
+        </view>
       </view>
     </view>
 

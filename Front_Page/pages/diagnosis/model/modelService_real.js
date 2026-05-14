@@ -6,9 +6,9 @@
 // API配置
 const API_CONFIG = {
   // 开发环境使用本地地址，生产环境需要配置合法域名
-  BASE_URL: 'http://127.0.0.1:5000',
+  BASE_URL: 'http://127.0.0.1:5050',
   // 备用地址（如果主地址不可用）
-  BACKUP_URL: 'http://localhost:5000',
+  BACKUP_URL: 'http://localhost:5050',
   ENDPOINTS: {
     SINGLE_PREDICT: '/predict',
     MULTIPLE_PREDICT: '/predict_multiple', // 如果你没实现，可以先不用

@@ -1,0 +1,106 @@
+<navigation-bar title="新增记录" back="{{true}}" color="white" background="#4a90b8"></navigation-bar>
+
+<scroll-view class="page" scroll-y enhanced="{{true}}">
+  <view class="hero">
+    <view class="hero-decor"></view>
+    <text class="hero-eyebrow">新增一条记录</text>
+    <text class="hero-title">{{lesionName || '跟踪档案'}}</text>
+    <text class="hero-sub">本次记录将自动计入愈合曲线</text>
+  </view>
+
+  <!-- ===== 图片 ===== -->
+  <view class="card">
+    <view class="card-header">
+      <text class="card-title">本次照片</text>
+      <text class="card-sub">最多 3 张</text>
+    </view>
+    <view class="img-grid">
+      <block wx:for="{{images}}" wx:key="*this">
+        <view class="img-item">
+          <image src="{{item}}" mode="aspectFill"></image>
+          <view class="img-remove" bindtap="removeImage" data-idx="{{index}}">×</view>
+        </view>
+      </block>
+      <view wx:if="{{images.length < 3}}" class="img-add" bindtap="pickImages">
+        <text class="img-add-icon">+</text>
+        <text class="img-add-text">拍照/相册</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 三个滑块 ===== -->
+  <view class="card">
+    <view class="card-header">
+      <text class="card-title">本次评估</text>
+      <text class="card-sub">愈合分:{{computePreview}}</text>
+    </view>
+
+    <view class="meter-row">
+      <view class="meter-label">
+        <text class="meter-name">严重程度</text>
+        <text class="meter-value">{{severity}} / 5</text>
+      </view>
+      <slider min="1" max="5" step="1" value="{{severity}}"
+              bindchange="onSeverity" block-size="22" activeColor="#ee6c4d"
+              backgroundColor="#eef3f7"></slider>
+      <view class="meter-hint">
+        <text>轻微</text>
+        <text>严重</text>
+      </view>
+    </view>
+
+    <view class="meter-row">
+      <view class="meter-label">
+        <text class="meter-name">红肿程度</text>
+        <text class="meter-value">{{rednessScore}}</text>
+      </view>
+      <slider min="0" max="100" step="5" value="{{rednessScore}}"
+              bindchange="onRedness" block-size="22" activeColor="#ee5a6f"
+              backgroundColor="#eef3f7"></slider>
+      <view class="meter-hint">
+        <text>无红肿</text>
+        <text>非常严重</text>
+      </view>
+    </view>
+
+    <view class="meter-row">
+      <view class="meter-label">
+        <text class="meter-name">病灶范围</text>
+        <text class="meter-value">{{areaScore}}</text>
+      </view>
+      <slider min="0" max="100" step="5" value="{{areaScore}}"
+              bindchange="onArea" block-size="22" activeColor="#4a90b8"
+              backgroundColor="#eef3f7"></slider>
+      <view class="meter-hint">
+        <text>已基本消退</text>
+        <text>大面积</text>
+      </view>
+    </view>
+
+    <!-- 实时预览 -->
+    <view class="preview">
+      <view class="preview-label">本次愈合评分</view>
+      <view class="preview-row">
+        <view class="preview-num">{{computePreview}}</view>
+        <view class="preview-bar">
+          <view class="preview-fill" style="width: {{computePreview}}%;"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 备注 ===== -->
+  <view class="card">
+    <view class="card-header">
+      <text class="card-title">备注(可选)</text>
+    </view>
+    <textarea class="notes" placeholder="例如:用药后第3天,瘙痒明显减轻..." maxlength="200"
+              value="{{notes}}" bindinput="onNotes" auto-height></textarea>
+  </view>
+</scroll-view>
+
+<view class="action-bar">
+  <view class="btn btn-primary {{submitting ? 'disabled' : ''}}" bindtap="submit">
+    <text>保存记录</text>
+  </view>
+</view>

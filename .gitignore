@@ -19,6 +19,10 @@ Front_Page/app.js
 Community_backend/data/*
 !Community_backend/data/.gitkeep
 
+# 项目本地便携版 MongoDB(uninstall-mongodb.sh 一键清除)
+.mongodb-portable/
+.mongodb-data/
+
 # ================================
 # 日志文件
 # ================================

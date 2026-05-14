@@ -242,6 +242,10 @@ app.use("/api/pets", petRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/diagnosis", diagnosisRoutes);
 app.use("/api/consultation", consultationRoutes);
+app.use("/api/tracking", require("./routes/tracking"));
+app.use("/api/hospitals", require("./routes/hospitals"));
+app.use("/api/dashboard", require("./routes/dashboard"));
+app.use("/api/risk", require("./routes/risk"));
 
 // 图片路由 - 设置特殊的响应头并注册路由
 app.use(

@@ -1,0 +1,103 @@
+<navigation-bar title="数据大屏" back="{{true}}" color="white" background="#0e1c2c"></navigation-bar>
+
+<scroll-view class="page" scroll-y enhanced="{{true}}">
+  <view wx:if="{{loading}}" class="loading">正在汇总数据...</view>
+
+  <block wx:else>
+    <view class="hero">
+      <view class="grid-deco"></view>
+      <text class="hero-eyebrow">DATA INTELLIGENCE</text>
+      <text class="hero-title">PetDerma 健康大屏</text>
+      <text class="hero-sub">实时聚合诊断 / 跟踪 / 医疗网络数据 · 更新于 {{generatedAt}}</text>
+    </view>
+
+    <!-- 大数字卡 -->
+    <view class="card-row">
+      <view class="big-card big-1">
+        <text class="bc-num">{{cards.diagnosisCount}}</text>
+        <text class="bc-label">累计诊断</text>
+      </view>
+      <view class="big-card big-2">
+        <text class="bc-num">{{cards.trackingCount}}</text>
+        <text class="bc-label">跟踪档案</text>
+      </view>
+    </view>
+    <view class="card-row">
+      <view class="big-card big-3">
+        <text class="bc-num">{{cards.userCount}}</text>
+        <text class="bc-label">注册用户</text>
+      </view>
+      <view class="big-card big-4">
+        <text class="bc-num">{{cards.hospitalCount}}</text>
+        <text class="bc-label">合作医院</text>
+      </view>
+    </view>
+
+    <!-- 7 天趋势 -->
+    <view class="dash-card">
+      <view class="dash-header">
+        <text class="dash-title">📈 最近 7 天诊断趋势</text>
+      </view>
+      <image wx:if="{{trendSvg}}" class="dash-chart" src="{{trendSvg}}" mode="widthFix" show-menu-by-longpress="{{false}}"></image>
+      <view wx:else class="dash-empty">暂无数据</view>
+    </view>
+
+    <!-- 病种分布 -->
+    <view class="dash-card">
+      <view class="dash-header">
+        <text class="dash-title">🦠 病种分布(TOP {{diseaseList.length}})</text>
+        <text class="dash-sub">基于 {{cards.diagnosisCount}} 次诊断</text>
+      </view>
+      <image wx:if="{{diseaseSvg}}" class="dash-chart" src="{{diseaseSvg}}" mode="widthFix" show-menu-by-longpress="{{false}}"></image>
+      <view wx:else class="dash-empty">暂无诊断数据</view>
+    </view>
+
+    <!-- 跟踪状态 -->
+    <view class="dash-card">
+      <view class="dash-header">
+        <text class="dash-title">🩺 病灶跟踪健康度</text>
+      </view>
+      <view class="track-stats">
+        <view class="ts-item ts-active">
+          <text class="ts-num">{{trackingStats.active}}</text>
+          <text class="ts-label">进行中</text>
+        </view>
+        <view class="ts-item ts-healed">
+          <text class="ts-num">{{trackingStats.healed}}</text>
+          <text class="ts-label">已愈合</text>
+        </view>
+        <view class="ts-item ts-relapsed">
+          <text class="ts-num">{{trackingStats.relapsed}}</text>
+          <text class="ts-label">复发中</text>
+        </view>
+        <view class="ts-item ts-avg">
+          <text class="ts-num">{{trackingStats.avgScore}}</text>
+          <text class="ts-label">平均愈合分</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 医院网络 -->
+    <view class="dash-card">
+      <view class="dash-header">
+        <text class="dash-title">🏥 医疗网络覆盖</text>
+        <text class="dash-sub">{{recommendedHospitals}} 家平台推荐</text>
+      </view>
+      <view class="city-list">
+        <block wx:for="{{cityCoverage}}" wx:key="city">
+          <view class="city-row">
+            <text class="city-name">{{item.city}}</text>
+            <view class="city-bar-wrap">
+              <view class="city-bar" style="width: {{item.count * 12}}%;"></view>
+            </view>
+            <text class="city-count">{{item.count}} 家</text>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="dash-foot">
+      <text>© PetDerma · 数据流由后端实时聚合</text>
+    </view>
+  </block>
+</scroll-view>

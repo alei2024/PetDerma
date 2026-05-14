@@ -1,403 +1,569 @@
 /* pages/diagnosis/result/result.wxss */
-/* 基础变量定义 */
-:root {
-  --bg-gray: #f6f8fa;
-  --text-dark: #333333;
-  --text-gray: #666666;
-  --primary-light: #a5d7e8;
-  --primary-blue: #4a90b8;
-  --danger-red: #ff6b6b;
-  --border-gray: #eeeeee;
+page {
+  --accent-deep: #2c5f7c;
+  --accent-mid: #4a90b8;
+  --accent-soft: #a5d7e8;
+  --accent-pink: #ffb3c1;
+  --accent-mint: #a8e6cf;
+  --accent-sun: #ffe5a8;
+  --warn: #ff6b6b;
+  --bg-page: #f4f7fa;
+  --text-dark: #1f2d3a;
+  --text-gray: #6b7886;
+  --text-light: #9aa6b2;
+  background: linear-gradient(180deg, #d4ebf4 0%, #f4f7fa 28%, #f4f7fa 100%);
 }
 
 .container {
-  padding: 30rpx;
-  background-color: var(--bg-gray);
+  padding: 24rpx 28rpx 220rpx;
+  box-sizing: border-box;
+  width: 100%;
   height: 100vh;
-  box-sizing: border-box;
-  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-  width: 100%;
-  padding-bottom: 200rpx; /* 增加底部内边距，为固定按钮留出更多空间 */
 }
 
-/* 通用卡片样式 */
-.card {
-  background-color: #fff;
+/* ===== Hero 诊断卡 ===== */
+.diagnosis-hero {
+  position: relative;
+  width: 100%;
+  border-radius: 32rpx;
+  padding: 32rpx 32rpx 28rpx;
+  margin-bottom: 28rpx;
+  color: #ffffff;
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: 0 12rpx 36rpx rgba(44, 95, 124, 0.2);
+}
+.diagnosis-hero.sev-mild {
+  background:
+    radial-gradient(140% 100% at 100% 0%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #6dd5ed 0%, #2980b9 100%);
+}
+.diagnosis-hero.sev-moderate {
+  background:
+    radial-gradient(140% 100% at 100% 0%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #f6a96b 0%, #ee6c4d 100%);
+}
+.diagnosis-hero.sev-severe {
+  background:
+    radial-gradient(140% 100% at 100% 0%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #ff7e7e 0%, #c0392b 100%);
+}
+
+.hero-decor {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero-decor.d1 {
+  width: 240rpx;
+  height: 240rpx;
+  top: -100rpx;
+  right: -80rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 70%);
+}
+.hero-decor.d2 {
+  width: 160rpx;
+  height: 160rpx;
+  bottom: -50rpx;
+  left: 30rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+.pet-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  padding: 6rpx 18rpx 6rpx 12rpx;
   border-radius: 24rpx;
-  max-width: 690rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.03);
-  overflow: hidden;
-}
-
-/* 图片展示区域 */
-.image-section {
-  width: 100%;
-  margin-bottom: 30rpx;
-  padding: 20rpx; /* 调整内边距 */
-  box-sizing: border-box;
-}
-
-.result-image-grid {
-  display: flex;
-  flex-wrap: wrap; /* 图片自动换行 */
-  gap: 16rpx;
-  width: 100%;
-}
-
-.result-image-item {
-  width: calc(33.33% - 12rpx); /* 3列布局 */
-  height: 200rpx;
-  border-radius: 16rpx;
-  object-fit: cover;
-}
-
-/* 图片标记提示 */
-.image-mark-tip {
-  margin-top: 16rpx;
-  padding: 8rpx 16rpx;
-  background-color: rgba(255, 107, 107, 0.1);
-  border-radius: 8rpx;
-  font-size: 24rpx;
-  color: var(--danger-red);
-  display: inline-block;
-}
-
-/* 诊断结果区域 */
-.result-section {
-  margin-bottom: 30rpx;
-  padding: 30rpx;
-  box-sizing: border-box;
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
-}
-
-.result-title {
-  font-size: 34rpx;
-  font-weight: bold;
-  color: var(--text-dark);
-}
-
-.pet-type {
-  font-size: 28rpx;
-  color: var(--primary-blue);
-  background-color: rgba(165, 215, 232, 0.2);
-  padding: 6rpx 16rpx;
-  border-radius: 20rpx;
-}
-
-.disease-info {
-  margin-bottom: 30rpx;
-}
-
-.disease-name {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: var(--text-dark);
-  margin-bottom: 24rpx;
-  line-height: 1.3;
-}
-
-/* 统一标题宽度，确保左侧对齐 */
-.confidence-label,
-.severity-label {
-  font-size: 28rpx;
-  color: #666;
-  margin-right: 16rpx;
-  width: 140rpx; /* 固定相同宽度 */
-  display: inline-block; /* 确保宽度生效 */
-  text-align: left; /* 文字左对齐 */
-}
-
-/* 可信度样式 */
-.confidence {
-  display: flex;
-  align-items: center;
   margin-bottom: 20rpx;
-  padding: 5rpx 0; /* 增加上下内边距，保持垂直对齐 */
+  z-index: 2;
+}
+.pet-pill-text {
+  font-size: 24rpx;
+  color: #ffffff;
+  font-weight: 600;
+}
+.pet-pill-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6rpx rgba(255, 255, 255, 0.8);
 }
 
-.confidence-bar-container {
-  flex: 1;
-  display: flex;
-  align-items: center;
+.disease-label {
+  position: relative;
+  font-size: 24rpx;
+  letter-spacing: 4rpx;
+  opacity: 0.85;
+  margin-bottom: 8rpx;
+  z-index: 2;
+  display: block;
 }
-
-.confidence-bar-bg {
-  flex: 1;
-  height: 16rpx;
-  background-color: #eee;
-  border-radius: 8rpx;
-  overflow: hidden;
-  margin-right: 16rpx;
-}
-
-.confidence-bar {
-  height: 100%;
-  background-color: #a5d7e8;
-  border-radius: 8rpx;
-}
-
-.confidence-value {
-  font-size: 28rpx;
-  color: ##a5d7e8;
-  font-weight: bold;
-  min-width: 80rpx; /* 固定宽度，防止数字跳动 */
-  text-align: right;
-}
-
-/* 严重程度样式 */
-.severity {
-  display: flex;
-  align-items: center;
-  padding: 5rpx 0; /* 与可信度保持相同上下内边距 */
-}
-
-.severity-indicators {
-  display: flex;
-  gap: 6rpx;
-  margin-right: 16rpx;
-  align-items: center;
-}
-
-.severity-indicator {
-  width: 10rpx;
-  height: 12rpx;
-  background-color: #ddd; /* 灰色默认状态 */
-  border-radius: 6rpx;
-}
-
-.severity-indicator.active {
-  background-color: #FF6B6B; /* 蓝色激活状态 */
-}
-
-.severity-text {
-  font-size: 28rpx;
-  font-weight: 500;
-  min-width: 100rpx; /* 固定宽度，防止文字跳动 */
-}
-
-/* 疾病描述样式 */
-.disease-description {
-  margin-top: 30rpx;
-  padding-top: 30rpx;
-  border-top: 2rpx solid var(--border-gray);
-}
-
-.description-title {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: var(--text-dark);
-  margin-bottom: 16rpx;
+.disease-name {
+  position: relative;
+  font-size: 50rpx;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 28rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.18);
+  z-index: 2;
   display: block;
 }
 
-.description-content {
+.hero-meters {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+  z-index: 2;
+}
+
+/* 圆环可信度 */
+.confidence-ring {
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 14rpx;
+  box-sizing: border-box;
+}
+.ring-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 4rpx 12rpx rgba(44, 95, 124, 0.1);
+}
+.ring-row {
+  display: flex;
+  align-items: baseline;
+}
+.ring-value {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: var(--accent-deep);
+  line-height: 1;
+}
+.ring-unit {
+  font-size: 24rpx;
+  color: var(--accent-mid);
+  font-weight: 600;
+  margin-left: 2rpx;
+}
+.ring-label {
+  font-size: 22rpx;
+  color: var(--text-gray);
+  margin-top: 4rpx;
+}
+
+/* 严重度 */
+.severity-gauge {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.gauge-label {
+  font-size: 24rpx;
+  letter-spacing: 2rpx;
+  opacity: 0.88;
+}
+.gauge-bar {
+  width: 100%;
+  height: 18rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 12rpx;
+  overflow: hidden;
+  position: relative;
+}
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffe5a8 0%, #ff7e7e 60%, #ffffff 100%);
+  border-radius: 12rpx;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 12rpx rgba(255, 255, 255, 0.5);
+}
+.gauge-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 2rpx;
+}
+
+/* ===== 通用卡片 ===== */
+.card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 28rpx;
+  padding: 28rpx 28rpx 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 6rpx 20rpx rgba(74, 144, 184, 0.06);
+  box-sizing: border-box;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.card-title::before {
+  content: "";
+  width: 8rpx;
+  height: 28rpx;
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent-mid));
+  border-radius: 4rpx;
+}
+.card-sub {
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+.card-tag {
+  font-size: 22rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 16rpx;
+  background: rgba(165, 215, 232, 0.25);
+  color: var(--accent-mid);
+}
+.card-tag.warn {
+  background: rgba(255, 107, 107, 0.12);
+  color: var(--warn);
+}
+
+/* ===== 图片网格 ===== */
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+.image-item {
+  width: calc(33.33% - 10rpx);
+  height: 200rpx;
+  border-radius: 18rpx;
+  object-fit: cover;
+  background: #eef3f7;
+}
+
+/* ===== 描述 ===== */
+.desc-text {
   font-size: 28rpx;
   color: var(--text-gray);
-  line-height: 1.6;
-  white-space: pre-line; /* 支持换行显示 */
+  line-height: 1.7;
+  white-space: pre-line;
 }
 
-/* 诊疗建议区域 */
-.advice-section {
-  margin-bottom: 320rpx; /* 大幅增加底部间距，确保内容不被按钮遮挡 */
-  padding: 30rpx;
-  box-sizing: border-box;
-}
-
-.advice-title {
-  font-size: 34rpx;
-  font-weight: bold;
-  color: var(--text-dark);
-  margin-bottom: 24rpx;
-  display: block;
-}
-
-.advice-tabs {
+/* ===== 概率排行 ===== */
+.prob-list {
   display: flex;
-  border-bottom: 2rpx solid var(--border-gray);
-  margin-bottom: 24rpx;
+  flex-direction: column;
+  gap: 18rpx;
+}
+.prob-item {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 16rpx 18rpx;
+  background: linear-gradient(135deg, #f7fafc 0%, #ffffff 100%);
+  border-radius: 18rpx;
+  border: 2rpx solid #eef3f7;
+}
+.rank-badge {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.08);
+}
+.prob-item.rank-0 .rank-badge {
+  background: linear-gradient(135deg, #ffd76a 0%, #ff9f43 100%);
+}
+.prob-item.rank-1 .rank-badge {
+  background: linear-gradient(135deg, #c5d3df 0%, #8a9bab 100%);
+}
+.prob-item.rank-2 .rank-badge {
+  background: linear-gradient(135deg, #d8a98c 0%, #a87554 100%);
+}
+.prob-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.prob-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.prob-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+.prob-pct {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--accent-mid);
+}
+.prob-bar {
+  width: 100%;
+  height: 12rpx;
+  background: #eef3f7;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.prob-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-soft), var(--accent-mid));
+  border-radius: 8rpx;
+  transition: width 0.5s ease;
 }
 
-.advice-tab {
+/* ===== 诊疗建议 ===== */
+.tab-bar {
+  display: flex;
+  background: #f4f7fa;
+  border-radius: 20rpx;
+  padding: 6rpx;
+  margin-bottom: 24rpx;
+  gap: 4rpx;
+}
+.tab {
   flex: 1;
   text-align: center;
   padding: 16rpx 0;
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: var(--text-gray);
-  position: relative;
-  transition: color 0.3s ease;
+  border-radius: 16rpx;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
 }
-
-.advice-tab.active {
-  color: var(--primary-blue);
-  font-weight: bold;
+.tab.active {
+  background: #ffffff;
+  color: var(--accent-deep);
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 184, 0.15);
 }
-
-.advice-tab.active::after {
-  content: "";
-  position: absolute;
-  bottom: -2rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60rpx;
-  height: 4rpx;
-  background-color: var(--primary-blue);
-  border-radius: 2rpx;
+.tab.active.tab-home {
+  color: #1d6fa5;
+}
+.tab.active.tab-medical {
+  color: #c0392b;
+}
+.tab.active.tab-prevent {
+  color: #2d8a5f;
 }
 
 .advice-content {
-  padding: 10rpx 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
 }
-
-.advice-item {
+.advice-step {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 20rpx;
+  gap: 16rpx;
+  padding: 16rpx 18rpx;
+  background: #f7fafc;
+  border-radius: 18rpx;
+  border-left: 6rpx solid var(--accent-soft);
 }
-
-.advice-item-dot {
-  width: 12rpx;
-  height: 12rpx;
+.advice-step.tab-home {
+  border-left-color: var(--accent-mid);
+  background: linear-gradient(90deg, rgba(165, 215, 232, 0.15), #f7fafc 60%);
+}
+.advice-step.tab-medical {
+  border-left-color: var(--warn);
+  background: linear-gradient(90deg, rgba(255, 107, 107, 0.1), #f7fafc 60%);
+}
+.advice-step.tab-prevent {
+  border-left-color: #5dd39e;
+  background: linear-gradient(90deg, rgba(168, 230, 207, 0.18), #f7fafc 60%);
+}
+.step-num {
+  width: 40rpx;
+  height: 40rpx;
   border-radius: 50%;
-  background-color: var(--primary-blue);
-  margin-top: 14rpx;
-  margin-right: 16rpx;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--accent-deep);
   flex-shrink: 0;
+  margin-top: 4rpx;
+  box-shadow: 0 2rpx 6rpx rgba(74, 144, 184, 0.15);
 }
-
-.advice-item-text {
+.step-text {
   font-size: 28rpx;
-  color: var(--text-gray);
+  color: var(--text-dark);
   line-height: 1.6;
   flex: 1;
   white-space: pre-line;
 }
 
-
-/* 操作按钮区域 */
-.actions-section {
+/* ===== 推荐医院 CTA ===== */
+.hospital-cta {
+  width: 100%;
   display: flex;
-  gap: 20rpx;
-  position: fixed;
-  bottom: 30rpx;
-  left: 30rpx;
-  right: 30rpx;
-  height: 80rpx;
-  z-index: 100;
-  background: linear-gradient(transparent, rgba(246, 248, 250, 0.7), rgba(246, 248, 250, 0.95));
-  padding-top: 30rpx;
-  padding-bottom: 10rpx;
-}
-.actions-section .btn {
-  flex: 1;
-  height: 100%;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 28rpx;
-  font-weight: bold;
-  border-radius: 40rpx;
+  gap: 16rpx;
+  padding: 22rpx 24rpx;
+  background: linear-gradient(135deg, rgba(165, 215, 232, 0.4), rgba(168, 230, 207, 0.32));
+  border: 2rpx solid rgba(74, 144, 184, 0.28);
+  border-radius: 22rpx;
+  margin-bottom: 18rpx;
   box-sizing: border-box;
-  line-height: 1;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease;
 }
-.btn-icon {
-  width: 32rpx;
-  height: 32rpx;
-  margin-right: 10rpx;
-  display: inline-block;
+.hospital-cta:active {
+  transform: scale(0.99);
 }
-.btn-outline {
-  border: 2rpx solid var(--primary-blue);
-  color: var(--primary-blue);
-  background-color: #ffffff;
+.cta-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38rpx;
+  flex-shrink: 0;
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 184, 0.18);
 }
-.btn-primary {
-  background-color: var(--primary-blue);
-  color: #ffffff;
-}
-
-/* 按钮禁用状态 */
-.btn-disabled {
-  opacity: 0.5;
-  pointer-events: none;
-  cursor: not-allowed;
-}
-
-/* 概率显示样式 */
-.probability-section {
-  margin-top: 30rpx;
-  padding: 30rpx;
-  background-color: #f8f9fa;
-  border-radius: 16rpx;
-}
-
-.probability-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-dark);
-  margin-bottom: 20rpx;
-  display: block;
-}
-
-.probability-list {
+.cta-body {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5rpx;
+  gap: 4rpx;
+  min-width: 0;
 }
-
-.probability-item {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  padding: 8rpx 12rpx;
-  background-color: #ffffff;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-}
-
-.probability-class {
-  font-size: 26rpx;
-  color: var(--text-dark);
-  min-width: 140rpx;
-  flex-shrink: 0;
-  font-weight: 500;
-}
-
-.probability-bar-container {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-}
-
-.probability-bar-bg {
-  flex: 1;
-  height: 16rpx;
-  background-color: #e9ecef;
-  border-radius: 8rpx;
+.cta-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--accent-deep);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cta-sub {
+  font-size: 22rpx;
+  color: var(--accent-mid);
+}
+.cta-arrow {
+  font-size: 36rpx;
+  color: var(--accent-mid);
+  font-weight: 300;
+  flex-shrink: 0;
 }
 
-.probability-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #4a90b8, #6bb6ff);
-  border-radius: 8rpx;
-  transition: width 0.3s ease;
+/* ===== 警示提示 ===== */
+.warning-strip {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg, rgba(255, 229, 168, 0.5), rgba(255, 200, 112, 0.2));
+  border-radius: 20rpx;
+  border-left: 6rpx solid #f0a868;
+  margin-bottom: 24rpx;
+  box-sizing: border-box;
 }
-
-.probability-value {
+.warn-icon {
+  font-size: 30rpx;
+  flex-shrink: 0;
+}
+.warn-text {
+  flex: 1;
   font-size: 24rpx;
-  color: var(--primary-blue);
-  min-width: 70rpx;
-  text-align: right;
-  font-weight: 600;
+  color: #8a5a2b;
+  line-height: 1.5;
 }
-    
+
+/* ===== 浮动操作栏 ===== */
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  padding: 24rpx 28rpx calc(24rpx + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 18rpx;
+  background: linear-gradient(to top, rgba(244, 247, 250, 1) 0%, rgba(244, 247, 250, 0.92) 60%, rgba(244, 247, 250, 0) 100%);
+  box-sizing: border-box;
+}
+.action-bar .btn {
+  flex: 1;
+  height: 96rpx;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  gap: 10rpx;
+  transition: transform 0.15s ease;
+  box-sizing: border-box;
+}
+.action-bar .btn:active {
+  transform: scale(0.97);
+}
+.btn-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+.btn-secondary {
+  background: #ffffff;
+  color: var(--accent-mid);
+  border: 2rpx solid rgba(74, 144, 184, 0.3);
+  box-shadow: 0 6rpx 18rpx rgba(74, 144, 184, 0.1);
+}
+.btn-primary {
+  background: linear-gradient(135deg, #4a90b8 0%, #2c5f7c 100%);
+  color: #ffffff;
+  box-shadow: 0 8rpx 22rpx rgba(44, 95, 124, 0.35);
+}
+.btn-track {
+  background: linear-gradient(135deg, #ffe5a8 0%, #f0a868 100%);
+  color: #ffffff;
+  box-shadow: 0 8rpx 22rpx rgba(240, 168, 104, 0.35);
+}
+.btn-emoji {
+  font-size: 32rpx;
+  margin-right: 4rpx;
+}
+.btn-disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}

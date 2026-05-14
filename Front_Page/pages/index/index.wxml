@@ -1,119 +1,161 @@
 <!--index.wxml-->
-<navigation-bar title="PetDerma" back="{{false}}" color="white" background="#A5D7E8" titleStyle="font-size: 20px;">
-	<view slot="left" class="nav-left-btn" bindtap="openMessages">
-		<image class="nav-left-icon" src="/images/message_icon.svg" mode="aspectFit"></image>
-		<view wx:if="{{unreadCount > 0}}" class="message-badge">
-			<text class="badge-text">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
-		</view>
-	</view>
+<navigation-bar title="PetDerma" back="{{false}}" color="white" background="#a5d7e8" titleStyle="font-size: 20px; letter-spacing: 2px;">
+  <view slot="left" class="nav-left-btn" bindtap="openMessages">
+    <image class="nav-left-icon" src="/images/message_icon.svg" mode="aspectFit"></image>
+    <view wx:if="{{unreadCount > 0}}" class="message-badge">
+      <text class="badge-text">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+    </view>
+  </view>
 </navigation-bar>
+
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
-    <!-- 欢迎区域 -->
-    <view class="welcome-section">
-      <view class="welcome-text">
-        <text class="welcome-title">欢迎来到PetDerma</text>
-        <text class="welcome-subtitle">您的宠物皮肤健康助手</text>
+
+    <!-- ===== Hero ===== -->
+    <view class="hero">
+      <view class="hero-blob blob-1"></view>
+      <view class="hero-blob blob-2"></view>
+
+      <view class="hero-content">
+        <view class="hero-text">
+          <text class="hero-greeting">{{greeting}} · 让宠物皮肤更健康</text>
+          <text class="hero-title">PetDerma</text>
+          <text class="hero-subtitle">您的宠物皮肤健康助手</text>
+        </view>
+        <image class="hero-image" src="/images/welcome.png" mode="aspectFit"></image>
       </view>
-      <view class="welcome-image">
-        <image src="/images/welcome.png" mode="aspectFit"></image>
+
+      <view class="quick-stats">
+        <view class="stat-item">
+          <text class="stat-value">{{petList.length}}</text>
+          <text class="stat-label">我的宠物</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-value">{{unreadCount}}</text>
+          <text class="stat-label">未读消息</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-value">{{tipsList.length}}</text>
+          <text class="stat-label">健康贴士</text>
+        </view>
       </view>
     </view>
-    
-		<!-- 宠物头像列表（从其他页面输入的数据，这里仅预留展示） -->
-		<view class="pet-avatars">
-			<block wx:for="{{petList}}" wx:key="id" wx:for-index="index" wx:for-item="item">
-				<view class="pet-avatar" bindtap="onTapPet" data-id="{{item.id}}">
-					<image class="avatar-img img-circle" src="{{item.avatar}}" mode="aspectFill"></image>
-					<text class="avatar-name">{{item.name}}</text>
-      </view>
-			</block>
+
+    <!-- ===== 我的宠物 ===== -->
+    <view class="section-header">
+      <text class="section-title">我的宠物</text>
+      <text class="section-action" bindtap="navigateToPets">管理 ›</text>
     </view>
-    
-    <!-- 功能区块 -->
+    <scroll-view scroll-x class="pet-scroll" enhanced="{{true}}" show-scrollbar="{{false}}">
+      <view class="pet-list">
+        <block wx:for="{{petList}}" wx:key="id">
+          <view class="pet-card" bindtap="onTapPet" data-id="{{item.id}}">
+            <view class="pet-avatar-wrap">
+              <image class="pet-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+              <view class="pet-status-dot"></view>
+            </view>
+            <text class="pet-name">{{item.name}}</text>
+          </view>
+        </block>
+        <view class="pet-card pet-add" bindtap="navigateToAddPet">
+          <view class="pet-add-icon">+</view>
+          <text class="pet-name">添加宠物</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- ===== 主功能 ===== -->
     <view class="features-grid">
-			<!-- 智能诊断入口（切换到底部导航页） -->
-			<view class="feature-item" bindtap="navigateTo" data-url="/pages/diagnosis/diagnosis" data-tab="true">
-        <view class="feature-icon-container primary">
+      <view class="feature-card feat-diagnosis" bindtap="navigateTo" data-url="/pages/diagnosis/diagnosis" data-tab="true">
+        <view class="feature-shape"></view>
+        <view class="feature-icon-wrap">
           <image class="feature-icon" src="/images/diagnosis_icon.png" mode="aspectFit"></image>
         </view>
         <text class="feature-title">智能诊断</text>
-        <text class="feature-desc">AI分析皮肤问题</text>
+        <text class="feature-desc">AI 分析宠物皮肤问题</text>
       </view>
-      
-			<!-- 社区交流入口（切换到底部导航页） -->
-			<view class="feature-item" bindtap="navigateTo" data-url="/pages/community/community" data-tab="true">
-        <view class="feature-icon-container secondary">
+
+      <view class="feature-card feat-community" bindtap="navigateTo" data-url="/pages/community/community" data-tab="true">
+        <view class="feature-shape"></view>
+        <view wx:if="{{hasNewPost}}" class="feature-badge">新动态</view>
+        <view class="feature-icon-wrap">
           <image class="feature-icon" src="/images/community_icon.png" mode="aspectFit"></image>
         </view>
         <text class="feature-title">社区交流</text>
-        <text class="feature-desc">分享经验和案例</text>
+        <text class="feature-desc">分享治愈与护理经验</text>
       </view>
-      
-			<!-- 知识科普入口（普通页面） -->
-			<view class="feature-item" bindtap="navigateTo" data-url="/pages/knowledge/knowledge" data-tab="false">
-        <view class="feature-icon-container tertiary">
+
+      <view class="feature-card feat-knowledge" bindtap="navigateTo" data-url="/pages/knowledge/knowledge" data-tab="false">
+        <view class="feature-shape"></view>
+        <view wx:if="{{hasNewArticle}}" class="feature-badge">每日更新</view>
+        <view class="feature-icon-wrap">
           <image class="feature-icon" src="/images/knowledge_icon.png" mode="aspectFit"></image>
         </view>
         <text class="feature-title">知识科普</text>
-        <text class="feature-desc">学习防治知识</text>
+        <text class="feature-desc">学习皮肤病防治</text>
       </view>
-      
-			<!-- 个人中心入口（切换到底部导航页） -->
-			<view class="feature-item" bindtap="navigateTo" data-url="/pages/user/user" data-tab="true">
-        <view class="feature-icon-container quaternary">
+
+      <view class="feature-card feat-user" bindtap="navigateTo" data-url="/pages/user/user" data-tab="true">
+        <view class="feature-shape"></view>
+        <view class="feature-icon-wrap">
           <image class="feature-icon" src="/images/user_icon.png" mode="aspectFit"></image>
         </view>
         <text class="feature-title">个人中心</text>
-        <text class="feature-desc">宠物健康管理</text>
-      </view>
-    </view>
-		
-    
-    <!-- 温馨提示 -->
-    <view class="tips-section">
-      <view class="tips-icon">
-        <image src="/images/tips_icon.png" mode="aspectFit"></image>
-      </view>
-      <view class="tips-content">
-				<view class="tips-row">
-        <text class="tips-title">健康提示</text>
-        <text class="tips-text">{{healthTip}}</text>
-				</view>
+        <text class="feature-desc">健康档案与历史记录</text>
       </view>
     </view>
 
-    <!-- 每日科普 -->
-		<view class="daily-knowledge" bindtap="navigateToKnowledge">
-			<view class="daily-header">
-				<text class="daily-title">每日科普</text>
-				<text class="daily-subtitle">根据本季易发疾病推荐</text>
-			</view>
-			<view class="daily-content">
-				<text class="daily-topic">{{dailyKnowledge.title}}</text>
-				<text class="daily-summary">{{dailyKnowledge.summary}}</text>
-			</view>
-			<view class="daily-footer">
-				<text class="daily-more">点击查看详情 ></text>
-			</view>
-		</view>
+    <!-- ===== 每日科普 ===== -->
+    <view class="daily-card" bindtap="navigateToKnowledge">
+      <view class="daily-deco deco-1"></view>
+      <view class="daily-deco deco-2"></view>
+
+      <view class="daily-tag">每日科普 · 季节推荐</view>
+      <text class="daily-topic">{{dailyKnowledge.title}}</text>
+      <text class="daily-summary">{{dailyKnowledge.summary}}</text>
+
+      <view wx:if="{{dailyKnowledge.keywords && dailyKnowledge.keywords.length > 0}}" class="daily-keywords">
+        <block wx:for="{{dailyKnowledge.keywords}}" wx:key="*this">
+          <text class="daily-kw">#{{item}}</text>
+        </block>
+      </view>
+
+      <view class="daily-more">
+        <text>查看完整内容</text>
+        <text class="daily-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- ===== 健康贴士 ===== -->
+    <view class="tip-strip">
+      <view class="tip-icon-wrap">
+        <image src="/images/tips_icon.png" mode="aspectFit"></image>
+      </view>
+      <view class="tip-body">
+        <text class="tip-title">健康小贴士</text>
+        <text class="tip-text">{{healthTip}}</text>
+      </view>
+    </view>
+
   </view>
 </scroll-view>
 
-<!-- 消息弹窗 -->
+<!-- 消息弹窗(保留兼容) -->
 <view wx:if="{{showMessagePopup}}" class="popup-mask" bindtap="closeMessages"></view>
 <view wx:if="{{showMessagePopup}}" class="popup-panel">
-	<view class="popup-header">
-		<text>消息中心</text>
-		<text class="popup-close" bindtap="closeMessages">×</text>
-	</view>
-	<scroll-view scroll-y class="popup-body">
-		<block wx:for="{{messages}}" wx:key="id">
-			<view class="msg-item">
-				<view class="msg-title">{{item.title}}</view>
-				<view class="msg-time">{{item.time}}</view>
-				<view class="msg-content">{{item.content}}</view>
-			</view>
-		</block>
-	</scroll-view>
+  <view class="popup-header">
+    <text>消息中心</text>
+    <text class="popup-close" bindtap="closeMessages">×</text>
+  </view>
+  <scroll-view scroll-y class="popup-body">
+    <block wx:for="{{messages}}" wx:key="id">
+      <view class="msg-item">
+        <view class="msg-title">{{item.title}}</view>
+        <view class="msg-time">{{item.time}}</view>
+        <view class="msg-content">{{item.content}}</view>
+      </view>
+    </block>
+  </scroll-view>
 </view>

@@ -1,0 +1,143 @@
+<navigation-bar title="跟踪详情" back="{{true}}" color="white" background="#4a90b8"></navigation-bar>
+
+<scroll-view class="page" scroll-y enhanced="{{true}}">
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:elif="{{tracking}}">
+    <!-- ===== Hero ===== -->
+    <view class="hero hero-{{analysis.trendType}}">
+      <view class="hero-decor d1"></view>
+      <view class="hero-decor d2"></view>
+
+      <view class="meta-pill">
+        <text>{{tracking.petName}} · {{tracking.bodyPart}}</text>
+      </view>
+
+      <text class="lesion-name">{{tracking.lesionName}}</text>
+      <text class="diagnosis">{{tracking.diagnosisName}}</text>
+
+      <view class="hero-meters">
+        <view class="big-score">
+          <view class="big-score-row">
+            <text class="big-score-num">{{analysis.currentScore}}</text>
+            <text class="big-score-unit">/100</text>
+          </view>
+          <text class="big-score-label">愈合评分</text>
+        </view>
+
+        <view class="trend-block">
+          <view class="trend-line">
+            <text class="trend-icon-big">{{analysis.trendIcon}}</text>
+            <text class="trend-text">{{analysis.trend}}</text>
+          </view>
+          <view wx:if="{{analysis.daysToHeal}}" class="trend-predict">
+            预计 <text class="predict-num">{{analysis.daysToHeal}}</text> 天后完全愈合
+          </view>
+          <view wx:elif="{{analysis.trendType === 'healed'}}" class="trend-predict">
+            🎉 该患处已基本愈合
+          </view>
+          <view wx:elif="{{analysis.trendType === 'worsening'}}" class="trend-predict warn">
+            ⚠️ 建议尽快就医
+          </view>
+          <view wx:else class="trend-predict">
+            持续记录可获得更准确预测
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 愈合曲线 ===== -->
+    <view class="card chart-card">
+      <view class="card-header">
+        <text class="card-title">愈合趋势曲线</text>
+        <text class="card-sub">{{analysis.pointCount}} 个数据点</text>
+      </view>
+      <view class="chart-wrap">
+        <image class="chart-canvas" src="{{chartSrc}}" mode="widthFix" show-menu-by-longpress="{{false}}"></image>
+      </view>
+      <view class="chart-legend">
+        <view class="legend-item">
+          <view class="legend-dot l1"></view>
+          <text>历史记录</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot l2"></view>
+          <text>当前评分</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 提示卡 ===== -->
+    <view wx:if="{{analysis.hasRelapsed || analysis.needsRevisit}}" class="alert-card">
+      <text wx:if="{{analysis.hasRelapsed}}" class="alert-text">
+        <text class="alert-icon">⚠️</text> 检测到病情曾愈合后再次加重,可能为复发
+      </text>
+      <text wx:if="{{analysis.needsRevisit}}" class="alert-text">
+        <text class="alert-icon">🏥</text> 建议尽快前往宠物医院复诊
+      </text>
+    </view>
+
+    <!-- ===== 时间轴 ===== -->
+    <view class="card timeline-card">
+      <view class="card-header">
+        <text class="card-title">记录时间轴</text>
+        <text class="card-sub">从近到远</text>
+      </view>
+      <view class="timeline">
+        <block wx:for="{{entries}}" wx:key="_id" wx:for-index="idx">
+          <view class="tl-item">
+            <view class="tl-dot-col">
+              <view class="tl-dot {{idx === entries.length - 1 ? 'tl-dot-active' : ''}}"></view>
+              <view wx:if="{{idx !== 0}}" class="tl-line"></view>
+            </view>
+            <view class="tl-body">
+              <view class="tl-row1">
+                <text class="tl-day">{{item.dayLabel}}</text>
+                <text class="tl-date">{{item.dateLabel}}</text>
+                <view class="tl-score-pill">{{item.healingScore}} 分</view>
+              </view>
+              <view wx:if="{{item.imageList && item.imageList.length}}" class="tl-images">
+                <block wx:for="{{item.imageList}}" wx:key="*this" wx:for-item="img">
+                  <image class="tl-img" src="{{img}}" mode="aspectFill" bindtap="previewImage" data-url="{{img}}"></image>
+                </block>
+              </view>
+              <view class="tl-meters">
+                <view class="tl-meter">
+                  <text class="tl-meter-label">严重度</text>
+                  <view class="tl-meter-bar">
+                    <view class="tl-meter-fill mtr-sev" style="width: {{item.severity * 20}}%;"></view>
+                  </view>
+                  <text class="tl-meter-num">{{item.severity}}/5</text>
+                </view>
+                <view class="tl-meter">
+                  <text class="tl-meter-label">红肿</text>
+                  <view class="tl-meter-bar">
+                    <view class="tl-meter-fill mtr-red" style="width: {{item.rednessScore}}%;"></view>
+                  </view>
+                  <text class="tl-meter-num">{{item.rednessScore}}</text>
+                </view>
+                <view class="tl-meter">
+                  <text class="tl-meter-label">范围</text>
+                  <view class="tl-meter-bar">
+                    <view class="tl-meter-fill mtr-area" style="width: {{item.areaScore}}%;"></view>
+                  </view>
+                  <text class="tl-meter-num">{{item.areaScore}}</text>
+                </view>
+              </view>
+              <view wx:if="{{item.notes}}" class="tl-notes">{{item.notes}}</view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+  </block>
+</scroll-view>
+
+<view wx:if="{{tracking}}" class="action-bar">
+  <view class="btn btn-primary" bindtap="goAdd">
+    <text>+ 新增一次记录</text>
+  </view>
+</view>

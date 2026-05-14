@@ -1,0 +1,86 @@
+<navigation-bar title="医院详情" back="{{true}}" color="white" background="#4a90b8"></navigation-bar>
+
+<scroll-view class="page" scroll-y enhanced="{{true}}">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <block wx:elif="{{hospital}}">
+    <!-- Hero -->
+    <view class="hero">
+      <view class="hero-decor"></view>
+      <view wx:if="{{hospital.isRecommended}}" class="rec-pill">⭐ 本平台推荐</view>
+      <text class="hosp-name">{{hospital.name}}</text>
+      <view class="hosp-meta">
+        <text class="meta-item">⭐ {{hospital.rating}}</text>
+        <text class="meta-divider">·</text>
+        <text class="meta-item">{{hospital.reviewCount}} 评价</text>
+        <text wx:if="{{hospital.is24h}}" class="meta-divider">·</text>
+        <text wx:if="{{hospital.is24h}}" class="meta-item meta-warn">24h 急诊</text>
+      </view>
+    </view>
+
+    <!-- 地图小卡 -->
+    <view class="card map-card">
+      <map class="mini-map" latitude="{{hospital.latitude}}" longitude="{{hospital.longitude}}"
+           scale="15" markers="{{markers}}"></map>
+    </view>
+
+    <!-- 信息 -->
+    <view class="card">
+      <view class="info-row">
+        <text class="info-icon">📍</text>
+        <view class="info-body">
+          <text class="info-label">地址</text>
+          <text class="info-value">{{hospital.address}}</text>
+        </view>
+      </view>
+      <view class="divider"></view>
+      <view class="info-row">
+        <text class="info-icon">📞</text>
+        <view class="info-body">
+          <text class="info-label">电话</text>
+          <text class="info-value">{{hospital.phone}}</text>
+        </view>
+      </view>
+      <view class="divider"></view>
+      <view class="info-row">
+        <text class="info-icon">🕐</text>
+        <view class="info-body">
+          <text class="info-label">营业时间</text>
+          <text class="info-value">{{hospital.openHours}}</text>
+        </view>
+      </view>
+      <view class="divider"></view>
+      <view class="info-row">
+        <text class="info-icon">💰</text>
+        <view class="info-body">
+          <text class="info-label">收费参考</text>
+          <text class="info-value">{{hospital.priceRange}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 专长 -->
+    <view class="card">
+      <view class="card-header">
+        <text class="card-title">擅长病种</text>
+      </view>
+      <view class="spec-list">
+        <block wx:for="{{hospital.specialties}}" wx:key="*this">
+          <text class="spec-tag">{{item}}</text>
+        </block>
+      </view>
+    </view>
+
+    <view wx:if="{{hospital.description}}" class="card">
+      <view class="card-header">
+        <text class="card-title">医院简介</text>
+      </view>
+      <text class="desc">{{hospital.description}}</text>
+    </view>
+  </block>
+</scroll-view>
+
+<view wx:if="{{hospital}}" class="action-bar">
+  <view class="btn btn-secondary" bindtap="callPhone">📞 一键拨号</view>
+  <view class="btn btn-primary" bindtap="navigateTo">🧭 一键导航</view>
+</view>

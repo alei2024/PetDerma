@@ -1292,6 +1292,24 @@ Page({
     });
   },
 
+  navigateToTracking: function () {
+    wx.navigateTo({
+      url: "/pages/user/tracking/tracking",
+    });
+  },
+
+  navigateToHospital: function () {
+    wx.navigateTo({ url: "/pages/hospital/hospital" });
+  },
+
+  navigateToDashboard: function () {
+    wx.navigateTo({ url: "/pages/dashboard/dashboard" });
+  },
+
+  navigateToRisk: function () {
+    wx.navigateTo({ url: "/pages/user/risk/risk" });
+  },
+
   // 跳转到家庭页面
   navigateToFamily: function () {
     wx.showToast({

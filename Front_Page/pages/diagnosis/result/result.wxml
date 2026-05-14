@@ -1,123 +1,149 @@
 <!--pages/diagnosis/result/result.wxml-->
-<navigation-bar title="诊断结果" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<navigation-bar title="诊断结果" back="{{true}}" color="white" background="#4a90b8"></navigation-bar>
+
 <scroll-view class="container" scroll-y enhanced="{{true}}">
-  <!-- 图片展示区域（优化图片布局） -->
-  <view class="image-section card">
-    <view class="result-image-grid">
+
+  <!-- ===== Hero 诊断卡 ===== -->
+  <view class="diagnosis-hero {{diagnosisResult.severity <= 2 ? 'sev-mild' : diagnosisResult.severity == 3 ? 'sev-moderate' : 'sev-severe'}}">
+    <view class="hero-decor d1"></view>
+    <view class="hero-decor d2"></view>
+
+    <view class="pet-pill">
+      <view class="pet-pill-dot"></view>
+      <text class="pet-pill-text">{{petName}} · {{petType === 'dog' ? '狗狗' : '猫咪'}}</text>
+    </view>
+
+    <text class="disease-label">AI 诊断结果</text>
+    <text class="disease-name">{{diagnosisResult.diseaseName}}</text>
+
+    <view class="hero-meters">
+      <view class="confidence-ring" style="background: conic-gradient(#ffffff 0%, rgba(255,255,255,0.95) {{diagnosisResult.confidence}}%, rgba(255,255,255,0.25) {{diagnosisResult.confidence}}%, rgba(255,255,255,0.25) 100%);">
+        <view class="ring-inner">
+          <view class="ring-row">
+            <text class="ring-value">{{diagnosisResult.confidence}}</text>
+            <text class="ring-unit">%</text>
+          </view>
+          <text class="ring-label">可信度</text>
+        </view>
+      </view>
+
+      <view class="severity-gauge">
+        <text class="gauge-label">严重程度</text>
+        <view class="gauge-bar">
+          <view class="gauge-fill" style="width: {{diagnosisResult.severity * 20}}%;"></view>
+        </view>
+        <text class="gauge-text">{{diagnosisResult.severity <= 1 ? '轻微' : diagnosisResult.severity <= 2 ? '轻度' : diagnosisResult.severity <= 3 ? '中度' : diagnosisResult.severity <= 4 ? '重度' : '严重'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 上传图片 ===== -->
+  <view class="card">
+    <view class="card-header">
+      <text class="card-title">上传图片</text>
+      <view wx:if="{{markedArea}}" class="card-tag warn">⚠ 已标记异常区域</view>
+    </view>
+    <view class="image-grid">
       <block wx:for="{{allImages}}" wx:key="index">
-        <image class="result-image-item" src="{{item}}" mode="aspectFill" lazy-load></image>
+        <image class="image-item" src="{{item}}" mode="aspectFill" lazy-load></image>
       </block>
     </view>
-    <!-- 新增图片标记提示 -->
-    <view class="image-mark-tip" wx:if="{{markedArea}}">
-      <text>⚠️ 已标记异常区域</text>
-    </view>
   </view>
-  
-  <!-- 诊断结果区域（优化信息层级） -->
-  <view class="result-section card">
-    <view class="result-header">
-      <text class="result-title">诊断结果</text>
-      <text class="pet-type">{{petName}}</text>
+
+  <!-- ===== 疾病描述 ===== -->
+  <view class="card">
+    <view class="card-header">
+      <text class="card-title">疾病描述</text>
     </view>
-    
-    <view class="disease-info">
-      <view class="disease-name">{{diagnosisResult.diseaseName}}</view>
-      
-      <view class="confidence">
-        <text class="confidence-label">可信度：</text>
-        <view class="confidence-bar-container">
-          <view class="confidence-bar-bg">
-            <view class="confidence-bar" style="width: {{diagnosisResult.confidence}}%;"></view>
+    <text class="desc-text">{{diagnosisResult.description}}</text>
+  </view>
+
+  <!-- ===== 详细预测排名 ===== -->
+  <view class="card" wx:if="{{diagnosisResult.allProbabilities && diagnosisResult.allProbabilities.length > 0}}">
+    <view class="card-header">
+      <text class="card-title">详细预测</text>
+      <text class="card-sub">前三名匹配</text>
+    </view>
+    <view class="prob-list">
+      <view class="prob-item rank-{{idx}}" wx:for="{{diagnosisResult.allProbabilities}}" wx:for-index="idx" wx:key="class">
+        <view class="rank-badge">{{idx + 1}}</view>
+        <view class="prob-content">
+          <view class="prob-row">
+            <text class="prob-name">{{item.displayName || item.class || '未知'}}</text>
+            <text class="prob-pct">{{item.displayProbability || '0.0'}}%</text>
           </view>
-          <text class="confidence-value">{{diagnosisResult.confidence}}%</text>
-        </view>
-      </view>
-      
-      <!-- 严重程度显示部分 -->
-      <view class="severity">
-        <text class="severity-label">严重程度：</text>
-        <view class="severity-indicators">
-          <view class="severity-indicator {{diagnosisResult.severity >= 1 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 2 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 3 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 4 ? 'active' : ''}}"></view>
-          <view class="severity-indicator {{diagnosisResult.severity >= 5 ? 'active' : ''}}"></view>
-        </view>
-        <text class="severity-text">{{diagnosisResult.severity <= 1 ? '轻微' : diagnosisResult.severity <= 2 ? '轻度' : diagnosisResult.severity <= 3 ? '中度' : diagnosisResult.severity <= 4 ? '重度' : '严重'}}</text>
-      </view>
-    </view>
-    
-    <view class="disease-description">
-      <text class="description-title">疾病描述</text>
-      <text class="description-content">{{diagnosisResult.description}}</text>
-    </view>
-    
-    <!-- 显示前三名预测概率 -->
-    <view class="probability-section" wx:if="{{diagnosisResult.allProbabilities && diagnosisResult.allProbabilities.length > 0}}">
-      <text class="probability-title">详细预测结果（前三名）</text>
-      <view class="probability-list">
-        <view class="probability-item" wx:for="{{diagnosisResult.allProbabilities}}" wx:key="class">
-          <text class="probability-class">{{item.displayName || item.class || '未知'}}</text>
-          <view class="probability-bar-container">
-            <view class="probability-bar-bg">
-              <view class="probability-bar" style="width: {{item.probability ? item.probability * 100 : 0}}%;"></view>
-            </view>
-            <text class="probability-value">{{item.displayProbability || '0.0'}}%</text>
+          <view class="prob-bar">
+            <view class="prob-fill" style="width: {{item.probability ? item.probability * 100 : 0}}%;"></view>
           </view>
         </view>
       </view>
     </view>
   </view>
-  
-  <!-- 诊疗建议区域（优化标签交互） -->
-  <view class="advice-section card">
-    <text class="advice-title">基本诊疗建议</text>
-    
-    <view class="advice-tabs">
-      <view class="advice-tab {{currentTab === 'home' ? 'active' : ''}}" bindtap="switchTab" data-tab="home">居家护理</view>
-      <view class="advice-tab {{currentTab === 'medical' ? 'active' : ''}}" bindtap="switchTab" data-tab="medical">就医建议</view>
-      <view class="advice-tab {{currentTab === 'prevent' ? 'active' : ''}}" bindtap="switchTab" data-tab="prevent">预防措施</view>
+
+  <!-- ===== 诊疗建议 ===== -->
+  <view class="card">
+    <view class="card-header">
+      <text class="card-title">诊疗建议</text>
     </view>
-    
+
+    <view class="tab-bar">
+      <view class="tab tab-home {{currentTab === 'home' ? 'active' : ''}}" bindtap="switchTab" data-tab="home">居家护理</view>
+      <view class="tab tab-medical {{currentTab === 'medical' ? 'active' : ''}}" bindtap="switchTab" data-tab="medical">就医建议</view>
+      <view class="tab tab-prevent {{currentTab === 'prevent' ? 'active' : ''}}" bindtap="switchTab" data-tab="prevent">预防措施</view>
+    </view>
+
     <view class="advice-content">
       <block wx:if="{{currentTab === 'home'}}">
-        <view class="advice-item" wx:for="{{diagnosisResult.homeAdvice}}" wx:key="index">
-          <view class="advice-item-dot"></view>
-          <text class="advice-item-text">{{item}}</text>
+        <view class="advice-step tab-home" wx:for="{{diagnosisResult.homeAdvice}}" wx:key="index">
+          <view class="step-num">{{index + 1}}</view>
+          <text class="step-text">{{item}}</text>
         </view>
       </block>
-      
       <block wx:elif="{{currentTab === 'medical'}}">
-        <view class="advice-item" wx:for="{{diagnosisResult.medicalAdvice}}" wx:key="index">
-          <view class="advice-item-dot"></view>
-          <text class="advice-item-text">{{item}}</text>
+        <view class="advice-step tab-medical" wx:for="{{diagnosisResult.medicalAdvice}}" wx:key="index">
+          <view class="step-num">{{index + 1}}</view>
+          <text class="step-text">{{item}}</text>
         </view>
       </block>
-      
       <block wx:else>
-        <view class="advice-item" wx:for="{{diagnosisResult.preventAdvice}}" wx:key="index">
-          <view class="advice-item-dot"></view>
-          <text class="advice-item-text">{{item}}</text>
+        <view class="advice-step tab-prevent" wx:for="{{diagnosisResult.preventAdvice}}" wx:key="index">
+          <view class="step-num">{{index + 1}}</view>
+          <text class="step-text">{{item}}</text>
         </view>
       </block>
-    </view>
-  </view>
-  
-    <!-- 操作按钮区域 -->
-    <view class="actions-section">
-    <view class="btn btn-outline {{isButtonDisabled ? 'btn-disabled' : ''}}" bindtap="saveResult">
-      <image class="btn-icon" 
-             src="{{isSaved ? '/images/saved_icon.png' : '/images/save_icon.png'}}" 
-            
-             mode="aspectFit"></image>
-      <text>{{isSaved ? '已保存' : '保存结果'}}</text>
-    </view>
-    <view class="btn btn-primary" bindtap="startChat">
-      <image class="btn-icon" src="/images/chat_icon.png" mode="aspectFit"></image>
-      <text>智能问诊</text>
     </view>
   </view>
 
+  <!-- ===== 推荐就诊医院 CTA ===== -->
+  <view class="hospital-cta" bindtap="findHospital">
+    <view class="cta-icon">🏥</view>
+    <view class="cta-body">
+      <text class="cta-title">找擅长「{{diagnosisResult.diseaseName}}」的医院</text>
+      <text class="cta-sub">基于诊断结果智能推荐 · 距离 + 专长加权排序</text>
+    </view>
+    <text class="cta-arrow">›</text>
+  </view>
+
+  <!-- ===== 警示提示 ===== -->
+  <view class="warning-strip">
+    <text class="warn-icon">⚠</text>
+    <text class="warn-text">{{diagnosisResult.warning || '此结果仅供参考，请以专业兽医诊断为准。如症状持续或加重，请尽快前往宠物医院就诊。'}}</text>
+  </view>
 
 </scroll-view>
+
+<!-- ===== 浮动操作栏 ===== -->
+<view class="action-bar">
+  <view class="btn btn-secondary {{isButtonDisabled ? 'btn-disabled' : ''}}" bindtap="saveResult">
+    <image class="btn-icon" src="{{isSaved ? '/images/saved_icon.png' : '/images/save_icon.png'}}" mode="aspectFit"></image>
+    <text>{{isSaved ? '已保存' : '保存'}}</text>
+  </view>
+  <view class="btn btn-track" bindtap="addToTracking">
+    <text class="btn-emoji">📈</text>
+    <text>加入跟踪</text>
+  </view>
+  <view class="btn btn-primary" bindtap="startChat">
+    <image class="btn-icon" src="/images/chat_icon.png" mode="aspectFit"></image>
+    <text>智能问诊</text>
+  </view>
+</view>

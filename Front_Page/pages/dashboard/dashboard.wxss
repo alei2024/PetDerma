@@ -1,0 +1,216 @@
+page {
+  --accent-cyan: #00d4ff;
+  --accent-blue: #3a7bd5;
+  --accent-pink: #ff7eb6;
+  --accent-mint: #5dd39e;
+  --bg-deep: #0e1c2c;
+  --bg-mid: #142a3f;
+  background: linear-gradient(180deg, #0e1c2c 0%, #16314a 100%);
+}
+
+view, scroll-view, image, text {
+  box-sizing: border-box;
+}
+
+.page {
+  height: 100vh;
+  width: 100%;
+  padding: 16rpx 22rpx 60rpx;
+}
+
+.loading {
+  text-align: center;
+  padding: 200rpx 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 26rpx;
+}
+
+/* ===== Hero ===== */
+.hero {
+  position: relative;
+  border-radius: 28rpx;
+  padding: 28rpx;
+  margin-bottom: 22rpx;
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(0, 212, 255, 0.25) 0%, rgba(0, 212, 255, 0) 60%),
+    linear-gradient(135deg, #1a3852 0%, #0e1c2c 100%);
+  color: #ffffff;
+  overflow: hidden;
+  border: 2rpx solid rgba(0, 212, 255, 0.2);
+}
+.grid-deco {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.08) 1rpx, transparent 1rpx),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.08) 1rpx, transparent 1rpx);
+  background-size: 40rpx 40rpx;
+  pointer-events: none;
+}
+.hero-eyebrow {
+  position: relative;
+  font-size: 22rpx;
+  letter-spacing: 6rpx;
+  color: var(--accent-cyan);
+  display: block;
+  margin-bottom: 8rpx;
+}
+.hero-title {
+  position: relative;
+  font-size: 50rpx;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 8rpx;
+  color: #ffffff;
+  text-shadow: 0 0 20rpx rgba(0, 212, 255, 0.3);
+}
+.hero-sub {
+  position: relative;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.65);
+  display: block;
+}
+
+/* ===== 大数字卡 ===== */
+.card-row {
+  display: flex;
+  gap: 18rpx;
+  margin-bottom: 18rpx;
+}
+.big-card {
+  flex: 1;
+  border-radius: 24rpx;
+  padding: 26rpx 22rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  position: relative;
+  overflow: hidden;
+  border: 2rpx solid rgba(255, 255, 255, 0.08);
+}
+.big-1 { background: linear-gradient(135deg, #1f4068, #1a3852); }
+.big-2 { background: linear-gradient(135deg, #4a307b, #322060); }
+.big-3 { background: linear-gradient(135deg, #1d6e6e, #144b4b); }
+.big-4 { background: linear-gradient(135deg, #b65d3a, #843d20); }
+
+.bc-num {
+  font-size: 64rpx;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -2rpx;
+  line-height: 1;
+}
+.bc-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 2rpx;
+}
+
+/* ===== 仪表卡 ===== */
+.dash-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2rpx solid rgba(0, 212, 255, 0.15);
+  border-radius: 24rpx;
+  padding: 22rpx;
+  margin-bottom: 22rpx;
+}
+.dash-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+.dash-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #ffffff;
+}
+.dash-sub {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.55);
+}
+.dash-chart {
+  width: 100%;
+  display: block;
+}
+.dash-empty {
+  text-align: center;
+  padding: 60rpx 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 24rpx;
+}
+
+/* ===== 跟踪状态 ===== */
+.track-stats {
+  display: flex;
+  gap: 14rpx;
+}
+.ts-item {
+  flex: 1;
+  border-radius: 18rpx;
+  padding: 18rpx 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  border: 2rpx solid transparent;
+}
+.ts-active { background: rgba(74, 144, 184, 0.15); border-color: rgba(74, 144, 184, 0.4); }
+.ts-healed { background: rgba(93, 211, 158, 0.15); border-color: rgba(93, 211, 158, 0.4); }
+.ts-relapsed { background: rgba(238, 108, 77, 0.15); border-color: rgba(238, 108, 77, 0.4); }
+.ts-avg { background: rgba(0, 212, 255, 0.15); border-color: rgba(0, 212, 255, 0.4); }
+
+.ts-num {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+.ts-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===== 城市覆盖 ===== */
+.city-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+.city-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.city-name {
+  width: 100rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+.city-bar-wrap {
+  flex: 1;
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+.city-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  border-radius: 6rpx;
+}
+.city-count {
+  width: 80rpx;
+  text-align: right;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.dash-foot {
+  text-align: center;
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 20rpx 0 30rpx;
+  letter-spacing: 1rpx;
+}
