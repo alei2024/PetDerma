@@ -111,6 +111,22 @@ app.use(
   express.static("uploads")
 );
 
+app.use(
+  "/images_cases",
+  (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.header("Cross-Origin-Resource-Policy", "cross-origin");
+    res.header("X-Content-Type-Options", "nosniff");
+    next();
+  },
+  express.static(path.join(__dirname, "..", "images_cases"))
+);
+
 /* ------------------------------------------------------------------
  ✅ 限流
 ------------------------------------------------------------------- */

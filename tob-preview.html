@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#e8ecf0;min-height:100vh;display:flex;flex-direction:column}
 .app-wrap{max-width:1100px;margin:0 auto;width:100%;background:#f5f5f5;min-height:100vh;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,0.08)}
-.nav-bar{height:48px;background:#A5D7E8;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:600;position:sticky;top:0;z-index:20;flex-shrink:0}
+.nav-bar{height:48px;background:linear-gradient(135deg,#A5D7E8,#8bc7d8);display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:600;position:sticky;top:0;z-index:20;flex-shrink:0;box-shadow:0 2px 12px rgba(165,215,232,0.4)}
 .nav-back{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:24px;cursor:pointer;padding:8px;color:rgba(255,255,255,0.9);background:none;border:none}
 .nav-back:hover{opacity:0.8}
 .nav-title{font-size:18px;font-weight:600}
@@ -111,10 +111,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .case-item .date{font-size:11px;color:#bbb;display:block}
 /* ===== Cases List ===== */
 .filter-bar{display:flex;gap:8px;padding:12px 0;overflow-x:auto}
-.filter-chip{padding:6px 18px;border-radius:20px;background:#f0f0f0;color:#666;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.filter-chip{padding:6px 18px;border-radius:20px;background:#f0f0f0;color:#666;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.2s ease}.filter-chip:hover{background:#e0e0e0;color:#333}
 .filter-chip.active{background:#A5D7E8;color:#fff;font-weight:bold}
-.case-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-.case-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.case-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:all 0.25s ease;border:1px solid transparent}
+.case-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.case-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.08);border-color:#e8f0fe;transform:translateY(-1px)}
 .card-pet{display:flex;align-items:center;gap:10px}
 .card-pet .avatar{width:40px;height:40px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:18px}
 .card-pet .name{font-size:15px;font-weight:bold;color:#333;display:block}
@@ -141,7 +141,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .case-actions .act.outline{background:transparent;color:#A5D7E8;border:1px solid #A5D7E8}
 .empty{padding:60px 0;text-align:center;color:#bbb;font-size:14px}
 /* ===== Detail ===== */
-.module{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.module{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:box-shadow 0.2s}
 .module h3{font-size:15px;color:#2C5F7C;margin-bottom:14px;font-weight:bold}
 .pet-prof{display:flex;gap:14px;margin-bottom:12px}
 .pet-img-lg{width:80px;height:80px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
@@ -208,7 +208,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .status-tab.active{background:#A5D7E8;color:#fff;font-weight:bold}
 .status-tab .cnt{font-size:10px;background:rgba(255,255,255,0.3);color:#fff;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
 .status-tab:not(.active) .cnt{background:#ff6b6b;color:#fff}
-.appt-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.appt-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:all 0.25s ease}.appt-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08)}
 .appt-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .appt-hdr .name{font-size:15px;font-weight:bold;color:#333;display:block}
 .appt-hdr .owner{font-size:11px;color:#999;display:block;margin-top:2px}
@@ -237,19 +237,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .appt-acts .report{background:#f0f7ff;color:#2C5F7C}
 /* Modal overlay */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;align-items:center;justify-content:center}
-.modal-box{background:#fff;border-radius:20px;padding:28px 24px;width:90%;max-width:440px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-box{background:#fff;border-radius:20px;padding:28px 24px;width:90%;max-width:440px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:modalIn 0.25s ease}@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 /* Tab bar */
 .tab-bar{height:56px;background:#fff;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-around;flex-shrink:0;padding:0 8px}
-.tab-bar-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;opacity:0.5;padding:4px 8px;border-radius:8px}
+.tab-bar-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;opacity:0.5;padding:4px 8px;border-radius:8px;transition:all 0.2s ease}
 .tab-bar-item.active{opacity:1;background:#f0f7ff}
 .tab-bar-item .ic{font-size:20px}
 .tab-bar-item .lb{font-size:9px;color:#999}
 .tab-bar-item.active .lb{color:#A5D7E8}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;z-index:9999;display:none;white-space:nowrap}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.82);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;z-index:9999;display:none;white-space:nowrap;backdrop-filter:blur(4px);box-shadow:0 4px 20px rgba(0,0,0,0.2)}
 .toast.show{display:block;animation:fadeInOut 2s forwards}
 @keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}10%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d0d0d0;border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:#bbb}
 @media (max-width:1100px){.app-wrap{max-width:100%}}
 @media (max-width:600px){.scroll{padding:12px 14px 20px}}
+
+.case-img{width:80px;height:80px;border-radius:8px;object-fit:cover;cursor:pointer;border:2px solid transparent;transition:all 0.2s}
+.case-img:hover{border-color:#A5D7E8;transform:scale(1.05)}
+.case-img.anno{border-color:#ff9800}
+.img-preview-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.img-preview-overlay img{max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain}
+
+.card-imgs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.card-thumb{width:56px;height:56px;border-radius:8px;object-fit:cover;cursor:pointer;border:1px solid #e8e8e8;transition:transform 0.2s}
+.card-thumb:hover{transform:scale(1.15);border-color:#A5D7E8}
 </style>
 </head>
 <body>
@@ -275,6 +290,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="page" id="pageCases">
     <div class="scroll">
       <div class="filter-bar" id="casesFilter"></div>
+      <div style="position:relative;margin-bottom:12px"><input id="caseSearch" placeholder="搜索宠物名称或主人..." oninput="renderCases(currentFilter)" style="width:100%;height:38px;background:#f0f0f0;border:none;border-radius:10px;padding:0 14px 0 36px;font-size:13px;outline:none;box-sizing:border-box;transition:all 0.2s" onfocus="this.style.background='#fff';this.style.boxShadow='0 0 0 2px #A5D7E8'" onblur="this.style.background='#f0f0f0';this.style.boxShadow='none'"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;opacity:0.4">🔍</span></div>
       <div id="casesList"></div>
     </div>
   </div>
@@ -301,13 +317,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="toast" id="toast"></div>
 
 <script>
+// ── 图片基础路径 ──
+const IMG_BASE = '/images_cases';
+const diseaseImages = {
+  '真菌感染': ['fungal_01.jpg','fungal_02.jpg','fungal_03.jpg','fungal_04.jpg','fungal_05.jpg'],
+  '皮炎': ['dermatitis_01.jpg','dermatitis_02.jpg','dermatitis_03.jpg','dermatitis_04.jpg','dermatitis_05.jpg'],
+  '湿疹': ['eczema_01.jpg','eczema_02.jpg','eczema_03.jpg','eczema_04.jpg','eczema_05.jpg'],
+  '过敏': ['allergy_01.jpg','allergy_02.jpg','allergy_03.jpg','allergy_04.jpg','allergy_05.jpg'],
+  '螨虫': ['mite_01.jpg','mite_02.jpg','mite_03.jpg','mite_04.jpg','mite_05.jpg'],
+  '癣病': ['ringworm_01.jpg','ringworm_02.jpg','ringworm_03.jpg','ringworm_04.jpg','ringworm_05.jpg'],
+  '健康': ['healthy_01.jpg','healthy_02.jpg','healthy_03.jpg','healthy_04.jpg','healthy_05.jpg'],
+};
 // ===== Mock Data =====
 const mockCases = [
-  {_id:'c1',petId:{name:'奶茶',avatar:'',species:'猫',breed:'布偶',age:2,gender:'雌性'},userId:{nickName:'王女士',phoneNumber:'138****1234'},severity:'中',weight:4.2,allergies:'无',sterilized:'已绝育',deworming:'近一个月未体外驱虫',symptoms:'最近3天耳后掉毛，宠物一直抓挠，局部发红，家里新接触过一只流浪猫。',skinDiseaseHistory:[{diseaseName:'真菌感染',symptoms:['掉毛','红肿','瘙痒'],affectedAreas:['耳后'],medication:'',isCured:'否',startDate:'2026-05-14'}],recentContact:'接触流浪猫',images:[{url:'',annotatedUrl:''}],aiSummary:'患宠：奶茶（猫）；宠主：王女士；症状：耳后掉毛、红肿、瘙痒3天，有流浪猫接触史。',severityAI:'中',trend:'初次就诊，建议持续观察并按时用药。',followUp:{needed:true,date:'2026-05-21',note:'复查皮肤恢复情况',completed:false},createdAt:'2026-05-14T08:00:00Z'},
-  {_id:'c2',petId:{name:'豆豆',avatar:'',species:'犬',breed:'金毛',age:3,gender:'雄性'},userId:{nickName:'张女士',phoneNumber:'139****5678'},severity:'中',weight:28.5,allergies:'花粉',sterilized:'是',symptoms:'背部红斑、瘙痒，持续一周',skinDiseaseHistory:[{diseaseName:'湿疹',symptoms:['红斑','瘙痒','掉毛'],affectedAreas:['背部','腹部'],medication:'红霉素软膏',isCured:'否',startDate:'2026-04-15'}],recentContact:'近期去过宠物公园',images:[],aiSummary:'患宠：豆豆（犬）；宠主：张女士；体重：28.5kg；诊断疾病：湿疹。',severityAI:'中',trend:'初次就诊，症状表现为中度皮肤红斑和瘙痒，建议持续观察。',followUp:{needed:true,date:'2026-05-20',note:'复查皮肤恢复情况',completed:false},createdAt:'2026-04-15T10:00:00Z'},
-  {_id:'c3',petId:{name:'旺财',avatar:'',species:'犬',breed:'柯基',age:4,gender:'雄性'},userId:{nickName:'王先生',phoneNumber:'137****9012'},severity:'重',weight:12,allergies:'食物过敏',sterilized:'否',symptoms:'全身多处渗液、结痂，严重瘙痒',skinDiseaseHistory:[{diseaseName:'肿皮症',symptoms:['渗液','结痂','红斑','瘙痒'],affectedAreas:['全身','爪缝'],medication:'抗生素+药浴',isCured:'否',startDate:'2026-05-01'},{diseaseName:'过敏性皮炎',symptoms:['红斑','瘙痒'],affectedAreas:['腹部'],medication:'抗组胺药',isCured:'是',startDate:'2026-01-10'}],recentContact:'家中新养了一只猫',images:[],aiSummary:'患宠：旺财（犬）；宠主：王先生；体重：12kg；诊断疾病：肿皮症；有食物过敏史。',severityAI:'重',trend:'该宠物共有2次就诊记录，目前肿皮症正在治疗中。',followUp:{needed:true,date:'2026-05-25',note:'复查肿皮症恢复情况',completed:false},createdAt:'2026-05-01T09:00:00Z'},
-  {_id:'c4',petId:{name:'呼咕',avatar:'',species:'猫',breed:'英短',age:2,gender:'雌性'},userId:{nickName:'李先生',phoneNumber:'139****5678'},severity:'轻',weight:4.2,allergies:'无',sterilized:'是',symptoms:'面部掉毛、结痂',skinDiseaseHistory:[{diseaseName:'猫癣',symptoms:['掉毛','结痂'],affectedAreas:['面部'],medication:'特比奈芬',isCured:'是',startDate:'2026-03-01'}],recentContact:'',images:[],aiSummary:'患宠：呼咕（猫）；宠主：李先生；诊断疾病：猫癣；已治愈。',severityAI:'轻',trend:'1次就诊记录，已痊愈。',followUp:{needed:false,completed:false},createdAt:'2026-03-01T14:00:00Z'},
-  {_id:'c5',petId:{name:'小白',avatar:'',species:'犬',breed:'比熊',age:1.5,gender:'雌性'},userId:{nickName:'赵女士',phoneNumber:'136****3456'},severity:'轻',weight:5.8,allergies:'无',sterilized:'是',symptoms:'面部红斑、泪痕',skinDiseaseHistory:[{diseaseName:'泪痕炎',symptoms:['红斑'],affectedAreas:['面部'],medication:'氯霉素眼药水',isCured:'是',startDate:'2026-02-20'}],recentContact:'',images:[],aiSummary:'患宠：小白（犬）；宠主：赵女士；已治愈。',severityAI:'轻',trend:'初次就诊，已痊愈。',followUp:{needed:false,completed:false},createdAt:'2026-02-20T16:00:00Z'},
+  {_id:'c1',petId:{name:'奶茶',avatar:'',species:'猫',breed:'布偶',age:2,gender:'雌性'},userId:{nickName:'王女士',phoneNumber:'138****1234'},severity:'中',weight:4.2,allergies:'无',sterilized:'已绝育',deworming:'近一个月未体外驱虫',symptoms:'最近3天耳后掉毛，宠物一直抓挠，局部发红，家里新接触过一只流浪猫。',skinDiseaseHistory:[{diseaseName:'真菌感染',symptoms:['掉毛','红肿','瘙痒'],affectedAreas:['耳后'],medication:'',isCured:'否',startDate:'2026-05-14'}],recentContact:'接触流浪猫',images:diseaseImages['真菌感染'].slice(0,3).map(f=>({url:IMG_BASE+'/fungal/'+f,annotatedUrl:IMG_BASE+'/fungal/'+f})),aiSummary:'患宠：奶茶（猫）；宠主：王女士；症状：耳后掉毛、红肿、瘙痒3天，有流浪猫接触史。',severityAI:'中',trend:'初次就诊，建议持续观察并按时用药。',followUp:{needed:true,date:'2026-05-21',note:'复查皮肤恢复情况',completed:false},createdAt:'2026-05-14T08:00:00Z'},
+  {_id:'c2',petId:{name:'豆豆',avatar:'',species:'犬',breed:'金毛',age:3,gender:'雄性'},userId:{nickName:'张女士',phoneNumber:'139****5678'},severity:'中',weight:28.5,allergies:'花粉',sterilized:'是',symptoms:'背部红斑、瘙痒，持续一周',skinDiseaseHistory:[{diseaseName:'湿疹',symptoms:['红斑','瘙痒','掉毛'],affectedAreas:['背部','腹部'],medication:'红霉素软膏',isCured:'否',startDate:'2026-04-15'}],recentContact:'近期去过宠物公园',images:diseaseImages['湿疹'].slice(0,2).map(f=>({url:IMG_BASE+'/eczema/'+f,annotatedUrl:IMG_BASE+'/eczema/'+f})),severityAI:'中',trend:'初次就诊，症状表现为中度皮肤红斑和瘙痒，建议持续观察。',followUp:{needed:true,date:'2026-05-20',note:'复查皮肤恢复情况',completed:false},createdAt:'2026-04-15T10:00:00Z'},
+  {_id:'c3',petId:{name:'旺财',avatar:'',species:'犬',breed:'柯基',age:4,gender:'雄性'},userId:{nickName:'王先生',phoneNumber:'137****9012'},severity:'重',weight:12,allergies:'食物过敏',sterilized:'否',symptoms:'全身多处渗液、结痂，严重瘙痒',skinDiseaseHistory:[{diseaseName:'肿皮症',symptoms:['渗液','结痂','红斑','瘙痒'],affectedAreas:['全身','爪缝'],medication:'抗生素+药浴',isCured:'否',startDate:'2026-05-01'},{diseaseName:'过敏性皮炎',symptoms:['红斑','瘙痒'],affectedAreas:['腹部'],medication:'抗组胺药',isCured:'是',startDate:'2026-01-10'}],recentContact:'家中新养了一只猫',images:diseaseImages['皮炎'].slice(0,4).map(f=>({url:IMG_BASE+'/dermatitis/'+f,annotatedUrl:IMG_BASE+'/dermatitis/'+f})),aiSummary:'患宠：旺财（犬）；宠主：王先生；体重：12kg；诊断疾病：肿皮症；有食物过敏史。',severityAI:'重',trend:'该宠物共有2次就诊记录，目前肿皮症正在治疗中。',followUp:{needed:true,date:'2026-05-25',note:'复查肿皮症恢复情况',completed:false},createdAt:'2026-05-01T09:00:00Z'},
+  {_id:'c4',petId:{name:'呼咕',avatar:'',species:'猫',breed:'英短',age:2,gender:'雌性'},userId:{nickName:'李先生',phoneNumber:'139****5678'},severity:'轻',weight:4.2,allergies:'无',sterilized:'是',symptoms:'面部掉毛、结痂',skinDiseaseHistory:[{diseaseName:'猫癣',symptoms:['掉毛','结痂'],affectedAreas:['面部'],medication:'特比奈芬',isCured:'是',startDate:'2026-03-01'}],recentContact:'',images:diseaseImages['癣病'].slice(0,4).map(f=>({url:IMG_BASE+'/ringworm/'+f,annotatedUrl:IMG_BASE+'/ringworm/'+f})),aiSummary:'患宠：呼咕（猫）；宠主：李先生；诊断疾病：猫癣；已治愈。',severityAI:'轻',trend:'1次就诊记录，已痊愈。',followUp:{needed:false,completed:false},createdAt:'2026-03-01T14:00:00Z'},
+  {_id:'c5',petId:{name:'小白',avatar:'',species:'犬',breed:'比熊',age:1.5,gender:'雌性'},userId:{nickName:'赵女士',phoneNumber:'136****3456'},severity:'轻',weight:5.8,allergies:'无',sterilized:'是',symptoms:'面部红斑、泪痕',skinDiseaseHistory:[{diseaseName:'泪痕炎',symptoms:['红斑'],affectedAreas:['面部'],medication:'氯霉素眼药水',isCured:'是',startDate:'2026-02-20'}],recentContact:'',images:diseaseImages['过敏'].slice(0,3).map(f=>({url:IMG_BASE+'/allergy/'+f,annotatedUrl:IMG_BASE+'/allergy/'+f})),severityAI:'轻',trend:'初次就诊，已痊愈。',followUp:{needed:false,completed:false},createdAt:'2026-02-20T16:00:00Z'},
 ];
 
 const mockAppointments = [
@@ -346,14 +373,14 @@ el.innerHTML=`
   <div class="inst-stats">
     <div class="inst-stat"><span class="inst-stat-num">${todayA||3}</span><span class="inst-stat-lbl">今日预约</span></div>
     <div class="inst-stat-div"></div>
-    <div class="inst-stat"><span class="inst-stat-num" style="color:#ffb74d">${pending||2}</span><span class="inst-stat-lbl">待处理</span></div>
+    <div class="inst-stat"><span class="inst-stat-num" style="color:#ffb74d">${pending}</span><span class="inst-stat-lbl">待处理</span></div>
     <div class="inst-stat-div"></div>
     <div class="inst-stat"><span class="inst-stat-num" style="color:#ff6b6b">${high||1}</span><span class="inst-stat-lbl">高风险</span></div>
   </div>
 </div>
 <div class="data-grid">
   <div class="data-card" onclick="navigateToPage('appointments','today')"><div class="icon">📅</div><span class="num">${todayA||3}</span><span class="lbl">今日预约</span></div>
-  <div class="data-card" onclick="navigateToPage('cases','pending')"><div class="icon">📋</div><span class="num orange">${pending||2}</span><span class="lbl">待处理预问诊</span></div>
+  <div class="data-card" onclick="navigateToPage('cases','pending')"><div class="icon">📋</div><span class="num orange">${pending}</span><span class="lbl">待处理预问诊</span></div>
   <div class="data-card" onclick="navigateToPage('cases','highrisk')"><div class="icon">⚠️</div><span class="num red">${high||1}</span><span class="lbl">高风险病例</span></div>
   <div class="data-card" onclick="navigateToPage('cases','booked')"><div class="icon">🔄</div><span class="num purple">${fu||2}</span><span class="lbl">待复诊提醒</span></div>
 </div>
@@ -365,19 +392,19 @@ el.innerHTML=`
 </div>
 <div class="section-card">
   <div class="sec-header"><span class="section-title">最近病例</span><span class="more" onclick="navigateToPage('cases','all')">查看全部 ></span></div>
-  <div>${mockCases.slice(0,3).map(c=>renderCaseItem(c)).join('')||'<div class="empty">暂无病例</div>'}</div>
+  <div>${mockCases.slice(0,3).map(c=>renderCaseItem(c)).join('')||'<div class="empty" style="padding:40px 0"><div style="font-size:48px;margin-bottom:12px;opacity:0.3">📋</div>暂无匹配病例</div>'}</div>
 </div>
 ${!inst?'<div style="text-align:center;padding:16px;background:#fff8e1;border-radius:12px;border:1px solid #ffe082;font-size:12px;color:#f57c00;cursor:pointer" onclick="navigateToPage(\'register\',\'\')">尚未完善机构信息，点击去入驻 ></div>':''}
 `;renderPageTitle('机构工作台')}
 
-function renderCaseItem(c){return `<div class="case-item" onclick="showDetail('${c._id}')"><div class="case-item-top"><div class="avatar">${c.petId?.species==='猫'?'🐱':'🐶'}</div><div class="meta"><span class="pname">${c.petId?.name||'未知'}</span><span class="oname">${c.userId?.nickName||'未知'}</span></div><span class="sev-tag ${sevClass(c.severity)}">${c.severity||'待评估'}</span></div><span class="disease">${c.skinDiseaseHistory?.[c.skinDiseaseHistory.length-1]?.diseaseName||'暂无诊断'}</span><span class="date">${fmt(c.createdAt)}</span></div>`}
+function renderCaseItem(c){return `<div class="case-item" onclick="showDetail('${c._id}')"><div class="case-item-top"><div class="avatar">${c.petId?.species==='猫'?'🐱':'🐶'}</div><div class="meta"><span class="pname">${c.petId?.name||'未知'}</span><span class="oname">${c.userId?.nickName||'未知'}</span></div><span class="sev-tag ${sevClass(c.severity)}">${c.severity||'待评估'}</span></div><span class="disease">${c.skinDiseaseHistory?.[c.skinDiseaseHistory.length-1]?.diseaseName||'暂无诊断'}</span><span class="date">${relativeTime(c.createdAt)}</span></div>`}
 
 // ===== Cases =====
 function renderCasesFilter(){const el=document.getElementById('casesFilter');const filters=['all','pending','contacted','booked','highrisk','care'];const labels={all:'全部',pending:'待处理',contacted:'已联系',booked:'已预约',highrisk:'高风险',care:'护理咨询'};el.innerHTML=filters.map(f=>`<span class="filter-chip ${f===currentFilter?'active':''}" onclick="renderCases('${f}')">${labels[f]}</span>`).join('')}
 
-function renderCases(filter){currentFilter=filter;renderCasesFilter();const el=document.getElementById('casesList');let list=mockCases;if(filter==='pending')list=mockCases.filter(c=>!c.aiSummary);else if(filter==='contacted')list=[];else if(filter==='booked')list=mockCases.filter(c=>c.followUp?.needed);else if(filter==='highrisk')list=mockCases.filter(c=>c.severity==='重');else if(filter==='care')list=mockCases.filter(c=>c.severity==='轻');
+function renderCases(filter){currentFilter=filter;renderCasesFilter();const el=document.getElementById('casesList');let list=mockCases;if(filter==='pending')list=mockCases.filter(c=>!c.aiSummary);else if(filter==='contacted')list=[];else if(filter==='booked')list=mockCases.filter(c=>c.followUp?.needed);else if(filter==='highrisk')list=mockCases.filter(c=>c.severity==='重');else if(filter==='care')list=mockCases.filter(c=>c.severity==='轻');const sq=document.getElementById('caseSearch');if(sq){const q=sq.value.trim().toLowerCase();if(q)list=list.filter(c=>(c.petId?.name||'').includes(q)||(c.userId?.nickName||'').includes(q)||(c.skinDiseaseHistory?.[c.skinDiseaseHistory.length-1]?.diseaseName||'').includes(q))}
 
-if(list.length===0){el.innerHTML='<div class="empty">暂无病例</div>';renderPageTitle('AI预问诊管理');return}
+if(list.length===0){el.innerHTML='<div class="empty" style="padding:40px 0"><div style="font-size:48px;margin-bottom:12px;opacity:0.3">📋</div>暂无匹配病例</div>';renderPageTitle('AI预问诊管理');return}
 el.innerHTML=list.map(c=>`
 <div class="case-card">
   <div class="case-card-top">
@@ -388,16 +415,17 @@ el.innerHTML=list.map(c=>`
     <span class="sev-tag ${sevClass(c.severity)}">${c.severity||'待评估'}</span>
   </div>
   <div class="card-symp"><strong style="color:#999;font-size:11px">主诉：</strong>${c.symptoms||'暂无'}</div>
+	  <div class="card-imgs">${c.images&&c.images.length>0?c.images.slice(0,3).map(img=>img.url?`<img class="card-thumb" src="${img.url}" onclick="event.stopPropagation();previewImg('${img.url}')" title="患处照片">`:"").join(""):""}</div>
   <div class="card-ai">
     <span class="card-ai-title">AI结果</span>
     <div class="ai-tags">
       <span class="ai-tag top1">真菌感染 0.72</span>
-      <span class="ai-tag top2">过敏性皮炎 0.58</span>
-      <span class="ai-tag top3">蜮虫感染 0.41</span>
+      <span class="ai-tag top2">过敏性皮炎 0.14</span>
+      <span class="ai-tag top3">蜮虫感染 0.06</span>
     </div>
   </div>
   <div class="card-foot">
-    <div class="meta"><span>📅 ${fmt(c.createdAt)}</span><span>📍 2.1km</span></div>
+    <div class="meta"><span>📅 ${relativeTime(c.createdAt)}</span><span>📍 2.1km</span></div>
     <span class="card-status ${c.aiSummary?'done':'pending'}">${c.aiSummary?'已处理':'待处理'}</span>
   </div>
   <div class="case-actions">
@@ -414,7 +442,7 @@ function contactOwner(id){const c=mockCases.find(x=>x._id===id);toast(c?.userId?
 function suggestBooking(id){const c=mockCases.find(x=>x._id===id);if(!c)return;const a={id:'a_'+Date.now(),caseId:c._id,petName:c.petId?.name||'未知',ownerName:c.userId?.nickName||'未知',date:new Date().toISOString(),serviceType:'皮肤病复核',severity:c.severity||'待评估',hasReport:!!c.aiSummary,status:'pending',notes:''};mockAppointments.unshift(a);toast('已创建预约建议')}
 
 // ===== Detail =====
-function renderDetail(id){const el=document.getElementById('detailContent');const c=mockCases.find(x=>x._id===id);if(!c){el.innerHTML='<div class="empty">未找到病例</div>';return};const sv=0.63;renderPageTitle('AI预问诊报告详情')
+function renderDetail(id){const el=document.getElementById('detailContent');const c=mockCases.find(x=>x._id===id);if(!c){el.innerHTML='<div class="empty">未找到病例</div>';return};const sv=0.63;const images=c.images&&c.images.length>0?c.images:[{url:'',annotatedUrl:''}];renderPageTitle('AI预问诊报告详情')
 el.innerHTML=`
 <div class="module"><h3>🐾 宠物基本信息</h3>
   <div class="pet-prof"><div class="pet-img-lg">${c.petId?.species==='猫'?'🐱':'🐶'}</div>
@@ -443,14 +471,14 @@ el.innerHTML=`
     <div class="symp-tag"><span class="tl">食欲</span><span class="tv">正常</span></div>
   </div>
 </div>
-<div class="module"><h3>📷 患处图片</h3>
-  <div class="img-tabs"><span class="img-tab active">原图</span><span class="img-tab">病灶标注</span></div>
-  <div class="imgs"><div class="img">📷</div></div>
+<div class="module"><h3>📷 患处图片 (${images.length}张)</h3>
+  <div class="img-tabs"><span class="img-tab active" onclick="switchImgTab(this,'raw','${c._id}')">原图</span><span class="img-tab" onclick="switchImgTab(this,'anno','${c._id}')">病灶标注</span></div>
+  <div class="imgs" id="imgs_${c._id}">${images.map((img,i)=>img.url?`<img class="case-img" src="${img.url}" onclick="previewImg('${img.url}')" title="患处图片 ${i+1}">`:`<div class="img">📷</div>`).join('')}</div>
 </div>
 <div class="module diag-card"><h3>🤖 AI诊断结果</h3>
   <div class="diag-item t1"><div class="diag-rank">Top 1</div><div class="diag-info"><span class="dn">真菌感染</span><span class="dp">72%</span></div><div class="diag-bar"><div class="fill" style="width:72%"></div></div></div>
-  <div class="diag-item t2"><div class="diag-rank">Top 2</div><div class="diag-info"><span class="dn">过敏性皮炎</span><span class="dp">58%</span></div><div class="diag-bar"><div class="fill" style="width:58%"></div></div></div>
-  <div class="diag-item t3"><div class="diag-rank">Top 3</div><div class="diag-info"><span class="dn">蜮虫感染</span><span class="dp">41%</span></div><div class="diag-bar"><div class="fill" style="width:41%"></div></div></div>
+  <div class="diag-item t2"><div class="diag-rank">Top 2</div><div class="diag-info"><span class="dn">过敏性皮炎</span><span class="dp">14%</span></div><div class="diag-bar"><div class="fill" style="width:14%"></div></div></div>
+  <div class="diag-item t3"><div class="diag-rank">Top 3</div><div class="diag-info"><span class="dn">蜮虫感染</span><span class="dp">6%</span></div><div class="diag-bar"><div class="fill" style="width:6%"></div></div></div>
   <div class="diag-sum" style="margin-top:10px">
     <div class="row"><span class="lbl">最高置信度</span><span class="val">72%</span></div>
     <div class="row"><span class="lbl">结果可靠性</span><span class="val green">中高</span></div>
@@ -483,7 +511,7 @@ function addNote(el){const n=prompt('输入内部备注：');if(n){document.getE
 // ===== Enhanced Appointments =====
 function renderApptTabs(){const el=document.getElementById('apptTabs');const statuses=['pending','confirmed','today','completed','cancelled'];const labels={pending:'待确认',confirmed:'已确认',today:'今日到店',completed:'已完成',cancelled:'已取消'};const cnts={};statuses.forEach(s=>cnts[s]=mockAppointments.filter(a=>a.status===s).length);el.innerHTML=statuses.map(s=>`<span class="status-tab ${s===currentStatus?'active':''}" onclick="renderAppointments('${s}')">${labels[s]}${cnts[s]>0?`<span class="cnt">${cnts[s]}</span>`:''}</span>`).join('')}
 
-function renderAppointments(status){currentStatus=status;renderApptTabs();const el=document.getElementById('apptList');let list=mockAppointments.filter(a=>a.status===status);if(list.length===0){el.innerHTML='<div class="empty">暂无预约</div>';renderPageTitle('预约管理');return}
+function renderAppointments(status){currentStatus=status;renderApptTabs();const el=document.getElementById('apptList');let list=mockAppointments.filter(a=>a.status===status);if(list.length===0){el.innerHTML='<div class="empty" style="padding:40px 0"><div style="font-size:48px;margin-bottom:12px;opacity:0.3">📅</div>暂无预约</div>';renderPageTitle('预约管理');return}
 el.innerHTML=list.map(a=>{
 const statusTexts={pending:'待确认',confirmed:'已确认',today:'今日到店',completed:'已完成',cancelled:'已取消'};const d=new Date(a.date);const dateStr=`${d.getMonth()+1}月${d.getDate()}日 周${'日一二三四五六'[d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 let acts='';
@@ -630,12 +658,12 @@ function viewApptReport(id){
           <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#1565c0;width:72%"></div></div>
         </div>
         <div class="diag-item t2" style="background:#fff;border-radius:10px;padding:12px;margin-bottom:8px">
-          <div class="diag-info"><span class="dn" style="font-size:14px;font-weight:bold;color:#7b1fa2">过敏性皮炎</span><span class="dp" style="font-size:14px;font-weight:bold;color:#7b1fa2">58%</span></div>
-          <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#7b1fa2;width:58%"></div></div>
+          <div class="diag-info"><span class="dn" style="font-size:14px;font-weight:bold;color:#7b1fa2">过敏性皮炎</span><span class="dp" style="font-size:14px;font-weight:bold;color:#7b1fa2">14%</span></div>
+          <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#7b1fa2;width:14%"></div></div>
         </div>
         <div class="diag-item t3" style="background:#fff;border-radius:10px;padding:12px">
-          <div class="diag-info"><span class="dn" style="font-size:14px;font-weight:bold;color:#e65100">螨虫感染</span><span class="dp" style="font-size:14px;font-weight:bold;color:#e65100">41%</span></div>
-          <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#e65100;width:41%"></div></div>
+          <div class="diag-info"><span class="dn" style="font-size:14px;font-weight:bold;color:#e65100">螨虫感染</span><span class="dp" style="font-size:14px;font-weight:bold;color:#e65100">6%</span></div>
+          <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#e65100;width:6%"></div></div>
         </div>
       </div>
       <button class="btn primary" onclick="closeModal()" style="width:100%">关闭</button>
@@ -705,9 +733,30 @@ document.getElementById('step2').style.display='none';document.getElementById('s
 
 function sevClass(s){if(s==='轻')return'light';if(s==='中')return'medium';if(s==='重')return'heavy';return''}
 function fmt(d){if(!d)return'';const date=new Date(d);const m=date.getMonth()+1;const day=date.getDate();return m+'月'+day+'日'}
+function relativeTime(d){if(!d)return'';const diff=Date.now()-new Date(d).getTime();const min=Math.floor(diff/60000);if(min<1)return'刚刚';if(min<60)return min+'分钟前';const h=Math.floor(min/60);if(h<24)return h+'小时前';const day=Math.floor(h/24);if(day<7)return day+'天前';return fmt(d)}
 
 // Init
 renderDashboard();
+
+// 图片相关函数
+function switchImgTab(el, type, caseId){
+  document.querySelectorAll(`#pageDetail .img-tab`).forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const container = document.getElementById('imgs_'+caseId);
+  if(!container) return;
+  const c = mockCases.find(x=>x._id===caseId);
+  if(!c) return;
+  const images = c.images && c.images.length>0 ? c.images : [{url:'',annotatedUrl:''}];
+  container.innerHTML = images.map((img,i)=>{
+    const src = type==='raw' ? img.url : (img.annotatedUrl||img.url);
+    return src ? `<img class="case-img" src="${src}" onclick="previewImg('${src}')" title="患处图片 ${i+1}">`:`<div class="img">📷</div>`;
+  }).join('');
+}
+function previewImg(src){
+  const ov=document.createElement('div');ov.className='img-preview-overlay';
+  ov.innerHTML=`<img src="${src}">`;
+  ov.onclick=()=>ov.remove();document.body.appendChild(ov);
+}
 </script>
 </body>
 </html>
