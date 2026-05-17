@@ -1,0 +1,68 @@
+<navigation-bar title="机构入驻" back="{{true}}" color="white" background="#667eea"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 入驻引导 -->
+    <view class="guide-section">
+      <text class="guide-title">加入 PetDerma 机构端</text>
+      <text class="guide-desc">为宠物提供专业的皮肤健康服务，获取更多线上客户</text>
+    </view>
+
+    <!-- 表单 -->
+    <view class="form-section">
+      <view class="form-item">
+        <text class="form-label">机构名称</text>
+        <input class="form-input" placeholder="请输入机构名称" value="{{formData.name}}" bindinput="onInput" data-field="name" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">机构类型</text>
+        <view class="form-options">
+          <view class="form-option {{formData.type === 'hospital' ? 'active' : ''}}" bindtap="selectType" data-type="hospital">
+            <text>宠物医院</text>
+          </view>
+          <view class="form-option {{formData.type === 'clinic' ? 'active' : ''}}" bindtap="selectType" data-type="clinic">
+            <text>宠物诊所</text>
+          </view>
+          <view class="form-option {{formData.type === 'care' ? 'active' : ''}}" bindtap="selectType" data-type="care">
+            <text>护理店</text>
+          </view>
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">联系人</text>
+        <input class="form-input" placeholder="请输入联系人姓名" value="{{formData.contact}}" bindinput="onInput" data-field="contact" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">联系电话</text>
+        <input class="form-input" placeholder="请输入联系电话" type="number" value="{{formData.phone}}" bindinput="onInput" data-field="phone" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">机构地址</text>
+        <input class="form-input" placeholder="请输入机构地址" value="{{formData.address}}" bindinput="onInput" data-field="address" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">机构简介</text>
+        <textarea class="form-textarea" placeholder="请简要介绍您的机构（特色、服务等）" value="{{formData.description}}" bindinput="onInput" data-field="description"></textarea>
+      </view>
+      <view class="form-item">
+        <text class="form-label">执业许可证</text>
+        <view class="upload-area" bindtap="uploadLicense">
+          <image wx:if="{{formData.licenseUrl}}" src="{{formData.licenseUrl}}" mode="aspectFill" class="license-preview"></image>
+          <view wx:else class="upload-placeholder">
+            <text class="upload-icon">+</text>
+            <text class="upload-text">上传许可证照片</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="submit-section">
+      <view class="btn-submit {{formData.agreed ? '' : 'disabled'}}" bindtap="submitRegistration">
+        <text>提交入驻申请</text>
+      </view>
+      <view class="agreement">
+        <view class="checkbox {{formData.agreed ? 'checked' : ''}}" bindtap="toggleAgreement"></view>
+        <text class="agreement-text">我已阅读并同意 <text class="agreement-link">《PetDerma机构入驻协议》</text></text>
+      </view>
+    </view>
+  </view>
+</scroll-view>

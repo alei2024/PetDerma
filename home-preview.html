@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PetDerma 首页预览</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.phone-frame {
+  width: 420px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #A5D7E8 0%, #FFFFFF 40%);
+  position: relative;
+  box-shadow: 0 0 40px rgba(0,0,0,0.1);
+}
+
+/* Nav Bar */
+.navbar {
+  background: #A5D7E8;
+  padding: 44px 16px 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.navbar .title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.navbar .msg-btn {
+  position: absolute;
+  right: 16px;
+  top: 48px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.navbar .msg-btn::after {
+  content: "💬";
+  font-size: 20px;
+}
+
+/* Content */
+.content {
+  padding: 16px 20px 32px;
+}
+
+/* Welcome */
+.welcome-section {
+  background: #A5D7E8;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  color: #fff;
+}
+.welcome-text { flex: 1; }
+.welcome-title { font-size: 22px; font-weight: bold; display: block; margin-bottom: 6px; }
+.welcome-subtitle { font-size: 14px; opacity: 0.9; display: block; }
+.welcome-image { width: 80px; height: 80px; flex-shrink: 0; }
+.welcome-image div {
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+}
+
+/* Pet Avatars */
+.pet-avatars {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.pet-avatar {
+  min-width: 80px;
+  max-width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pet-avatar .avatar-img {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: #e0e7ef;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.pet-avatar .avatar-name {
+  font-size: 12px; color: #333; margin-top: 6px;
+  display: block; text-align: center;
+}
+
+/* Features Grid */
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.feature-item {
+  width: calc(50% - 6px);
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.feature-item:active { transform: scale(0.97); }
+.feature-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.feature-icon.primary { background: rgba(165,215,232,0.2); }
+.feature-icon.secondary { background: rgba(255,192,203,0.2); }
+.feature-icon.tertiary { background: rgba(255,250,205,0.3); }
+.feature-icon.quaternary { background: rgba(189,252,201,0.2); }
+.feature-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 4px; }
+.feature-desc { font-size: 12px; color: #999; text-align: center; }
+
+/* Institution Entry */
+.institution-entry {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.institution-entry:active { transform: scale(0.98); }
+.inst-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.inst-icon {
+  width: 48px; height: 48px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+.inst-text { flex: 1; }
+.inst-title { font-size: 18px; font-weight: bold; color: #fff; display: block; margin-bottom: 2px; }
+.inst-desc { font-size: 13px; color: rgba(255,255,255,0.85); display: block; }
+.inst-features {
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.inst-features span {
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+  display: block;
+  text-align: center;
+}
+.inst-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.inst-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 10px 20px;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.inst-btn .arrow { font-size: 16px; }
+
+/* Tips */
+.tips-section {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+.tips-icon { font-size: 28px; margin-right: 14px; flex-shrink: 0; }
+.tips-content { flex: 1; }
+.tips-title { font-size: 14px; font-weight: bold; color: #333; margin-right: 8px; }
+.tips-text { font-size: 12px; color: #999; line-height: 1.5; }
+
+/* Daily Knowledge */
+.daily-knowledge {
+  background: linear-gradient(135deg, #a5d7e8 0%, #e8f4fd 100%);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(165,215,232,0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+.daily-knowledge:active { transform: scale(0.98); }
+.daily-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.daily-title { font-size: 16px; font-weight: bold; color: #2c5f7c; }
+.daily-subtitle {
+  font-size: 11px; color: #5a8ba8;
+  background: rgba(255,255,255,0.6);
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.daily-topic { font-size: 15px; font-weight: bold; color: #1a4a5c; display: block; margin-bottom: 8px; }
+.daily-summary { font-size: 12px; color: #2c5f7c; line-height: 1.6; display: block; }
+.daily-footer { text-align: right; margin-top: 12px; }
+.daily-more {
+  font-size: 11px; color: #5a8ba8;
+  background: rgba(255,255,255,0.7);
+  padding: 6px 12px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 999;
+  display: none;
+}
+.toast.show { display: block; animation: fadeIn .3s; }
+@keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="navbar">
+    <span class="title">PetDerma</span>
+    <div class="msg-btn"></div>
+  </div>
+
+  <div class="content">
+    <!-- Welcome -->
+    <div class="welcome-section">
+      <div class="welcome-text">
+        <span class="welcome-title">欢迎来到PetDerma</span>
+        <span class="welcome-subtitle">您的宠物皮肤健康助手</span>
+      </div>
+      <div class="welcome-image">
+        <div>🐾</div>
+      </div>
+    </div>
+
+    <!-- Pet Avatars -->
+    <div class="pet-avatars">
+      <div class="pet-avatar">
+        <div class="avatar-img">🐱</div>
+        <span class="avatar-name">奶茶</span>
+      </div>
+      <div class="pet-avatar">
+        <div class="avatar-img">🐶</div>
+        <span class="avatar-name">豆豆</span>
+      </div>
+      <div class="pet-avatar">
+        <div class="avatar-img">🐱</div>
+        <span class="avatar-name">咪咪</span>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features-grid">
+      <div class="feature-item" onclick="navigateTo('diagnosis')">
+        <div class="feature-icon primary">🔍</div>
+        <span class="feature-title">智能诊断</span>
+        <span class="feature-desc">AI分析皮肤问题</span>
+      </div>
+      <div class="feature-item" onclick="navigateTo('community')">
+        <div class="feature-icon secondary">💬</div>
+        <span class="feature-title">社区交流</span>
+        <span class="feature-desc">分享经验和案例</span>
+      </div>
+      <div class="feature-item" onclick="navigateTo('knowledge')">
+        <div class="feature-icon tertiary">📖</div>
+        <span class="feature-title">知识科普</span>
+        <span class="feature-desc">学习防治知识</span>
+      </div>
+      <div class="feature-item" onclick="navigateTo('user')">
+        <div class="feature-icon quaternary">👤</div>
+        <span class="feature-title">个人中心</span>
+        <span class="feature-desc">宠物健康管理</span>
+      </div>
+    </div>
+
+    <!-- 机构端入口 (入口1：满足需求文档) -->
+    <div class="institution-entry" onclick="navigateTo('institution')">
+      <div class="inst-header">
+        <div class="inst-icon">🏥</div>
+        <div class="inst-text">
+          <span class="inst-title">机构服务</span>
+          <span class="inst-desc">宠物医院 / 护理店入驻</span>
+        </div>
+      </div>
+      <div class="inst-features">
+        <span>AI预问诊管理 · 预约转化 · 复诊跟踪</span>
+      </div>
+      <div class="inst-footer">
+        <button class="inst-btn">
+          机构工作台 <span class="arrow">›</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips-section">
+      <span class="tips-icon">💡</span>
+      <div class="tips-content">
+        <span class="tips-title">健康提示</span>
+        <span class="tips-text" id="healthTip">定期为宠物检查皮肤状况，发现异常及时就诊</span>
+      </div>
+    </div>
+
+    <!-- Daily Knowledge -->
+    <div class="daily-knowledge">
+      <div class="daily-header">
+        <span class="daily-title">每日科普</span>
+        <span class="daily-subtitle">根据本季易发疾病推荐</span>
+      </div>
+      <span class="daily-topic" id="dailyTopic">换季过敏预防</span>
+      <span class="daily-summary" id="dailySummary">冬春交替季节，宠物容易发生过敏反应。注意观察皮肤变化，及时调整饮食和环境，预防季节性过敏。</span>
+      <div class="daily-footer">
+        <span class="daily-more">点击查看详情 ›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 1500);
+}
+
+// Page navigation
+const PAGES = {
+  diagnosis: { title: 'AI智能诊断', desc: 'AI分析皮肤问题' },
+  community: { title: '社区交流', desc: '分享经验和案例' },
+  knowledge: { title: '知识科普', desc: '学习防治知识' },
+  user: { title: '个人中心', desc: '宠物健康管理' },
+};
+let currentPage = null;
+
+function navigateTo(page) {
+  // Real page navigations
+  if (page === 'institution') {
+    window.location.href = '/institution-preview';
+    return;
+  }
+  if (page === 'diagnosis') {
+    // 入口3：诊断结果页（含预约复核 + 发送护理店）
+    window.location.href = '/result-preview';
+    return;
+  }
+  if (page === 'community') {
+    // 入口2：地图导航页（含发送AI报告给机构）
+    window.location.href = '/map-preview';
+    return;
+  }
+  if (page === 'knowledge') {
+    const app = document.querySelector('.phone-frame');
+    app.innerHTML = `
+      <div class="navbar" style="justify-content:flex-start;gap:12px;">
+        <span class="back-btn" onclick="goHome()" style="font-size:28px;cursor:pointer;color:#fff;">‹</span>
+        <span class="title">知识科普</span>
+      </div>
+      <div class="content" style="padding:16px 20px;">
+        <div class="card" style="background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+          <div style="font-size:18px;font-weight:bold;color:#333;margin-bottom:16px;">📖 宠物皮肤健康知识</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;gap:12px;padding:12px;background:#f8faff;border-radius:12px;cursor:pointer;" onclick="showToast('文章详情')">
+              <div style="font-size:32px;flex-shrink:0;">🦴</div>
+              <div><div style="font-size:14px;font-weight:bold;color:#333;margin-bottom:4px;">识别常见皮肤病</div><div style="font-size:12px;color:#999;">如何区分常见宠物皮肤病的症状与表现</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;background:#f8faff;border-radius:12px;cursor:pointer;" onclick="showToast('文章详情')">
+              <div style="font-size:32px;flex-shrink:0;">🌸</div>
+              <div><div style="font-size:14px;font-weight:bold;color:#333;margin-bottom:4px;">季节性过敏预防</div><div style="font-size:12px;color:#999;">气候变化可能引发宠物过敏，预防从环境管理做起</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;background:#f8faff;border-radius:12px;cursor:pointer;" onclick="showToast('文章详情')">
+              <div style="font-size:32px;flex-shrink:0;">🧴</div>
+              <div><div style="font-size:14px;font-weight:bold;color:#333;margin-bottom:4px;">洗护产品选择指南</div><div style="font-size:12px;color:#999;">根据皮肤类型选择温和无刺激的洗护产品</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;background:#f8faff;border-radius:12px;cursor:pointer;" onclick="showToast('文章详情')">
+              <div style="font-size:32px;flex-shrink:0;">🐛</div>
+              <div><div style="font-size:14px;font-weight:bold;color:#333;margin-bottom:4px;">寄生虫防治策略</div><div style="font-size:12px;color:#999;">建立定期驱虫计划，保障皮肤与被毛健康</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+          <div style="font-size:16px;font-weight:bold;color:#333;margin-bottom:12px;">🏷️ 热门标签</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:12px;padding:6px 14px;border-radius:16px;background:#f0f4ff;color:#667eea;">猫癣</span>
+            <span style="font-size:12px;padding:6px 14px;border-radius:16px;background:#f0f4ff;color:#667eea;">湿疹</span>
+            <span style="font-size:12px;padding:6px 14px;border-radius:16px;background:#f0f4ff;color:#667eea;">过敏</span>
+            <span style="font-size:12px;padding:6px 14px;border-radius:16px;background:#f0f4ff;color:#667eea;">夏季护理</span>
+            <span style="font-size:12px;padding:6px 14px;border-radius:16px;background:#f0f4ff;color:#667eea;">驱虫</span>
+            <span style="font-size:12px;padding:6px 14px;border-radius:16px;background:#f0f4ff;color:#667eea;">洗护</span>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (page === 'user') {
+    const app = document.querySelector('.phone-frame');
+    app.innerHTML = `
+      <div class="navbar" style="justify-content:flex-start;gap:12px;">
+        <span class="back-btn" onclick="goHome()" style="font-size:28px;cursor:pointer;color:#fff;">‹</span>
+        <span class="title">个人中心</span>
+      </div>
+      <div class="content" style="padding:16px 20px;">
+        <div class="card" style="background:linear-gradient(135deg,#A5D7E8,#7ec8e0);border-radius:16px;padding:24px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+          <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:30px;">👤</div>
+          <div style="color:#fff;"><div style="font-size:18px;font-weight:bold;">宠主用户</div><div style="font-size:13px;opacity:0.85;margin-top:4px;">已绑定 2 只宠物</div></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <div style="flex:1;background:#fff;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.03);cursor:pointer;" onclick="showToast('我的宠物')">
+            <div style="font-size:28px;margin-bottom:6px;">🐾</div>
+            <div style="font-size:13px;font-weight:bold;color:#333;">我的宠物</div>
+            <div style="font-size:11px;color:#999;margin-top:2px;">2只</div>
+          </div>
+          <div style="flex:1;background:#fff;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.03);cursor:pointer;" onclick="showToast('健康档案')">
+            <div style="font-size:28px;margin-bottom:6px;">📋</div>
+            <div style="font-size:13px;font-weight:bold;color:#333;">健康档案</div>
+            <div style="font-size:11px;color:#999;margin-top:2px;">3条记录</div>
+          </div>
+          <div style="flex:1;background:#fff;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.03);cursor:pointer;" onclick="showToast('收藏')">
+            <div style="font-size:28px;margin-bottom:6px;">⭐</div>
+            <div style="font-size:13px;font-weight:bold;color:#333;">我的收藏</div>
+            <div style="font-size:11px;color:#999;margin-top:2px;">5篇</div>
+          </div>
+        </div>
+        <div class="card" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #f5f5f5;cursor:pointer;" onclick="showToast('宠物管理')">
+            <span style="font-size:14px;color:#333;">🐱 宠物管理</span>
+            <span style="color:#ccc;">›</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #f5f5f5;cursor:pointer;" onclick="showToast('诊断记录')">
+            <span style="font-size:14px;color:#333;">📊 诊断记录</span>
+            <span style="color:#ccc;">›</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #f5f5f5;cursor:pointer;" onclick="showToast('消息中心')">
+            <span style="font-size:14px;color:#333;">💬 消息中心</span>
+            <span style="color:#ccc;">›</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer;" onclick="showToast('设置')">
+            <span style="font-size:14px;color:#333;">⚙️ 设置</span>
+            <span style="color:#ccc;">›</span>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+}
+
+function goHome() {
+  window.location.reload();
+}
+
+// Rotate tips
+const tips = [
+  "定期为宠物检查皮肤状况，发现异常及时就诊",
+  "保持宠物被毛清洁干燥，定期给宠物洗澡和梳理",
+  "选择适合宠物皮肤类型的洗护产品，避免刺激",
+  "确保宠物有均衡的营养摄入，有助于皮肤健康",
+  "注意防治体外寄生虫，定期驱虫很重要"
+];
+setInterval(() => {
+  const idx = Math.floor(Math.random() * tips.length);
+  document.getElementById('healthTip').textContent = tips[idx];
+}, 5000);
+</script>
+</body>
+</html>

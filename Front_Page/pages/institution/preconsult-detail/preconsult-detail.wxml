@@ -1,0 +1,111 @@
+<navigation-bar title="预问诊详情" back="{{true}}" color="white" background="#667eea"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 报告头部 -->
+    <view class="report-header-card">
+      <view class="report-pet-info">
+        <image class="report-pet-avatar" src="{{report.petAvatar || '/images/default_pet.png'}}" mode="aspectFill"></image>
+        <view class="report-pet-detail">
+          <text class="report-pet-name">{{report.petName}}</text>
+          <text class="report-pet-breed">{{report.petType}} · {{report.petBreed || '未知品种'}}</text>
+        </view>
+      </view>
+      <view class="report-owner-info">
+        <text class="report-owner-label">宠主</text>
+        <text class="report-owner-name">{{report.ownerName}}</text>
+        <text class="report-owner-phone" wx:if="{{report.ownerPhone}}">{{report.ownerPhone}}</text>
+      </view>
+    </view>
+
+    <!-- AI诊断摘要 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">🤖 AI诊断摘要</text>
+        <view class="report-badge {{report.status}}">{{report.statusText}}</view>
+      </view>
+      <view class="diagnosis-card">
+        <view class="diag-row">
+          <text class="diag-label">诊断疾病</text>
+          <text class="diag-value highlight">{{report.diseaseName}}</text>
+        </view>
+        <view class="diag-row">
+          <text class="diag-label">严重程度</text>
+          <view class="severity-tag {{severityClass(report.severity)}}">{{report.severity || '待评估'}}</view>
+        </view>
+        <view class="diag-row" wx:if="{{report.confidence}}">
+          <text class="diag-label">可信度</text>
+          <view class="confidence-bar-container">
+            <view class="confidence-bar-bg">
+              <view class="confidence-bar" style="width: {{report.confidence}}%;"></view>
+            </view>
+            <text class="confidence-value">{{report.confidence}}%</text>
+          </view>
+        </view>
+      </view>
+      <view class="ai-summary" wx:if="{{report.aiSummary}}">
+        <text class="summary-label">AI分析总结</text>
+        <text class="summary-text">{{report.aiSummary}}</text>
+      </view>
+    </view>
+
+    <!-- 症状详情 -->
+    <view class="section" wx:if="{{report.symptoms && report.symptoms.length > 0}}">
+      <text class="section-title">症状表现</text>
+      <view class="symptom-tags">
+        <text class="symptom-tag" wx:for="{{report.symptoms}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 患病部位 -->
+    <view class="section" wx:if="{{report.affectedAreas && report.affectedAreas.length > 0}}">
+      <text class="section-title">患病部位</text>
+      <view class="area-tags">
+        <text class="area-tag" wx:for="{{report.affectedAreas}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 宠物档案 -->
+    <view class="section">
+      <text class="section-title">宠物档案</text>
+      <view class="profile-grid">
+        <view class="profile-item">
+          <text class="profile-label">体重</text>
+          <text class="profile-value">{{report.weight || '未知'}}</text>
+        </view>
+        <view class="profile-item">
+          <text class="profile-label">过敏史</text>
+          <text class="profile-value">{{report.allergies || '无'}}</text>
+        </view>
+        <view class="profile-item">
+          <text class="profile-label">绝育</text>
+          <text class="profile-value">{{report.sterilized || '未知'}}</text>
+        </view>
+        <view class="profile-item">
+          <text class="profile-label">近期接触</text>
+          <text class="profile-value">{{report.recentContact || '无异常'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 图片 -->
+    <view class="section" wx:if="{{report.images && report.images.length > 0}}">
+      <text class="section-title">患处照片</text>
+      <view class="image-grid">
+        <image class="grid-image" wx:for="{{report.images}}" wx:key="*this" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}"></image>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-bar">
+      <view class="action-btn primary" wx:if="{{report.status === 'pending'}}" bindtap="markAsRead">
+        <text>标记已查看</text>
+      </view>
+      <view class="action-btn outline" bindtap="contactOwner">
+        <text>联系宠主</text>
+      </view>
+      <view class="action-btn outline" bindtap="addFollowUp">
+        <text>添加复诊提醒</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>

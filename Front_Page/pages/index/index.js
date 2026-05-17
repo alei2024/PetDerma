@@ -307,6 +307,13 @@ Page({
     });
   },
 
+  // 跳转到机构端
+  navigateToInstitution: function () {
+    wx.navigateTo({
+      url: "/pages/institution/dashboard/dashboard",
+    });
+  },
+
   // 初始化WebSocket连接
   initWebSocket: function () {
     const app = getApp();

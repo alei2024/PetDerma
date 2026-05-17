@@ -68,8 +68,29 @@
         <text class="feature-desc">宠物健康管理</text>
       </view>
     </view>
-		
-    
+
+    <!-- 机构端入口 -->
+    <view class="institution-entry" bindtap="navigateToInstitution">
+      <view class="institution-entry-header">
+        <view class="institution-entry-icon">
+          <image src="/images/doctor.png" mode="aspectFit"></image>
+        </view>
+        <view class="institution-entry-text">
+          <text class="institution-entry-title">机构服务</text>
+          <text class="institution-entry-desc">宠物医院 / 护理店入驻</text>
+        </view>
+      </view>
+      <view class="institution-entry-features">
+        <text class="institution-feature-text">AI预问诊管理 · 预约转化 · 复诊跟踪</text>
+      </view>
+      <view class="institution-entry-footer">
+        <view class="institution-entry-btn">
+          <text>机构工作台</text>
+          <image class="arrow-icon" src="/images/arrow_right.png" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+
     <!-- 温馨提示 -->
     <view class="tips-section">
       <view class="tips-icon">

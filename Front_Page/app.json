@@ -18,7 +18,12 @@
     "pages/message/message",
     "pages/doctor/doctor",
     "pages/doctor/cases/cases",
-    "pages/doctor/cases/detail/detail"
+    "pages/doctor/cases/detail/detail",
+    "pages/institution/register/register",
+    "pages/institution/dashboard/dashboard",
+    "pages/institution/preconsult-list/preconsult-list",
+    "pages/institution/preconsult-detail/preconsult-detail",
+    "pages/institution/appointment/appointment"
   ],
   "window": {
     "backgroundTextStyle": "light",

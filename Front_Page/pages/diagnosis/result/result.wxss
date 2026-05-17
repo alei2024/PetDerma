@@ -284,34 +284,46 @@
 /* 操作按钮区域 */
 .actions-section {
   display: flex;
-  gap: 20rpx;
+  flex-direction: column;
+  gap: 16rpx;
   position: fixed;
   bottom: 30rpx;
   left: 30rpx;
   right: 30rpx;
-  height: 80rpx;
   z-index: 100;
   background: linear-gradient(transparent, rgba(246, 248, 250, 0.7), rgba(246, 248, 250, 0.95));
   padding-top: 30rpx;
-  padding-bottom: 10rpx;
+  padding-bottom: 20rpx;
 }
-.actions-section .btn {
+.actions-row {
+  display: flex;
+  gap: 20rpx;
+}
+.actions-row .btn {
   flex: 1;
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: bold;
   border-radius: 40rpx;
   box-sizing: border-box;
   line-height: 1;
+  padding: 24rpx 0;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
 }
+.btn-action {
+  font-size: 28rpx;
+  padding: 26rpx 0;
+}
+.btn-small {
+  font-size: 24rpx;
+  padding: 18rpx 0;
+}
 .btn-icon {
-  width: 32rpx;
-  height: 32rpx;
-  margin-right: 10rpx;
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 8rpx;
   display: inline-block;
 }
 .btn-outline {
@@ -321,6 +333,10 @@
 }
 .btn-primary {
   background-color: var(--primary-blue);
+  color: #ffffff;
+}
+.btn-secondary {
+  background-color: #6c5ce7;
   color: #ffffff;
 }
 

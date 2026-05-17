@@ -277,19 +277,107 @@ page {
   color: #f44336;
 }
 
+.action-icon.purple {
+  color: #7c4dff;
+}
+
+/* 弹窗样式 */
+.popup-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+.popup-panel {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  max-width: 620rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow: hidden;
+}
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  border-bottom: 2rpx solid #eee;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2C5F7C;
+}
+.popup-close {
+  font-size: 40rpx;
+  color: #999;
+}
+.popup-body {
+  padding: 20rpx 28rpx;
+}
+.institution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.institution-item {
+  padding: 20rpx;
+  background: #f8faff;
+  border-radius: 16rpx;
+  border: 1rpx solid #eef4ff;
+}
+.institution-item:active {
+  transform: scale(0.98);
+}
+.institution-info {
+  margin-bottom: 12rpx;
+}
+.institution-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+.institution-address {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-top: 6rpx;
+}
+.institution-distance {
+  font-size: 22rpx;
+  color: #A5D7E8;
+  display: block;
+  margin-top: 4rpx;
+}
+.institution-tags {
+  display: flex;
+  gap: 10rpx;
+}
+.institution-tag {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 10rpx;
+  background: #e8f0fe;
+  color: #4a90b8;
+}
+
 /* 空状态 */
 .empty-state {
   padding: 60rpx 0;
   text-align: center;
 }
-
 .empty-text {
   font-size: 30rpx;
   color: #999;
   display: block;
   margin-bottom: 12rpx;
 }
-
 .empty-hint {
   font-size: 24rpx;
   color: #ccc;

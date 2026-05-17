@@ -1,0 +1,120 @@
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+.container {
+  padding: 0 30rpx 40rpx;
+}
+
+/* 筛选栏 */
+.filter-bar {
+  display: flex;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 12rpx;
+  margin: 20rpx 0;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.filter-item {
+  flex: 1;
+  text-align: center;
+  padding: 12rpx 0;
+  font-size: 26rpx;
+  color: #999;
+  border-radius: 12rpx;
+}
+.filter-item.active {
+  background: #667eea;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 报告列表 */
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.report-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.report-card:active {
+  transform: scale(0.98);
+}
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+}
+.card-info {
+  flex: 1;
+}
+.card-pet-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+.card-disease {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+  margin-top: 4rpx;
+}
+.card-status {
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  background: #fff3e0;
+  color: #ff9800;
+}
+.card-status.read {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+.card-status.completed {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+.card-mid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+.card-owner {
+  font-size: 24rpx;
+  color: #999;
+}
+.card-time {
+  font-size: 22rpx;
+  color: #bbb;
+}
+.card-bottom {
+  background: #f8faff;
+  border-radius: 10rpx;
+  padding: 14rpx;
+}
+.card-summary {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #ccc;
+}

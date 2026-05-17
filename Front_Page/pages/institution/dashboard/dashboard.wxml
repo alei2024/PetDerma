@@ -1,0 +1,75 @@
+<navigation-bar title="机构工作台" back="{{true}}" color="white" background="#667eea"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 机构信息 -->
+    <view class="inst-header">
+      <view class="inst-avatar">
+        <image src="{{instInfo.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
+      </view>
+      <view class="inst-info">
+        <text class="inst-name">{{instInfo.name || '未认证机构'}}</text>
+        <text class="inst-status {{instInfo.status}}">{{instInfo.statusText || '待认证'}}</text>
+      </view>
+    </view>
+
+    <!-- 数据看板 -->
+    <view class="stats-grid">
+      <view class="stat-card" bindtap="viewPreconsultList">
+        <text class="stat-number">{{stats.pendingPreconsult}}</text>
+        <text class="stat-label">待预问诊</text>
+      </view>
+      <view class="stat-card pending" bindtap="viewAppointments">
+        <text class="stat-number">{{stats.todayAppointments}}</text>
+        <text class="stat-label">今日预约</text>
+      </view>
+      <view class="stat-card followup" bindtap="viewPreconsultList">
+        <text class="stat-number">{{stats.totalReports}}</text>
+        <text class="stat-label">AI报告</text>
+      </view>
+    </view>
+
+    <!-- 快捷导航 -->
+    <view class="quick-nav">
+      <view class="nav-item" bindtap="viewPreconsultList">
+        <view class="nav-icon purple">🤖</view>
+        <text class="nav-name">AI预问诊</text>
+        <text class="nav-desc">查看AI诊断报告</text>
+      </view>
+      <view class="nav-item" bindtap="viewAppointments">
+        <view class="nav-icon blue">📅</view>
+        <text class="nav-name">预约管理</text>
+        <text class="nav-desc">处理预约请求</text>
+      </view>
+      <view class="nav-item" bindtap="goToRegister">
+        <view class="nav-icon green">🏪</view>
+        <text class="nav-name">机构入驻</text>
+        <text class="nav-desc">完善机构信息</text>
+      </view>
+    </view>
+
+    <!-- 最新AI预问诊报告 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">最新AI预问诊报告</text>
+        <text class="section-more" bindtap="viewPreconsultList">查看全部 ></text>
+      </view>
+      <view class="report-list">
+        <view class="report-card" wx:for="{{recentReports}}" wx:key="id" bindtap="viewReportDetail" data-id="{{item.id}}">
+          <view class="report-header">
+            <text class="report-pet-name">{{item.petName}}</text>
+            <text class="report-time">{{item.time}}</text>
+          </view>
+          <text class="report-disease">{{item.diseaseName}}</text>
+          <view class="report-footer">
+            <text class="report-owner">{{item.ownerName}} · {{item.petType}}</text>
+            <view class="report-tag {{item.status}}">{{item.statusText}}</view>
+          </view>
+        </view>
+        <view wx:if="{{recentReports.length === 0}}" class="empty-state">
+          <text class="empty-text">暂无AI预问诊报告</text>
+          <text class="empty-hint">当宠主发送诊断报告后，将显示在此处</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

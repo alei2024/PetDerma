@@ -35,6 +35,11 @@
           <text class="action-name">病例列表</text>
           <text class="action-desc">查看授权病例</text>
         </view>
+        <view class="action-item" bindtap="sendAIReport">
+          <view class="action-icon purple">📤</view>
+          <text class="action-name">发送AI报告</text>
+          <text class="action-desc">发送诊断报告给机构</text>
+        </view>
         <view class="action-item" bindtap="refreshData">
           <view class="action-icon green">🔄</view>
           <text class="action-name">刷新数据</text>
@@ -81,3 +86,37 @@
     </view>
   </view>
 </scroll-view>
+
+<!-- 选择机构弹窗 -->
+<view wx:if="{{showInstitutionPicker}}" class="popup-mask" bindtap="closeInstitutionPicker"></view>
+<view wx:if="{{showInstitutionPicker}}" class="popup-panel">
+  <view class="popup-header">
+    <text>选择机构发送报告</text>
+    <text class="popup-close" bindtap="closeInstitutionPicker">×</text>
+  </view>
+  <scroll-view scroll-y class="popup-body">
+    <view class="institution-list">
+      <view
+        class="institution-item"
+        wx:for="{{nearbyInstitutions}}"
+        wx:key="id"
+        bindtap="selectInstitution"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+      >
+        <view class="institution-info">
+          <text class="institution-name">{{item.name}}</text>
+          <text class="institution-address">{{item.address}}</text>
+          <text class="institution-distance">{{item.distance}}</text>
+        </view>
+        <view class="institution-tags">
+          <text class="institution-tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{nearbyInstitutions.length === 0}}" class="empty-state">
+      <text class="empty-text">暂无可选机构</text>
+      <text class="empty-hint">附近暂无合作的宠物医院或护理店</text>
+    </view>
+  </scroll-view>
+</view>

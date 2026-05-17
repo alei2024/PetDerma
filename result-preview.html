@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PetDerma 诊断结果</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f6f8fa;
+  display: flex; justify-content: center; min-height: 100vh;
+}
+.phone-frame { width: 420px; min-height: 100vh; background: #f6f8fa; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
+
+/* Nav */
+.navbar {
+  background: #A5D7E8; padding: 44px 16px 14px;
+  display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10;
+}
+.navbar .back { font-size: 28px; color: #fff; cursor: pointer; text-decoration: none; }
+.navbar .title { font-size: 18px; font-weight: bold; color: #fff; flex: 1; }
+
+.content { padding: 16px 20px 200px; }
+
+/* Card */
+.card {
+  background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+/* Image Section */
+.image-grid {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.image-grid .img-item {
+  width: calc(33.33% - 7px); height: 140px; border-radius: 12px;
+  background: linear-gradient(135deg, #e0e7ef, #d0dbe6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; overflow: hidden;
+}
+
+/* Result Section */
+.result-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.result-title { font-size: 18px; font-weight: bold; color: #333; }
+.pet-tag {
+  font-size: 13px; color: #4a90b8; background: rgba(165,215,232,0.2);
+  padding: 4px 14px; border-radius: 14px;
+}
+
+.disease-name { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 16px; }
+
+.info-row { display: flex; align-items: center; margin-bottom: 12px; }
+.info-label { font-size: 13px; color: #666; width: 80px; flex-shrink: 0; }
+.info-bar { flex: 1; display: flex; align-items: center; gap: 10px; }
+.info-bar .bar-bg { flex: 1; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
+.info-bar .bar-fill { height: 100%; background: #A5D7E8; border-radius: 5px; }
+.info-bar .bar-val { font-size: 13px; color: #A5D7E8; font-weight: bold; min-width: 40px; }
+
+.severity-dots { display: flex; gap: 6px; }
+.severity-dots .dot {
+  width: 20px; height: 10px; border-radius: 5px; background: #ddd;
+}
+.severity-dots .dot.active { background: #ff6b6b; }
+.severity-text { font-size: 14px; font-weight: 500; margin-left: 10px; }
+
+.disease-desc {
+  margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0f0f0;
+  font-size: 13px; color: #666; line-height: 1.7;
+}
+
+/* Probabilities */
+.prob-section { margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 12px; }
+.prob-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 12px; display: block; }
+.prob-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+  background: #fff; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.prob-item:last-child { margin-bottom: 0; }
+.prob-class { font-size: 13px; color: #333; min-width: 100px; font-weight: 500; }
+.prob-bar-container { flex: 1; display: flex; align-items: center; gap: 8px; }
+.prob-bar-bg { flex: 1; height: 10px; background: #e9ecef; border-radius: 5px; overflow: hidden; }
+.prob-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #4a90b8, #6bb6ff); border-radius: 5px;
+}
+.prob-val { font-size: 12px; color: #4a90b8; min-width: 40px; text-align: right; font-weight: 600; }
+
+/* Advice Tabs */
+.advice-tabs {
+  display: flex; border-bottom: 1px solid #f0f0f0; margin-bottom: 16px;
+}
+.advice-tab {
+  flex: 1; text-align: center; padding: 10px 0; font-size: 14px; color: #666; cursor: pointer;
+  position: relative; transition: all .2s;
+}
+.advice-tab.active { color: #4a90b8; font-weight: bold; }
+.advice-tab.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+  width: 40px; height: 3px; background: #4a90b8; border-radius: 2px;
+}
+.advice-content { min-height: 100px; }
+.advice-item { display: flex; align-items: flex-start; margin-bottom: 12px; }
+.advice-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #4a90b8;
+  margin-top: 6px; margin-right: 10px; flex-shrink: 0;
+}
+.advice-text { font-size: 13px; color: #666; line-height: 1.6; flex: 1; }
+
+/* Fixed Action Buttons (入口3核心) */
+.actions-section {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 420px; z-index: 100;
+  background: linear-gradient(transparent, rgba(246,248,250,0.7), rgba(246,248,250,0.95));
+  padding: 20px 20px 24px;
+}
+.actions-row { display: flex; gap: 12px; margin-bottom: 10px; }
+.actions-row:last-child { margin-bottom: 0; }
+.btn {
+  flex: 1; display: flex; justify-content: center; align-items: center;
+  padding: 16px 0; border-radius: 24px; border: none;
+  font-size: 14px; font-weight: bold; cursor: pointer; text-align: center;
+  transition: all .2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: #4a90b8; color: #fff; }
+.btn-secondary { background: #6c5ce7; color: #fff; }
+.btn-outline { border: 1.5px solid #4a90b8; color: #4a90b8; background: #fff; box-shadow: none; }
+.btn-small { font-size: 13px; padding: 12px 0; }
+
+/* Popup */
+.popup-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; display: none;
+}
+.popup-mask.show { display: block; }
+.popup-panel {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 420px; max-height: 65vh; background: #fff; border-radius: 20px 20px 0 0;
+  z-index: 100; display: none; flex-direction: column; overflow: hidden;
+}
+.popup-panel.show { display: flex; }
+.popup-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px; border-bottom: 1px solid #f0f0f0;
+}
+.popup-header .popup-title { font-size: 16px; font-weight: bold; }
+.popup-header .popup-close { font-size: 24px; color: #999; cursor: pointer; }
+.popup-body { padding: 16px 20px 24px; overflow-y: auto; flex: 1; }
+
+.inst-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px; border-radius: 12px; border: 1.5px solid #f0f0f0;
+  margin-bottom: 10px; cursor: pointer; transition: all .2s;
+}
+.inst-card:active { transform: scale(0.98); }
+.inst-card.selected { border-color: #6c5ce7; background: #f8faff; }
+.inst-card .ic-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: rgba(108,92,231,0.1); display: flex; align-items: center;
+  justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.inst-card .ic-info { flex: 1; }
+.inst-card .ic-name { font-size: 14px; font-weight: bold; color: #333; display: block; }
+.inst-card .ic-addr { font-size: 11px; color: #999; display: block; margin-top: 2px; }
+
+.confirm-btn {
+  display: block; width: 100%; padding: 14px 0; border: none; border-radius: 24px;
+  background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
+  font-size: 15px; font-weight: bold; cursor: pointer; text-align: center; margin-top: 12px;
+  transition: all .2s;
+}
+.confirm-btn:active { transform: scale(0.97); }
+.confirm-btn:disabled { background: #ddd; color: #999; cursor: not-allowed; }
+
+/* Toast */
+.toast {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.75); color: #fff; padding: 12px 24px; border-radius: 8px;
+  font-size: 14px; z-index: 999; display: none;
+}
+.toast.show { display: block; animation: fadeIn .3s; }
+@keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Nav -->
+  <div class="navbar">
+    <a class="back" href="/home-preview">‹</a>
+    <span class="title">诊断结果</span>
+  </div>
+
+  <div class="content">
+    <!-- Images -->
+    <div class="card">
+      <div class="image-grid">
+        <div class="img-item">📷</div>
+        <div class="img-item">📷</div>
+        <div class="img-item">📷</div>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:#ff6b6b;">⚠️ 已标记异常区域</div>
+    </div>
+
+    <!-- Diagnosis Result -->
+    <div class="card">
+      <div class="result-header">
+        <span class="result-title">诊断结果</span>
+        <span class="pet-tag">奶茶</span>
+      </div>
+      <div class="disease-name">真菌感染（猫癣）</div>
+
+      <div class="info-row">
+        <span class="info-label">可信度：</span>
+        <div class="info-bar">
+          <div class="bar-bg"><div class="bar-fill" style="width:72%;"></div></div>
+          <span class="bar-val">72%</span>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">严重程度：</span>
+        <div class="severity-dots">
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <span class="severity-text" style="color:#ff9800;">中度</span>
+      </div>
+
+      <div class="disease-desc">
+        猫癣是由真菌引起的常见皮肤病，主要表现为皮肤局部脱毛、发红、皮屑增多等症状。建议尽快到宠物医院进行伍德灯检查确认真菌类型。
+      </div>
+
+      <!-- Top-3 probabilities -->
+      <div class="prob-section">
+        <span class="prob-title">详细预测结果（前三名）</span>
+        <div class="prob-item">
+          <span class="prob-class">🦠 真菌感染</span>
+          <div class="prob-bar-container">
+            <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:72%;"></div></div>
+            <span class="prob-val">72.0%</span>
+          </div>
+        </div>
+        <div class="prob-item">
+          <span class="prob-class">🤧 过敏性皮炎</span>
+          <div class="prob-bar-container">
+            <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:58%;"></div></div>
+            <span class="prob-val">58.0%</span>
+          </div>
+        </div>
+        <div class="prob-item">
+          <span class="prob-class">🐛 螨虫感染</span>
+          <div class="prob-bar-container">
+            <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:41%;"></div></div>
+            <span class="prob-val">41.0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advice -->
+    <div class="card">
+      <span style="font-size:16px;font-weight:bold;color:#333;display:block;margin-bottom:12px;">基本诊疗建议</span>
+      <div class="advice-tabs">
+        <div class="advice-tab active" onclick="switchAdvice(this, 'home')">居家护理</div>
+        <div class="advice-tab" onclick="switchAdvice(this, 'medical')">就医建议</div>
+        <div class="advice-tab" onclick="switchAdvice(this, 'prevent')">预防措施</div>
+      </div>
+      <div class="advice-content" id="adviceHome">
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">保持患处清洁干燥，避免宠物抓挠</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">使用兽医推荐的抗真菌洗液给宠物洗澡</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">定期更换宠物的床垫和玩具</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">使用伊丽莎白圈防止宠物舔舐患处</span></div>
+      </div>
+      <div class="advice-content" id="adviceMedical" style="display:none;">
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">建议尽快前往宠物医院进行确诊</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">可能需要进行皮肤刮片检查确认真菌类型</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">遵医嘱使用抗真菌药物</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">定期复诊观察恢复情况</span></div>
+      </div>
+      <div class="advice-content" id="advicePrevent" style="display:none;">
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">定期给宠物洗澡并梳理毛发</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">保持生活环境干净卫生</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">避免与患病动物接触</span></div>
+        <div class="advice-item"><div class="advice-dot"></div><span class="advice-text">增强宠物免疫力，提供均衡饮食</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons (入口3：预约复核 + 发送护理店) -->
+  <div class="actions-section">
+    <div class="actions-row">
+      <button class="btn btn-primary" onclick="bookOfflineReview()">📋 预约附近宠物医院复核</button>
+      <button class="btn btn-secondary" onclick="sendToCareShop()">✂️ 发送给护理店获取建议</button>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-outline btn-small" onclick="showToast('已收藏')">⭐ 收藏结果</button>
+      <button class="btn btn-primary btn-small" onclick="showToast('智能问诊功能开发中')">💬 智能问诊</button>
+    </div>
+  </div>
+
+  <!-- Booking Popup (入口3：预约确认弹窗) -->
+  <div class="popup-mask" id="bookingMask" onclick="closeBooking()"></div>
+  <div class="popup-panel" id="bookingPopup">
+    <div class="popup-header">
+      <span class="popup-title">📋 预约附近宠物医院复核</span>
+      <span class="popup-close" onclick="closeBooking()">×</span>
+    </div>
+    <div class="popup-body">
+      <div style="background:#fff3e0;border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:#e65100;line-height:1.5;">
+        ⚠️ AI诊断置信度72%（中度严重），建议尽快线下复核确认病因。
+      </div>
+      <div style="font-size:14px;font-weight:bold;color:#333;margin-bottom:6px;">诊断结果已保存：</div>
+      <div style="font-size:12px;color:#666;margin-bottom:16px;">
+        真菌感染 · 中度 · 患处：耳后<br>
+        宠主：王女士 · 宠物：奶茶（猫·布偶）
+      </div>
+      <div style="font-size:13px;font-weight:bold;color:#333;margin-bottom:10px;">选择附近机构：</div>
+      <div id="bookingInstList">
+        <div class="inst-card" onclick="selectBookingInst(this, '爱宠宠物医院')">
+          <div class="ic-icon">🏥</div>
+          <div class="ic-info"><span class="ic-name">爱宠宠物医院</span><span class="ic-addr">朝阳区建国路88号 · 1.2km</span></div>
+        </div>
+        <div class="inst-card" onclick="selectBookingInst(this, '美联宠物诊所')">
+          <div class="ic-icon">🏥</div>
+          <div class="ic-info"><span class="ic-name">美联宠物诊所</span><span class="ic-addr">西城区西单北大街22号 · 2.3km</span></div>
+        </div>
+        <div class="inst-card" onclick="selectBookingInst(this, '瑞鹏宠物医院')">
+          <div class="ic-icon">🏥</div>
+          <div class="ic-info"><span class="ic-name">瑞鹏宠物医院</span><span class="ic-addr">东城区东直门外大街12号 · 1.8km</span></div>
+        </div>
+      </div>
+      <button class="confirm-btn" id="bookingBtn" onclick="confirmBooking()" disabled>请选择机构</button>
+    </div>
+  </div>
+
+  <!-- Care Shop Popup (入口3：发送护理店弹窗) -->
+  <div class="popup-mask" id="careMask" onclick="closeCare()"></div>
+  <div class="popup-panel" id="carePopup">
+    <div class="popup-header">
+      <span class="popup-title">✂️ 发送给护理店获取建议</span>
+      <span class="popup-close" onclick="closeCare()">×</span>
+    </div>
+    <div class="popup-body">
+      <div style="background:#e8f5e9;border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:#2e7d32;line-height:1.5;">
+        💡 适合护理店处理的轻症建议：保持清洁、使用温和洗护产品、定期护理。
+      </div>
+      <div style="font-size:13px;font-weight:bold;color:#333;margin-bottom:10px;">选择附近护理店：</div>
+      <div id="careInstList">
+        <div class="inst-card" onclick="selectCareInst(this, '毛毛宠物护理店')">
+          <div class="ic-icon">✂️</div>
+          <div class="ic-info"><span class="ic-name">毛毛宠物护理店</span><span class="ic-addr">海淀区中关村大街66号 · 0.8km</span></div>
+        </div>
+        <div class="inst-card" onclick="selectCareInst(this, '萌宠天地护理店')">
+          <div class="ic-icon">✂️</div>
+          <div class="ic-info"><span class="ic-name">萌宠天地护理店</span><span class="ic-addr">朝阳区望京西路15号 · 1.5km</span></div>
+        </div>
+      </div>
+      <button class="confirm-btn" id="careBtn" onclick="confirmCare()" disabled>请选择护理店</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let bookingInst = '';
+let careInst = '';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 2000);
+}
+
+function switchAdvice(el, tab) {
+  document.querySelectorAll('.advice-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('adviceHome').style.display = tab === 'home' ? 'block' : 'none';
+  document.getElementById('adviceMedical').style.display = tab === 'medical' ? 'block' : 'none';
+  document.getElementById('advicePrevent').style.display = tab === 'prevent' ? 'block' : 'none';
+}
+
+// === 入口3：预约复核 ===
+function bookOfflineReview() {
+  document.getElementById('bookingMask').classList.add('show');
+  document.getElementById('bookingPopup').classList.add('show');
+}
+
+function closeBooking() {
+  document.getElementById('bookingMask').classList.remove('show');
+  document.getElementById('bookingPopup').classList.remove('show');
+  bookingInst = '';
+}
+
+function selectBookingInst(el, name) {
+  document.querySelectorAll('#bookingInstList .inst-card').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  bookingInst = name;
+  document.getElementById('bookingBtn').disabled = false;
+  document.getElementById('bookingBtn').textContent = '向 ' + name + ' 发起预约';
+}
+
+function confirmBooking() {
+  if (!bookingInst) return;
+  showToast('✅ 已向「' + bookingInst + '」发起复核预约，请等待机构确认');
+  closeBooking();
+}
+
+// === 入口3：发送护理店 ===
+function sendToCareShop() {
+  document.getElementById('careMask').classList.add('show');
+  document.getElementById('carePopup').classList.add('show');
+}
+
+function closeCare() {
+  document.getElementById('careMask').classList.remove('show');
+  document.getElementById('carePopup').classList.remove('show');
+  careInst = '';
+}
+
+function selectCareInst(el, name) {
+  document.querySelectorAll('#careInstList .inst-card').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  careInst = name;
+  document.getElementById('careBtn').disabled = false;
+  document.getElementById('careBtn').textContent = '发送给 ' + name;
+}
+
+function confirmCare() {
+  if (!careInst) return;
+  showToast('✅ AI诊断报告已发送给「' + careInst + '」，等待护理建议');
+  closeCare();
+}
+</script>
+</body>
+</html>

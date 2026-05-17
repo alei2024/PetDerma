@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PetDerma 机构端 - 预览</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+.phone-frame { max-width: 420px; margin: 0 auto; background: #f5f5f5; min-height: 100vh; position: relative; }
+
+/* Nav */
+.navbar { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 44px 16px 14px; display: flex; align-items: center; position: sticky; top: 0; z-index: 10; }
+.navbar .back { font-size: 24px; margin-right: 12px; cursor: pointer; opacity: 0.8; }
+.navbar .title { font-size: 18px; font-weight: 600; flex: 1; }
+.navbar .tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 3px; }
+.navbar .tabs button { background: transparent; border: none; color: rgba(255,255,255,0.7); padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+.navbar .tabs button.active { background: rgba(255,255,255,0.25); color: #fff; font-weight: 600; }
+
+.content { padding: 12px 16px 24px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Cards */
+.card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+.card-title { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+.card-title .more { font-size: 13px; color: #667eea; cursor: pointer; }
+
+/* Stats */
+.stats-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.stat-box { flex: 1; background: #fff; border-radius: 12px; padding: 16px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
+.stat-box .num { font-size: 28px; font-weight: 800; color: #667eea; display: block; }
+.stat-box .num.pending { color: #FFB84D; }
+.stat-box .num.green { color: #4caf50; }
+.stat-box .label { font-size: 12px; color: #999; display: block; margin-top: 4px; }
+.stat-box:active { transform: scale(0.97); }
+
+/* Quick Nav */
+.quick-nav { display: flex; gap: 12px; margin-bottom: 16px; }
+.qnav { flex: 1; background: #fff; border-radius: 12px; padding: 16px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
+.qnav:active { transform: scale(0.97); }
+.qnav .icon { font-size: 28px; margin-bottom: 6px; }
+.qnav .name { font-size: 13px; font-weight: 600; color: #333; display: block; }
+.qnav .desc { font-size: 11px; color: #bbb; display: block; margin-top: 2px; }
+
+/* Institution Header */
+.inst-header { background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 16px; padding: 20px; margin-bottom: 16px; display: flex; align-items: center; }
+.inst-header .avatar { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); margin-right: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.inst-header .info { flex: 1; }
+.inst-header .name { font-size: 17px; font-weight: 700; color: #fff; }
+.inst-header .status { display: inline-block; font-size: 11px; padding: 2px 12px; border-radius: 10px; background: rgba(255,255,255,0.2); color: #fff; margin-top: 4px; }
+
+/* Report Card */
+.rpt { background: #f8faff; border: 1px solid #eef4ff; border-radius: 12px; padding: 14px; margin-bottom: 10px; cursor: pointer; }
+.rpt:active { transform: scale(0.98); }
+.rpt-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.rpt-name { font-size: 15px; font-weight: 700; color: #333; }
+.rpt-disease { font-size: 13px; color: #666; margin-top: 2px; }
+.rpt-status { font-size: 11px; padding: 3px 12px; border-radius: 10px; }
+.rpt-status.pending { background: #fff3e0; color: #ff9800; }
+.rpt-status.read { background: #e8f5e9; color: #4caf50; }
+.rpt-status.completed { background: #e3f2fd; color: #2196f3; }
+.rpt-mid { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.rpt-owner { font-size: 12px; color: #999; }
+.rpt-time { font-size: 11px; color: #bbb; }
+.rpt-summary { background: #f0f4ff; border-radius: 8px; padding: 10px; font-size: 12px; color: #666; line-height: 1.5; margin-top: 6px; }
+
+/* Detail */
+.detail-header { background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.detail-header .pet { display: flex; align-items: center; margin-bottom: 12px; }
+.detail-header .pet-avatar { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.detail-header .pet-name { font-size: 18px; font-weight: 700; color: #fff; }
+.detail-header .pet-breed { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; }
+.detail-header .owner { font-size: 13px; color: rgba(255,255,255,0.9); }
+.detail-header .owner span { opacity: 0.6; }
+.diag-card { background: #f8faff; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.diag-row { display: flex; align-items: center; margin-bottom: 10px; }
+.diag-row:last-child { margin-bottom: 0; }
+.diag-label { font-size: 13px; color: #999; width: 80px; flex-shrink: 0; }
+.diag-val { font-size: 15px; font-weight: 600; color: #333; }
+.diag-val.highlight { color: #667eea; font-size: 18px; }
+.sev-tag { font-size: 12px; padding: 2px 14px; border-radius: 10px; }
+.sev-tag.light { background: #e8f5e9; color: #4caf50; }
+.sev-tag.medium { background: #fff3e0; color: #ff9800; }
+.sev-tag.heavy { background: #ffebee; color: #f44336; }
+.ai-summary { background: #f0f4ff; border-radius: 10px; padding: 14px; border-left: 3px solid #667eea; }
+.ai-summary .lb { font-size: 12px; color: #667eea; font-weight: 600; margin-bottom: 6px; display: block; }
+.ai-summary .txt { font-size: 13px; color: #555; line-height: 1.6; }
+.tag-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-size: 12px; padding: 4px 14px; border-radius: 14px; background: #f0f4ff; color: #667eea; border: 1px solid #dde8ff; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.profile-item { background: #f8f9fa; border-radius: 10px; padding: 12px; }
+.profile-item .lb { font-size: 11px; color: #999; display: block; margin-bottom: 4px; }
+.profile-item .val { font-size: 13px; color: #333; font-weight: 500; }
+.actions-row { display: flex; gap: 12px; margin-top: 12px; }
+.btn { flex: 1; padding: 14px 0; border-radius: 24px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+.btn-outline { border: 2px solid #667eea; color: #667eea; background: #fff; }
+
+/* Register Form */
+.form-group { margin-bottom: 16px; }
+.form-group label { font-size: 14px; font-weight: 600; color: #333; display: block; margin-bottom: 6px; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; background: #f8f9fa; }
+.form-group textarea { height: 80px; resize: vertical; }
+.type-options { display: flex; gap: 10px; }
+.type-opt { flex: 1; padding: 10px 0; text-align: center; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 13px; color: #666; cursor: pointer; }
+.type-opt.active { border-color: #667eea; color: #667eea; background: rgba(102,126,234,0.05); }
+.checkbox-row { display: flex; align-items: center; justify-content: center; margin-top: 16px; font-size: 13px; color: #999; }
+.checkbox-row input { margin-right: 8px; }
+
+/* Appointments */
+.date-bar { display: flex; gap: 10px; margin-bottom: 16px; }
+.date-item { flex: 1; background: #fff; border-radius: 12px; padding: 14px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; }
+.date-item .d { font-size: 13px; color: #666; display: block; }
+.date-item .n { font-size: 20px; font-weight: 700; color: #667eea; display: block; margin-top: 4px; }
+.date-item.active { background: linear-gradient(135deg, #667eea, #764ba2); }
+.date-item.active .d, .date-item.active .n { color: #fff; }
+.apt { display: flex; background: #fff; border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.apt-time { width: 70px; background: #f8faff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #667eea; flex-shrink: 0; }
+.apt-body { flex: 1; padding: 14px; }
+.apt-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.apt-pet { font-size: 15px; font-weight: 600; }
+.apt-status { font-size: 11px; padding: 2px 10px; border-radius: 10px; }
+.apt-status.confirmed { background: #e8f5e9; color: #4caf50; }
+.apt-status.completed { background: #e3f2fd; color: #2196f3; }
+.apt-status.cancelled { background: #ffebee; color: #f44336; }
+.apt-status.pending { background: #fff3e0; color: #ff9800; }
+.apt-owner { font-size: 12px; color: #999; }
+.apt-actions { display: flex; gap: 8px; margin-top: 8px; }
+.apt-btn { flex: 1; padding: 8px 0; border-radius: 16px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+.apt-btn.confirm { background: #667eea; color: #fff; }
+.apt-btn.reject { border: 1px solid #ff6b6b; color: #ff6b6b; background: #fff; }
+.apt-btn.complete { background: #4caf50; color: #fff; }
+
+.empty { text-align: center; padding: 40px 0; color: #ccc; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Nav -->
+  <div class="navbar" id="navbar">
+    <span class="back" id="backBtn" style="visibility:hidden;">‹</span>
+    <span class="title" id="pageTitle">机构工作台</span>
+    <div class="tabs" id="navTabs">
+      <button class="active" data-page="dashboard">工作台</button>
+      <button data-page="preconsult">预问诊</button>
+      <button data-page="appointment">预约</button>
+      <button data-page="register">入驻</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- ===== Dashboard ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="inst-header">
+        <div class="avatar">🏥</div>
+        <div class="info">
+          <div class="name">爱宠宠物医院</div>
+          <div class="status">已认证</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box" onclick="switchPage('preconsult')">
+          <span class="num">6</span>
+          <span class="label">待预问诊</span>
+        </div>
+        <div class="stat-box" onclick="switchPage('appointment')">
+          <span class="num pending">3</span>
+          <span class="label">今日预约</span>
+        </div>
+        <div class="stat-box" onclick="switchPage('preconsult')">
+          <span class="num green">12</span>
+          <span class="label">AI报告</span>
+        </div>
+      </div>
+
+      <div class="quick-nav">
+        <div class="qnav" onclick="switchPage('preconsult')">
+          <div class="icon">🤖</div>
+          <span class="name">AI预问诊</span>
+          <span class="desc">查看AI诊断报告</span>
+        </div>
+        <div class="qnav" onclick="switchPage('appointment')">
+          <div class="icon">📅</div>
+          <span class="name">预约管理</span>
+          <span class="desc">处理预约请求</span>
+        </div>
+        <div class="qnav" onclick="switchPage('register')">
+          <div class="icon">🏪</div>
+          <span class="name">机构入驻</span>
+          <span class="desc">完善机构信息</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">最新AI预问诊报告 <span class="more" onclick="switchPage('preconsult')">查看全部 ›</span></div>
+        <div id="dashboardReports"></div>
+      </div>
+    </div>
+
+    <!-- ===== Preconsult List ===== -->
+    <div class="page" id="page-preconsult">
+      <div class="card" style="padding:12px;">
+        <div style="display:flex;gap:8px;" id="filterTabs">
+          <button class="btn active" style="flex:1;padding:8px 0;font-size:13px;border-radius:8px;border:none;background:#667eea;color:#fff;cursor:pointer;" data-filter="all" onclick="setFilter('all')">全部</button>
+          <button class="btn" style="flex:1;padding:8px 0;font-size:13px;border-radius:8px;border:none;background:#f0f0f0;color:#666;cursor:pointer;" data-filter="pending" onclick="setFilter('pending')">待处理</button>
+          <button class="btn" style="flex:1;padding:8px 0;font-size:13px;border-radius:8px;border:none;background:#f0f0f0;color:#666;cursor:pointer;" data-filter="read" onclick="setFilter('read')">已查看</button>
+          <button class="btn" style="flex:1;padding:8px 0;font-size:13px;border-radius:8px;border:none;background:#f0f0f0;color:#666;cursor:pointer;" data-filter="completed" onclick="setFilter('completed')">已完成</button>
+        </div>
+      </div>
+      <div id="reportList"></div>
+    </div>
+
+    <!-- ===== Preconsult Detail ===== -->
+    <div class="page" id="page-detail">
+      <div id="detailContent"></div>
+    </div>
+
+    <!-- ===== Appointment ===== -->
+    <div class="page" id="page-appointment">
+      <div class="date-bar">
+        <div class="date-item active" onclick="selectDate(this,'today')">
+          <span class="d">今天</span>
+          <span class="n" id="cnt-today">3</span>
+        </div>
+        <div class="date-item" onclick="selectDate(this,'tomorrow')">
+          <span class="d">明天</span>
+          <span class="n" id="cnt-tomorrow">2</span>
+        </div>
+        <div class="date-item" onclick="selectDate(this,'week')">
+          <span class="d">本周</span>
+          <span class="n" id="cnt-week">1</span>
+        </div>
+      </div>
+
+      <div class="stats-row" style="margin-bottom:12px;">
+        <div class="stat-box"><span class="num" style="font-size:20px;">3</span><span class="label">待确认</span></div>
+        <div class="stat-box"><span class="num" style="font-size:20px;color:#4caf50;">2</span><span class="label">已确认</span></div>
+        <div class="stat-box"><span class="num" style="font-size:20px;color:#2196f3;">1</span><span class="label">已完成</span></div>
+        <div class="stat-box"><span class="num" style="font-size:20px;color:#999;">0</span><span class="label">已取消</span></div>
+      </div>
+      <div id="appointmentList"></div>
+    </div>
+
+    <!-- ===== Register ===== -->
+    <div class="page" id="page-register">
+      <div class="card">
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="font-size:20px;font-weight:700;color:#667eea;margin-bottom:6px;">加入 PetDerma 机构端</div>
+          <div style="font-size:13px;color:#999;">为宠物提供专业的皮肤健康服务</div>
+        </div>
+        <div class="form-group">
+          <label>机构名称</label>
+          <input value="爱宠宠物医院" placeholder="请输入机构名称">
+        </div>
+        <div class="form-group">
+          <label>机构类型</label>
+          <div class="type-options">
+            <div class="type-opt active">宠物医院</div>
+            <div class="type-opt">宠物诊所</div>
+            <div class="type-opt">护理店</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>联系人</label>
+          <input value="张医生" placeholder="请输入联系人姓名">
+        </div>
+        <div class="form-group">
+          <label>联系电话</label>
+          <input value="13800138000" type="tel" placeholder="请输入联系电话">
+        </div>
+        <div class="form-group">
+          <label>机构地址</label>
+          <input value="北京市朝阳区建国路88号" placeholder="请输入机构地址">
+        </div>
+        <div class="form-group">
+          <label>机构简介</label>
+          <textarea placeholder="请简要介绍您的机构">专业宠物皮肤科，拥有先进的诊疗设备</textarea>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" checked id="agree">
+          <label for="agree">我已阅读并同意《PetDerma机构入驻协议》</label>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;">提交入驻申请</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Data =====
+const reports = [
+  { id:1, petName:"豆豆", petType:"犬·金毛", owner:"张女士", disease:"湿疹", time:"今天 10:30", severity:"中", confidence:85, status:"pending", statusText:"待处理", summary:"患宠：豆豆（犬），体重28.5kg。主要诊断：湿疹。症状表现：红斑、瘙痒、掉毛。患病部位：背部、腹部。建议进行过敏原检测并保持环境干燥。", symptoms:["红斑","瘙痒","掉毛"], areas:["背部","腹部"], weight:"28.5kg", allergies:"花粉", sterilized:"是", contact:"近期去过宠物公园" },
+  { id:2, petName:"咪咪", petType:"猫·英短", owner:"李先生", disease:"猫癣", time:"今天 09:15", severity:"轻", confidence:92, status:"read", statusText:"已查看", summary:"患宠：咪咪（猫），体重4.2kg。猫癣已治愈。面部出现掉毛、结痂症状。", symptoms:["掉毛","结痂"], areas:["面部"], weight:"4.2kg", allergies:"无", sterilized:"是", contact:"无" },
+  { id:3, petName:"旺财", petType:"犬·柯基", owner:"王先生", disease:"脓皮症", time:"昨天 16:45", severity:"重", confidence:78, status:"pending", statusText:"待处理", summary:"患宠：旺财（犬），体重12kg。诊断为脓皮症。症状：渗液、结痂、红斑、瘙痒。患病部位：全身、爪缝。有食物过敏史，复发风险较高。", symptoms:["渗液","结痂","红斑","瘙痒"], areas:["全身","爪缝"], weight:"12kg", allergies:"食物过敏", sterilized:"否", contact:"家中新养了一只猫" },
+  { id:4, petName:"小白", petType:"犬·比熊", owner:"赵女士", disease:"泪痕炎", time:"昨天 14:20", severity:"轻", confidence:95, status:"completed", statusText:"已完成", summary:"患宠：小白（犬），体重5.8kg。泪痕炎已治愈。建议定期清洁眼部。", symptoms:["红斑"], areas:["面部"], weight:"5.8kg", allergies:"无", sterilized:"是", contact:"无" },
+  { id:5, petName:"小黑", petType:"猫·田园猫", owner:"刘女士", disease:"猫藓", time:"前天 11:00", severity:"中", confidence:82, status:"pending", statusText:"待处理", summary:"患宠：小黑（猫），面部出现红斑脱毛，疑似猫藓。建议进行真菌培养确诊。", symptoms:["红斑","脱毛"], areas:["面部"], weight:"3.8kg", allergies:"无", sterilized:"否", contact:"曾接触流浪猫" },
+];
+
+const appointments = [
+  { id:1, petName:"豆豆", petType:"金毛", owner:"张女士", service:"皮肤复查", time:"09:30", date:"today", status:"pending", statusText:"待确认" },
+  { id:2, petName:"咪咪", petType:"英短", owner:"李先生", service:"猫癣复诊", time:"10:00", date:"today", status:"confirmed", statusText:"已确认" },
+  { id:3, petName:"旺财", petType:"柯基", owner:"王先生", service:"脓皮症复诊", time:"14:00", date:"today", status:"confirmed", statusText:"已确认" },
+  { id:4, petName:"小白", petType:"比熊", owner:"赵女士", service:"泪痕复查", time:"15:30", date:"today", status:"completed", statusText:"已完成" },
+  { id:5, petName:"花花", petType:"橘猫", owner:"陈女士", service:"皮肤检查", time:"09:00", date:"tomorrow", status:"pending", statusText:"待确认" },
+  { id:6, petName:"布丁", petType:"泰迪", owner:"林先生", service:"过敏检测", time:"11:00", date:"tomorrow", status:"pending", statusText:"待确认" },
+  { id:7, petName:"Lucky", petType:"哈士奇", owner:"杨先生", service:"药浴护理", time:"16:00", date:"week", status:"pending", statusText:"待确认" },
+];
+
+let currentFilter = 'all';
+let currentDate = 'today';
+
+function severityClass(s) {
+  if (s === '轻') return 'light';
+  if (s === '中') return 'medium';
+  if (s === '重') return 'heavy';
+  return '';
+}
+
+function statusClass(s) {
+  return s;
+}
+
+// Render functions
+function renderDashboard() {
+  const el = document.getElementById('dashboardReports');
+  el.innerHTML = reports.slice(0, 3).map(r => `
+    <div class="rpt" onclick="showDetail(${r.id})">
+      <div class="rpt-top">
+        <div><div class="rpt-name">${r.petName}</div><div class="rpt-disease">${r.disease}</div></div>
+        <div class="rpt-status ${r.status}">${r.statusText}</div>
+      </div>
+      <div class="rpt-mid">
+        <span class="rpt-owner">${r.owner} · ${r.petType}</span>
+        <span class="rpt-time">${r.time}</span>
+      </div>
+    </div>
+  `).join('');
+  if (reports.length === 0) el.innerHTML = '<div class="empty">暂无AI预问诊报告</div>';
+}
+
+function renderReports() {
+  const el = document.getElementById('reportList');
+  const filtered = currentFilter === 'all' ? reports : reports.filter(r => r.status === currentFilter);
+  el.innerHTML = filtered.map(r => `
+    <div class="rpt" onclick="showDetail(${r.id})">
+      <div class="rpt-top">
+        <div><div class="rpt-name">${r.petName}</div><div class="rpt-disease">${r.disease}</div></div>
+        <div class="rpt-status ${r.status}">${r.statusText}</div>
+      </div>
+      <div class="rpt-mid">
+        <span class="rpt-owner">${r.owner} · ${r.petType}</span>
+        <span class="rpt-time">${r.time}</span>
+      </div>
+      ${r.summary ? `<div class="rpt-summary">AI摘要：${r.summary}</div>` : ''}
+    </div>
+  `).join('');
+  if (filtered.length === 0) el.innerHTML = '<div class="empty">暂无报告</div>';
+}
+
+function showDetail(id) {
+  const r = reports.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('pageTitle').textContent = '预问诊详情';
+  document.getElementById('backBtn').style.visibility = 'visible';
+  document.getElementById('navTabs').style.display = 'none';
+  switchPage('detail');
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-header">
+      <div class="pet">
+        <div class="pet-avatar">🐾</div>
+        <div>
+          <div class="pet-name">${r.petName}</div>
+          <div class="pet-breed">${r.petType}</div>
+        </div>
+      </div>
+      <div class="owner"><span>宠主</span> ${r.owner}</div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div class="card-title" style="margin-bottom:0;">🤖 AI诊断摘要</div>
+        <div class="rpt-status ${r.status}">${r.statusText}</div>
+      </div>
+      <div class="diag-card">
+        <div class="diag-row">
+          <span class="diag-label">诊断疾病</span>
+          <span class="diag-val highlight">${r.disease}</span>
+        </div>
+        <div class="diag-row">
+          <span class="diag-label">严重程度</span>
+          <span class="sev-tag ${severityClass(r.severity)}">${r.severity}</span>
+        </div>
+        <div class="diag-row">
+          <span class="diag-label">可信度</span>
+          <div style="flex:1;display:flex;align-items:center;">
+            <div style="flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden;margin-right:10px;">
+              <div style="height:100%;width:${r.confidence}%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:4px;"></div>
+            </div>
+            <span style="font-size:13px;color:#667eea;font-weight:600;">${r.confidence}%</span>
+          </div>
+        </div>
+      </div>
+      <div class="ai-summary">
+        <span class="lb">AI分析总结</span>
+        <div class="txt">${r.summary}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">症状表现</div>
+      <div class="tag-group">${r.symptoms.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">患病部位</div>
+      <div class="tag-group">${r.areas.map(a => `<span class="tag">${a}</span>`).join('')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">宠物档案</div>
+      <div class="profile-grid">
+        <div class="profile-item"><span class="lb">体重</span><span class="val">${r.weight}</span></div>
+        <div class="profile-item"><span class="lb">过敏史</span><span class="val">${r.allergies}</span></div>
+        <div class="profile-item"><span class="lb">绝育</span><span class="val">${r.sterilized}</span></div>
+        <div class="profile-item"><span class="lb">近期接触</span><span class="val">${r.contact}</span></div>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn btn-primary" onclick="showToast('已标记为已查看')">${r.status === 'pending' ? '标记已查看' : '已查看'}</button>
+      <button class="btn btn-outline" onclick="showToast('已添加复诊提醒')">添加复诊提醒</button>
+    </div>
+  `;
+}
+
+function renderAppointments() {
+  const el = document.getElementById('appointmentList');
+  const filtered = appointments.filter(a => a.date === currentDate);
+  el.innerHTML = filtered.map(a => `
+    <div class="apt">
+      <div class="apt-time">${a.time}</div>
+      <div class="apt-body">
+        <div class="apt-hdr">
+          <span class="apt-pet">${a.petName}</span>
+          <span class="apt-status ${a.status}">${a.statusText}</span>
+        </div>
+        <span class="apt-owner">${a.owner} · ${a.petType}</span>
+        <div style="font-size:12px;color:#666;margin-top:2px;">${a.service}</div>
+        ${a.status === 'pending' ? `
+          <div class="apt-actions">
+            <button class="apt-btn confirm" onclick="updateApt(${a.id},'confirmed','已确认')">确认</button>
+            <button class="apt-btn reject" onclick="updateApt(${a.id},'cancelled','已取消')">拒绝</button>
+          </div>
+        ` : a.status === 'confirmed' ? `
+          <div class="apt-actions">
+            <button class="apt-btn complete" onclick="updateApt(${a.id},'completed','已完成')">完成服务</button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+  if (filtered.length === 0) el.innerHTML = '<div class="empty">暂无预约</div>';
+
+  document.getElementById('cnt-today').textContent = appointments.filter(a => a.date === 'today').length;
+  document.getElementById('cnt-tomorrow').textContent = appointments.filter(a => a.date === 'tomorrow').length;
+  document.getElementById('cnt-week').textContent = appointments.filter(a => a.date === 'week').length;
+}
+
+function updateApt(id, status, text) {
+  const a = appointments.find(x => x.id === id);
+  if (a) { a.status = status; a.statusText = text; }
+  renderAppointments();
+  showToast(text);
+}
+
+function selectDate(el, date) {
+  document.querySelectorAll('.date-item').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+  currentDate = date;
+  renderAppointments();
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('#filterTabs .btn').forEach(b => {
+    const isActive = b.dataset.filter === filter;
+    b.style.background = isActive ? '#667eea' : '#f0f0f0';
+    b.style.color = isActive ? '#fff' : '#666';
+  });
+  renderReports();
+}
+
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('pageTitle').textContent =
+    page === 'dashboard' ? '机构工作台' :
+    page === 'preconsult' ? 'AI预问诊列表' :
+    page === 'appointment' ? '预约管理' :
+    page === 'detail' ? '预问诊详情' : '机构入驻';
+  document.getElementById('backBtn').style.visibility = (page === 'detail') ? 'visible' : 'hidden';
+  document.getElementById('navTabs').style.display = (page === 'detail') ? 'none' : 'flex';
+}
+
+// Nav tabs
+document.querySelectorAll('#navTabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#navTabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    switchPage(btn.dataset.page);
+  });
+});
+
+// Back button
+document.getElementById('backBtn').addEventListener('click', () => {
+  switchPage('preconsult');
+});
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:999;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 1500);
+}
+
+// Init
+renderDashboard();
+renderReports();
+renderAppointments();
+</script>
+</body>
+</html>

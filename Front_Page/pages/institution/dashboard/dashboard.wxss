@@ -1,0 +1,226 @@
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+.container {
+  padding: 0 30rpx 40rpx;
+}
+
+/* 机构信息 */
+.inst-header {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 20rpx 0;
+}
+.inst-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255,255,255,0.2);
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+.inst-avatar image {
+  width: 100%;
+  height: 100%;
+}
+.inst-info {
+  flex: 1;
+}
+.inst-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+  margin-bottom: 8rpx;
+}
+.inst-status {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+/* 数据看板 */
+.stats-grid {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+.stat-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx 16rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.stat-card:active {
+  transform: scale(0.97);
+}
+.stat-number {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #667eea;
+  display: block;
+}
+.stat-card.pending .stat-number {
+  color: #FFB84D;
+}
+.stat-card.followup .stat-number {
+  color: #4caf50;
+}
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-top: 8rpx;
+}
+
+/* 快捷导航 */
+.quick-nav {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+.nav-item {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx 16rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.nav-item:active {
+  transform: scale(0.97);
+}
+.nav-icon {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+.nav-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+.nav-desc {
+  font-size: 20rpx;
+  color: #bbb;
+  display: block;
+  margin-top: 4rpx;
+}
+
+/* 区域 */
+.section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+.section-more {
+  font-size: 26rpx;
+  color: #667eea;
+}
+
+/* 报告列表 */
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.report-card {
+  background: #f8faff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  border: 1rpx solid #eef4ff;
+}
+.report-card:active {
+  transform: scale(0.98);
+}
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.report-pet-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+.report-time {
+  font-size: 22rpx;
+  color: #bbb;
+}
+.report-disease {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 12rpx;
+}
+.report-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.report-owner {
+  font-size: 22rpx;
+  color: #999;
+}
+.report-tag {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  background: #fff3e0;
+  color: #ff9800;
+}
+.report-tag.read {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+.report-tag.completed {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 60rpx 0;
+  text-align: center;
+}
+.empty-text {
+  font-size: 30rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 12rpx;
+}
+.empty-hint {
+  font-size: 24rpx;
+  color: #ccc;
+  display: block;
+}

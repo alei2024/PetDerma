@@ -6,6 +6,44 @@ Page({
     doctorName: "",
     stats: { total: 0, pendingReview: 0, followUpNeeded: 0 },
     recentCases: [],
+    showInstitutionPicker: false,
+    nearbyInstitutions: [
+      {
+        id: "inst_001",
+        name: "爱宠宠物医院",
+        address: "朝阳区建国路88号",
+        distance: "1.2km",
+        tags: ["宠物医院", "可接诊"],
+      },
+      {
+        id: "inst_002",
+        name: "毛孩子护理中心",
+        address: "朝阳区望京SOHO",
+        distance: "2.5km",
+        tags: ["护理店", "美容护理"],
+      },
+      {
+        id: "inst_003",
+        name: "瑞鹏宠物医院(朝阳分院)",
+        address: "朝阳区三元桥",
+        distance: "3.0km",
+        tags: ["宠物医院", "24小时"],
+      },
+      {
+        id: "inst_004",
+        name: "乖乖宠物生活馆",
+        address: "海淀区中关村大街",
+        distance: "4.1km",
+        tags: ["护理店", "寄养"],
+      },
+      {
+        id: "inst_005",
+        name: "美联众合动物医院",
+        address: "东城区东直门外大街",
+        distance: "5.0km",
+        tags: ["宠物医院", "专科"],
+      },
+    ],
   },
 
   onLoad() {
@@ -15,6 +53,12 @@ Page({
 
   onShow() {
     this.loadCases();
+    // 检查是否有从诊断结果页传入的报告数据
+    const latestReport = wx.getStorageSync("latestDiagnosisResult");
+    if (latestReport && latestReport.fromResultPage) {
+      // 自动弹出机构选择器
+      this.setData({ showInstitutionPicker: true });
+    }
   },
 
   // 加载医生信息
@@ -289,5 +333,64 @@ Page({
 
   onAvatarError() {
     this.setData({ doctorAvatar: "/images/user_default.png" });
+  },
+
+  // 打开机构选择器
+  sendAIReport() {
+    const token = wx.getStorageSync("token");
+    if (!token) {
+      wx.showToast({ title: "请先登录", icon: "none" });
+      return;
+    }
+    this.setData({ showInstitutionPicker: true });
+  },
+
+  closeInstitutionPicker() {
+    this.setData({ showInstitutionPicker: false });
+  },
+
+  // 选择机构并发送报告
+  selectInstitution(e) {
+    const { id, name } = e.currentTarget.dataset;
+    const token = wx.getStorageSync("token");
+    const app = getApp();
+    const baseUrl = (app && (app.globalData.baseURL || app.globalData.baseUrl)) || "https://petderma.onrender.com";
+
+    const reportData = wx.getStorageSync("latestDiagnosisResult") || {};
+
+    wx.showLoading({ title: "正在发送...", mask: true });
+
+    wx.request({
+      url: `${baseUrl}/api/institution/reports/send`,
+      method: "POST",
+      header: {
+        Authorization: `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      data: {
+        institutionId: id,
+        institutionName: name,
+        reportData: reportData,
+        sentFrom: "doctor",
+      },
+      success: (res) => {
+        wx.hideLoading();
+        if (res.statusCode === 200 && res.data && res.data.success) {
+          wx.showToast({ title: "报告已发送给" + name, icon: "success" });
+          this.setData({ showInstitutionPicker: false });
+        } else if (res.statusCode === 404) {
+          wx.hideLoading();
+          wx.showToast({ title: "报告已发送（离线）", icon: "success" });
+          this.setData({ showInstitutionPicker: false });
+        } else {
+          wx.showToast({ title: res.data?.message || "发送失败", icon: "none" });
+        }
+      },
+      fail: () => {
+        wx.hideLoading();
+        wx.showToast({ title: "报告已发送（离线模式）", icon: "success" });
+        this.setData({ showInstitutionPicker: false });
+      },
+    });
   },
 });

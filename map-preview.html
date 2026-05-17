@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PetDerma 附近机构 - 地图导航</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+.phone-frame { width: 420px; min-height: 100vh; background: #fff; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
+
+/* Nav */
+.navbar {
+  background: #A5D7E8; padding: 44px 16px 14px;
+  display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10;
+}
+.navbar .back { font-size: 28px; color: #fff; cursor: pointer; text-decoration: none; }
+.navbar .title { font-size: 18px; font-weight: bold; color: #fff; flex: 1; }
+
+/* Map area (simulated) */
+.map-area {
+  height: 360px; background: linear-gradient(135deg, #e8f4f8 0%, #d4ecf7 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.map-area::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(165,215,232,0.4) 0, transparent 60px),
+    radial-gradient(circle at 70% 40%, rgba(165,215,232,0.3) 0, transparent 80px),
+    radial-gradient(circle at 50% 70%, rgba(165,215,232,0.2) 0, transparent 100px);
+}
+.map-marker-group { position: relative; width: 100%; height: 100%; }
+.map-marker {
+  position: absolute; display: flex; flex-direction: column; align-items: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+.map-marker:nth-child(1) { top: 25%; left: 30%; animation-delay: 0s; }
+.map-marker:nth-child(2) { top: 45%; left: 55%; animation-delay: 0.5s; }
+.map-marker:nth-child(3) { top: 60%; left: 25%; animation-delay: 1s; }
+.map-marker:nth-child(4) { top: 35%; left: 65%; animation-delay: 1.5s; }
+.map-marker .dot {
+  width: 16px; height: 16px; background: #667eea; border: 3px solid #fff;
+  border-radius: 50%; box-shadow: 0 2px 8px rgba(102,126,234,0.4);
+}
+.map-marker .label {
+  font-size: 10px; color: #333; background: #fff; padding: 2px 8px;
+  border-radius: 8px; margin-top: 4px; white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.map-marker .label.highlight { background: #667eea; color: #fff; }
+.map-marker .label .dist { color: #999; margin-left: 4px; }
+.map-marker .label.highlight .dist { color: rgba(255,255,255,0.7); }
+@keyframes pulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.center-dot {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 2; text-align: center;
+}
+.center-dot .ring {
+  width: 40px; height: 40px; background: rgba(165,215,232,0.3);
+  border: 3px solid #A5D7E8; border-radius: 50%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+}
+.center-dot .ring .inner { width: 12px; height: 12px; background: #A5D7E8; border-radius: 50%; }
+.center-dot .loc-label { font-size: 10px; color: #666; margin-top: 4px; }
+.map-overlay-text {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; color: #999; background: rgba(255,255,255,0.85);
+  padding: 4px 14px; border-radius: 12px; z-index: 3;
+}
+
+/* Content */
+.content { padding: 16px 20px; }
+
+/* AI Report Card */
+.report-card {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 16px; padding: 20px; margin-bottom: 16px; color: #fff;
+  box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+}
+.report-card .rc-title { font-size: 18px; font-weight: bold; display: block; margin-bottom: 8px; }
+.report-card .rc-desc { font-size: 13px; opacity: 0.85; display: block; line-height: 1.5; }
+.report-card .rc-btn {
+  display: block; width: 100%; margin-top: 14px;
+  padding: 14px 0; border: none; border-radius: 24px;
+  background: rgba(255,255,255,0.2); color: #fff;
+  font-size: 15px; font-weight: bold; cursor: pointer; text-align: center;
+  transition: all .2s;
+}
+.report-card .rc-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.3); }
+
+/* Section */
+.section-title {
+  font-size: 16px; font-weight: bold; color: #333; margin-bottom: 12px; display: block;
+}
+
+/* Institution list */
+.inst-list { margin-bottom: 16px; }
+.inst-item {
+  background: #fff; border-radius: 14px; padding: 16px; margin-bottom: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04); display: flex; gap: 14px;
+  cursor: pointer; transition: all .2s; border: 1px solid transparent;
+}
+.inst-item:active { transform: scale(0.98); border-color: #667eea; }
+.inst-item.selected { border-color: #667eea; background: #f8faff; }
+.inst-icon {
+  width: 48px; height: 48px; border-radius: 12px; background: rgba(102,126,234,0.1);
+  display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+}
+.inst-info { flex: 1; }
+.inst-name { font-size: 15px; font-weight: bold; color: #333; display: block; }
+.inst-addr { font-size: 12px; color: #999; display: block; margin-top: 2px; }
+.inst-meta { display: flex; gap: 10px; margin-top: 6px; }
+.inst-tag {
+  font-size: 11px; padding: 2px 10px; border-radius: 10px;
+  background: #f0f4ff; color: #667eea; display: inline-block;
+}
+.inst-dist { font-size: 12px; color: #999; flex-shrink: 0; }
+.inst-actions { display: flex; gap: 8px; margin-top: 8px; }
+.inst-send-btn {
+  flex: 1; padding: 10px 0; border: none; border-radius: 20px;
+  font-size: 13px; font-weight: bold; cursor: pointer; text-align: center;
+  background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; transition: all .2s;
+}
+.inst-send-btn:active { transform: scale(0.97); }
+.inst-send-btn:disabled { background: #ddd; color: #999; cursor: not-allowed; }
+
+/* Toast */
+.toast {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.75); color: #fff; padding: 12px 24px; border-radius: 8px;
+  font-size: 14px; z-index: 999; display: none;
+}
+.toast.show { display: block; animation: fadeIn .3s; }
+@keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+/* Popup */
+.popup-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; display: none;
+}
+.popup-mask.show { display: block; }
+.popup-panel {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 420px; max-height: 60vh; background: #fff; border-radius: 20px 20px 0 0;
+  z-index: 100; display: none; flex-direction: column; overflow: hidden;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+.popup-panel.show { display: flex; }
+.popup-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
+}
+.popup-header .popup-title { font-size: 16px; font-weight: bold; }
+.popup-header .popup-close { font-size: 24px; color: #999; cursor: pointer; }
+.popup-body { padding: 12px 20px 24px; overflow-y: auto; flex: 1; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Nav -->
+  <div class="navbar">
+    <a class="back" href="/home-preview">‹</a>
+    <span class="title">附近机构</span>
+  </div>
+
+  <!-- Map -->
+  <div class="map-area">
+    <div class="center-dot">
+      <div class="ring"><div class="inner"></div></div>
+      <div class="loc-label">我的位置</div>
+    </div>
+    <div class="map-marker-group">
+      <div class="map-marker">
+        <div class="dot"></div>
+        <div class="label highlight">爱宠宠物医院 <span class="dist">1.2km</span></div>
+      </div>
+      <div class="map-marker">
+        <div class="dot" style="background:#4caf50;"></div>
+        <div class="label">毛毛护理店 <span class="dist">0.8km</span></div>
+      </div>
+      <div class="map-marker">
+        <div class="dot" style="background:#ff9800;"></div>
+        <div class="label">美联宠物诊所 <span class="dist">2.3km</span></div>
+      </div>
+      <div class="map-marker">
+        <div class="dot" style="background:#f44336;"></div>
+        <div class="label">瑞鹏宠物医院 <span class="dist">1.8km</span></div>
+      </div>
+    </div>
+    <div class="map-overlay-text">📍 共 4 家合作机构在附近</div>
+  </div>
+
+  <div class="content">
+    <!-- Send Report Card (入口2核心) -->
+    <div class="report-card" id="reportCard">
+      <span class="rc-title">📋 本次AI诊断报告</span>
+      <span class="rc-desc">
+        宠主：王女士 · 宠物：奶茶（猫·布偶）
+        诊断：真菌感染（置信度72%）· 严重程度：中度
+      </span>
+      <button class="rc-btn" onclick="showSendPopup()">📤 发送本次AI诊断报告给机构</button>
+    </div>
+
+    <!-- Nearby institutions -->
+    <span class="section-title">🏥 附近合作机构</span>
+    <div class="inst-list">
+      <div class="inst-item" onclick="selectInst(this, '爱宠宠物医院')">
+        <div class="inst-icon">🏥</div>
+        <div class="inst-info">
+          <span class="inst-name">爱宠宠物医院</span>
+          <span class="inst-addr">朝阳区建国路88号</span>
+          <div class="inst-meta">
+            <span class="inst-tag">诊疗</span>
+            <span class="inst-tag">手术</span>
+            <span class="inst-tag">皮肤科</span>
+          </div>
+        </div>
+        <span class="inst-dist">1.2km</span>
+      </div>
+      <div class="inst-item" onclick="selectInst(this, '毛毛宠物护理店')">
+        <div class="inst-icon">✂️</div>
+        <div class="inst-info">
+          <span class="inst-name">毛毛宠物护理店</span>
+          <span class="inst-addr">海淀区中关村大街66号</span>
+          <div class="inst-meta">
+            <span class="inst-tag">洗护</span>
+            <span class="inst-tag">美容</span>
+            <span class="inst-tag">护理</span>
+          </div>
+        </div>
+        <span class="inst-dist">0.8km</span>
+      </div>
+      <div class="inst-item" onclick="selectInst(this, '美联宠物诊所')">
+        <div class="inst-icon">🏥</div>
+        <div class="inst-info">
+          <span class="inst-name">美联宠物诊所</span>
+          <span class="inst-addr">西城区西单北大街22号</span>
+          <div class="inst-meta">
+            <span class="inst-tag">诊疗</span>
+            <span class="inst-tag">疫苗</span>
+          </div>
+        </div>
+        <span class="inst-dist">2.3km</span>
+      </div>
+      <div class="inst-item" onclick="selectInst(this, '瑞鹏宠物医院')">
+        <div class="inst-icon">🏥</div>
+        <div class="inst-info">
+          <span class="inst-name">瑞鹏宠物医院</span>
+          <span class="inst-addr">东城区东直门外大街12号</span>
+          <div class="inst-meta">
+            <span class="inst-tag">诊疗</span>
+            <span class="inst-tag">手术</span>
+            <span class="inst-tag">住院</span>
+          </div>
+        </div>
+        <span class="inst-dist">1.8km</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Send Popup -->
+  <div class="popup-mask" id="sendMask" onclick="closeSendPopup()"></div>
+  <div class="popup-panel" id="sendPopup">
+    <div class="popup-header">
+      <span class="popup-title">📤 发送AI诊断报告</span>
+      <span class="popup-close" onclick="closeSendPopup()">×</span>
+    </div>
+    <div class="popup-body">
+      <div style="background:#f8faff;border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:bold;color:#333;margin-bottom:8px;">报告摘要</div>
+        <div style="font-size:12px;color:#666;line-height:1.6;">
+          宠物：奶茶（猫·布偶）<br>
+          宠主：王女士 · 电话：138****8888<br>
+          诊断：真菌感染（72%）> 过敏性皮炎（58%）> 螨虫感染（41%）<br>
+          严重程度：中度 · 综合评分：0.63<br>
+          症状：耳后掉毛、红肿、瘙痒3天<br>
+          建议：建议到店进行皮肤刮片或伍德灯检查
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:bold;color:#333;margin-bottom:10px;">选择接收机构</div>
+      <div id="popupInstList">
+        <div class="inst-item" onclick="selectInstPopup(this, '爱宠宠物医院')" style="margin-bottom:8px;padding:12px;">
+          <div class="inst-icon" style="width:40px;height:40px;font-size:18px;">🏥</div>
+          <div class="inst-info"><span class="inst-name" style="font-size:14px;">爱宠宠物医院</span><span class="inst-addr" style="font-size:11px;">朝阳区建国路88号 · 1.2km</span></div>
+        </div>
+        <div class="inst-item" onclick="selectInstPopup(this, '毛毛宠物护理店')" style="margin-bottom:8px;padding:12px;">
+          <div class="inst-icon" style="width:40px;height:40px;font-size:18px;">✂️</div>
+          <div class="inst-info"><span class="inst-name" style="font-size:14px;">毛毛宠物护理店</span><span class="inst-addr" style="font-size:11px;">海淀区中关村大街66号 · 0.8km</span></div>
+        </div>
+        <div class="inst-item" onclick="selectInstPopup(this, '美联宠物诊所')" style="margin-bottom:8px;padding:12px;">
+          <div class="inst-icon" style="width:40px;height:40px;font-size:18px;">🏥</div>
+          <div class="inst-info"><span class="inst-name" style="font-size:14px;">美联宠物诊所</span><span class="inst-addr" style="font-size:11px;">西城区西单北大街22号 · 2.3km</span></div>
+        </div>
+      </div>
+      <button class="inst-send-btn" id="confirmSendBtn" onclick="confirmSend()" disabled>请选择机构</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let selectedInstitution = '';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 2000);
+}
+
+function selectInst(el, name) {
+  document.querySelectorAll('.inst-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedInstitution = name;
+  showToast('已选择: ' + name);
+}
+
+function selectInstPopup(el, name) {
+  document.querySelectorAll('#popupInstList .inst-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedInstitution = name;
+  document.getElementById('confirmSendBtn').disabled = false;
+  document.getElementById('confirmSendBtn').textContent = '发送给 ' + name;
+}
+
+function showSendPopup() {
+  document.getElementById('sendMask').classList.add('show');
+  document.getElementById('sendPopup').classList.add('show');
+}
+
+function closeSendPopup() {
+  document.getElementById('sendMask').classList.remove('show');
+  document.getElementById('sendPopup').classList.remove('show');
+}
+
+function confirmSend() {
+  if (!selectedInstitution) { showToast('请选择机构'); return; }
+  showToast('✅ AI诊断报告已成功发送给「' + selectedInstitution + '」');
+  closeSendPopup();
+  document.querySelectorAll('.inst-item').forEach(i => i.classList.remove('selected'));
+  selectedInstitution = '';
+}
+</script>
+</body>
+</html>

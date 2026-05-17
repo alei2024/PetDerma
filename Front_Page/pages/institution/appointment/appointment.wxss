@@ -1,0 +1,180 @@
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+.container {
+  padding: 0 30rpx 40rpx;
+}
+
+/* 日期栏 */
+.date-bar {
+  display: flex;
+  gap: 16rpx;
+  margin: 20rpx 0;
+}
+.date-item {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.date-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.date-item.active .date-day,
+.date-item.active .date-num {
+  color: #fff;
+}
+.date-day {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+}
+.date-num {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #667eea;
+  display: block;
+  margin-top: 6rpx;
+}
+
+/* 统计卡片 */
+.stats-cards {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+.stat-mini {
+  flex: 1;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.stat-mini-num {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+.stat-mini-label {
+  font-size: 20rpx;
+  color: #bbb;
+  display: block;
+  margin-top: 4rpx;
+}
+
+/* 预约列表 */
+.appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.appointment-card {
+  display: flex;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.apt-time {
+  width: 120rpx;
+  background: #f8faff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.apt-time-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #667eea;
+}
+.apt-body {
+  flex: 1;
+  padding: 20rpx;
+}
+.apt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+.apt-pet-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+.apt-status {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  background: #fff3e0;
+  color: #ff9800;
+}
+.apt-status.confirmed {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+.apt-status.completed {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+.apt-status.cancelled {
+  background: #ffebee;
+  color: #f44336;
+}
+.apt-owner {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 4rpx;
+}
+.apt-service {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 12rpx;
+}
+.apt-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+.apt-btn {
+  flex: 1;
+  text-align: center;
+  padding: 12rpx 0;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+.apt-btn.confirm {
+  background: #667eea;
+  color: #fff;
+}
+.apt-btn.reject {
+  border: 2rpx solid #ff6b6b;
+  color: #ff6b6b;
+}
+.apt-btn.complete {
+  background: #4caf50;
+  color: #fff;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #ccc;
+}
