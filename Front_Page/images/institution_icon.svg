@@ -1,0 +1,5 @@
+<svg t="1712345678000" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <path d="M512 64L128 256v128h768V256L512 64z" fill="#ffffff"/>
+  <path d="M192 640h128v320H192zM384 640h128v320H384zM576 640h128v320H576zM768 640h128v320H768z" fill="#ffffff" opacity="0.9"/>
+  <path d="M128 896h768v64H128z" fill="#ffffff" opacity="0.7"/>
+</svg>

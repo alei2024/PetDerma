@@ -1,39 +1,72 @@
-<navigation-bar title="授权病例" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<navigation-bar title="AI预问诊管理" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
 <view class="page">
   <!-- 筛选标签 -->
   <view class="filter-tabs">
     <view class="filter-tab {{currentFilter === 'all' ? 'active' : ''}}" bindtap="switchFilter" data-filter="all">全部</view>
     <view class="filter-tab {{currentFilter === 'pending' ? 'active' : ''}}" bindtap="switchFilter" data-filter="pending">待处理</view>
-    <view class="filter-tab {{currentFilter === 'followup' ? 'active' : ''}}" bindtap="switchFilter" data-filter="followup">需复诊</view>
+    <view class="filter-tab {{currentFilter === 'contacted' ? 'active' : ''}}" bindtap="switchFilter" data-filter="contacted">已联系</view>
+    <view class="filter-tab {{currentFilter === 'booked' ? 'active' : ''}}" bindtap="switchFilter" data-filter="booked">已预约</view>
+    <view class="filter-tab {{currentFilter === 'highrisk' ? 'active' : ''}}" bindtap="switchFilter" data-filter="highrisk">高风险</view>
+    <view class="filter-tab {{currentFilter === 'care' ? 'active' : ''}}" bindtap="switchFilter" data-filter="care">护理咨询</view>
   </view>
 
   <!-- 病例列表 -->
   <scroll-view class="list-scroll" scroll-y>
     <view class="case-list">
-      <view class="case-card" wx:for="{{filteredCases}}" wx:key="_id" bindtap="viewDetail" data-id="{{item._id}}">
-        <view class="case-header">
-          <image class="case-avatar" src="{{item.petId?.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
-          <view class="case-meta">
-            <text class="case-pet">{{item.petId?.name || '未知宠物'}}</text>
-            <text class="case-owner">{{item.userId?.nickName || '未知宠主'}}</text>
+      <view class="case-card" wx:for="{{filteredCases}}" wx:key="_id" data-id="{{item._id}}">
+        <!-- 卡片头部 -->
+        <view class="card-header">
+          <view class="card-pet-info">
+            <view class="card-pet-avatar">
+              <image src="{{item.petId?.avatar || '/images/default_pet.png'}}" mode="aspectFill"></image>
+            </view>
+            <view class="card-pet-detail">
+              <text class="card-pet-name">{{item.petId?.name || '未知宠物'}}</text>
+              <text class="card-pet-breed">{{item.petId?.species || ''}} / {{item.petId?.breed || ''}} / {{item.petId?.age || '?'}}岁</text>
+            </view>
           </view>
-          <view class="case-severity {{severityClass(item.severity)}}">{{item.severity || '待评估'}}</view>
+          <view class="card-severity {{severityClass(item.severity)}}">{{item.severity || '待评估'}}</view>
         </view>
-        <view class="case-info">
-          <text class="case-disease">{{item.skinDiseaseHistory?.[item.skinDiseaseHistory.length - 1]?.diseaseName || '暂无诊断记录'}}</text>
-          <text class="case-date">{{formatTime(item.createdAt)}}</text>
+
+        <!-- 主诉 -->
+        <view class="card-symptom">
+          <text class="symptom-label">主诉：</text>
+          <text class="symptom-text">{{item.symptoms || item.skinDiseaseHistory?.[0]?.symptoms?.join('、') || '暂无描述'}}</text>
         </view>
-        <view class="case-tags">
-          <text class="tag summary-done" wx:if="{{item.aiSummary}}">AI 摘要已生成</text>
-          <text class="tag summary-pending" wx:if="{{!item.aiSummary}}">待生成摘要</text>
-          <text class="tag need-followup" wx:if="{{item.followUp?.needed && !item.followUp?.completed}}">待复诊</text>
+
+        <!-- AI 结果 -->
+        <view class="card-ai-result" wx:if="{{item.aiSummary}}">
+          <text class="ai-result-title">AI结果</text>
+          <view class="ai-result-tags">
+            <text class="ai-tag top1">真菌感染 0.72</text>
+            <text class="ai-tag top2">过敏性皮炎 0.58</text>
+            <text class="ai-tag top3">螨虫感染 0.41</text>
+          </view>
+        </view>
+
+        <!-- 底部信息 -->
+        <view class="card-footer">
+          <view class="card-meta">
+            <text class="meta-item">📅 {{formatTime(item.createdAt)}}</text>
+            <text class="meta-item">📍 2.1km</text>
+          </view>
+          <view class="card-status {{item.aiSummary ? 'done' : 'pending'}}">
+            {{item.aiSummary ? '已处理' : '待处理'}}
+          </view>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="card-actions">
+          <button class="action-btn primary" bindtap="viewDetail" data-id="{{item._id}}">查看报告</button>
+          <button class="action-btn secondary" bindtap="contactOwner" data-id="{{item._id}}">联系用户</button>
+          <button class="action-btn outline" bindtap="suggestBooking" data-id="{{item._id}}">建议预约</button>
         </view>
       </view>
     </view>
 
     <view class="empty-state" wx:if="{{filteredCases.length === 0}}">
       <text class="empty-text">暂无病例</text>
-      <text class="empty-hint">暂无符合条件的授权病例</text>
+      <text class="empty-hint">暂无符合条件的预问诊报告</text>
     </view>
   </scroll-view>
 </view>

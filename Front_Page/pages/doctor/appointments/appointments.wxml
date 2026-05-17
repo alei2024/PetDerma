@@ -1,0 +1,89 @@
+<navigation-bar title="预约管理" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<view class="page">
+  <!-- 状态分栏 -->
+  <view class="status-tabs">
+    <view class="status-tab {{currentStatus === 'pending' ? 'active' : ''}}" bindtap="switchStatus" data-status="pending">
+      待确认 <text class="tab-count" wx:if="{{statusCounts.pending > 0}}">{{statusCounts.pending}}</text>
+    </view>
+    <view class="status-tab {{currentStatus === 'confirmed' ? 'active' : ''}}" bindtap="switchStatus" data-status="confirmed">
+      已确认 <text class="tab-count" wx:if="{{statusCounts.confirmed > 0}}">{{statusCounts.confirmed}}</text>
+    </view>
+    <view class="status-tab {{currentStatus === 'today' ? 'active' : ''}}" bindtap="switchStatus" data-status="today">
+      今日到店 <text class="tab-count urgent" wx:if="{{statusCounts.today > 0}}">{{statusCounts.today}}</text>
+    </view>
+    <view class="status-tab {{currentStatus === 'completed' ? 'active' : ''}}" bindtap="switchStatus" data-status="completed">已完成</view>
+    <view class="status-tab {{currentStatus === 'cancelled' ? 'active' : ''}}" bindtap="switchStatus" data-status="cancelled">已取消</view>
+  </view>
+
+  <!-- 预约列表 -->
+  <scroll-view class="list-scroll" scroll-y>
+    <view class="appointment-list">
+      <view class="appt-card" wx:for="{{filteredAppointments}}" wx:key="id">
+
+        <!-- 卡片头部 -->
+        <view class="appt-header">
+          <view class="appt-pet">
+            <text class="appt-pet-name">{{item.petName}}</text>
+            <text class="appt-owner">{{item.ownerName}}</text>
+          </view>
+          <view class="appt-status-badge {{item.status}}">
+            {{statusText(item.status)}}
+          </view>
+        </view>
+
+        <!-- 预约详情 -->
+        <view class="appt-details">
+          <view class="appt-detail-row">
+            <text class="detail-icon">📅</text>
+            <text class="detail-text">{{formatDate(item.date)}}</text>
+          </view>
+          <view class="appt-detail-row">
+            <text class="detail-icon">🔧</text>
+            <text class="detail-text">{{item.serviceType || '皮肤病复核'}}</text>
+          </view>
+          <view class="appt-detail-row">
+            <text class="detail-icon">⚠️</text>
+            <text class="detail-text">AI严重程度：{{item.severity || '待评估'}}</text>
+          </view>
+          <view class="appt-detail-row" wx:if="{{item.hasReport}}">
+            <text class="detail-icon">📋</text>
+            <text class="detail-text">已发送AI报告</text>
+          </view>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="appt-actions" wx:if="{{item.status === 'pending'}}">
+          <button class="appt-btn primary" bindtap="confirmAppt" data-id="{{item.id}}">确认预约</button>
+          <button class="appt-btn secondary" bindtap="rescheduleAppt" data-id="{{item.id}}">修改时间</button>
+          <button class="appt-btn outline" bindtap="contactOwner" data-id="{{item.id}}">联系用户</button>
+        </view>
+
+        <view class="appt-actions" wx:elif="{{item.status === 'confirmed'}}">
+          <button class="appt-btn success" bindtap="markArrived" data-id="{{item.id}}">标记到店</button>
+          <button class="appt-btn secondary" bindtap="rescheduleAppt" data-id="{{item.id}}">修改时间</button>
+          <button class="appt-btn danger" bindtap="cancelAppt" data-id="{{item.id}}">取消</button>
+        </view>
+
+        <view class="appt-actions" wx:elif="{{item.status === 'today'}}">
+          <button class="appt-btn success" bindtap="markCompleted" data-id="{{item.id}}">标记完成</button>
+          <button class="appt-btn outline" bindtap="viewReport" data-id="{{item.id}}">查看AI报告</button>
+        </view>
+
+        <!-- 已完成: 填写到店后信息 -->
+        <view wx:if="{{item.status === 'completed' && item.visitNotes}}" class="visit-notes">
+          <text class="notes-title">到店记录：</text>
+          <text class="notes-text">实际判断：{{item.visitNotes.diagnosis || '未记录'}}</text>
+          <text class="notes-text" wx:if="{{item.visitNotes.suggestTest}}">建议检查：是</text>
+          <text class="notes-text" wx:if="{{item.visitNotes.suggestFollowUp}}">建议复诊：{{item.visitNotes.followUpNote || '是'}}</text>
+          <text class="notes-text" wx:if="{{item.visitNotes.remarks}}">备注：{{item.visitNotes.remarks}}</text>
+        </view>
+
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{filteredAppointments.length === 0}}">
+      <text class="empty-text">暂无预约</text>
+      <text class="empty-hint">当前状态下没有预约记录</text>
+    </view>
+  </scroll-view>
+</view>

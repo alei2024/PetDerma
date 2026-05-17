@@ -18,7 +18,9 @@
     "pages/message/message",
     "pages/doctor/doctor",
     "pages/doctor/cases/cases",
-    "pages/doctor/cases/detail/detail"
+    "pages/doctor/cases/detail/detail",
+    "pages/doctor/register/register",
+    "pages/doctor/appointments/appointments"
   ],
   "window": {
     "backgroundTextStyle": "light",

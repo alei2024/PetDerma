@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetDerma 机构工作台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#e8ecf0;min-height:100vh;display:flex;flex-direction:column}
+.app-wrap{max-width:1100px;margin:0 auto;width:100%;background:#f5f5f5;min-height:100vh;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,0.08)}
+.nav-bar{height:48px;background:#A5D7E8;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:600;position:sticky;top:0;z-index:20;flex-shrink:0}
+.nav-back{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:24px;cursor:pointer;padding:8px;color:rgba(255,255,255,0.9);background:none;border:none}
+.nav-back:hover{opacity:0.8}
+.nav-title{font-size:18px;font-weight:600}
+.page{display:none;flex-direction:column;flex:1;overflow:hidden}
+.page.active{display:flex}
+.scroll{flex:1;overflow-y:auto;padding:16px 20px 30px;-webkit-overflow-scrolling:touch}
+/* ===== 入驻页 ===== */
+.steps{display:flex;justify-content:center;align-items:center;padding:20px 0;gap:8px}
+.step-dot{width:32px;height:32px;border-radius:50%;background:#e0e0e0;color:#999;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold}
+.step-dot.active{background:#A5D7E8;color:#fff}
+.step-dot.done{background:#4caf50;color:#fff}
+.step-line{width:50px;height:3px;background:#e0e0e0;border-radius:2px}
+.step-line.done{background:#4caf50}
+.step-label{font-size:11px;color:#999;text-align:center;margin-top:4px}
+.step.active .step-label{color:#2C5F7C;font-weight:bold}
+.type-grid{display:flex;gap:16px;margin:16px 0}
+.type-card{flex:1;background:#fff;border-radius:16px;padding:24px 16px;text-align:center;border:3px solid #e0e0e0;cursor:pointer;transition:all 0.2s}
+.type-card:hover{border-color:#A5D7E8}
+.type-card.selected{border-color:#A5D7E8;background:#f0f9ff;box-shadow:0 4px 16px rgba(165,215,232,0.3)}
+.type-icon{font-size:48px;margin-bottom:8px}
+.type-name{font-size:16px;font-weight:bold;color:#333;display:block;margin-bottom:4px}
+.type-desc{font-size:12px;color:#999}
+.form-group{margin-bottom:16px}
+.form-group label{font-size:13px;color:#555;display:block;margin-bottom:6px}
+.form-group .required{color:#f44336}
+.form-group input,.form-group select{width:100%;height:42px;background:#f8f8f8;border:2px solid #e5e5e5;border-radius:10px;padding:0 14px;font-size:14px;outline:none;box-sizing:border-box}
+.form-group input:focus{border-color:#A5D7E8;background:#fff}
+.form-row{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.form-row label{flex:1;font-size:13px;color:#555}
+.switch{position:relative;width:44px;height:24px;background:#ddd;border-radius:12px;cursor:pointer;transition:0.2s;flex-shrink:0}
+.switch.on{background:#A5D7E8}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:0.2s}
+.switch.on::after{left:22px}
+.upload-box{width:100%;height:80px;background:#f8f8f8;border:2px dashed #d0d0d0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#bbb;cursor:pointer}
+.upload-box.done{border-color:#4caf50;color:#4caf50}
+.btn-group{display:flex;gap:12px;margin-top:20px}
+.btn{flex:1;height:44px;border-radius:22px;font-size:15px;font-weight:bold;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn.primary{background:#A5D7E8;color:#fff;box-shadow:0 4px 12px rgba(165,215,232,0.4)}
+.btn.primary:hover{background:#8bc7d8}
+.btn.primary:disabled{background:#d0d0d0;box-shadow:none;cursor:not-allowed}
+.btn.secondary{background:#f0f0f0;color:#666}
+.btn.secondary:hover{background:#e0e0e0}
+.btn.green{background:#4caf50;color:#fff}
+.btn.green:hover{background:#43a047}
+.section-card{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.section-title{font-size:16px;font-weight:bold;color:#2C5F7C;display:block;margin-bottom:16px}
+.reg-success{text-align:center;padding:20px}
+.reg-success .icon{font-size:56px;margin-bottom:12px}
+.reg-success h3{font-size:18px;color:#2C5F7C;margin-bottom:8px}
+.reg-success .name{font-size:22px;font-weight:bold;color:#333;margin-bottom:4px}
+.reg-success .type{color:#A5D7E8;font-size:13px;margin-bottom:16px}
+.reg-divider{height:1px;background:#f0f0f0;margin:16px 0}
+.reg-info{display:flex;padding:6px 0;font-size:13px}
+.reg-info .lbl{width:100px;color:#999;flex-shrink:0}
+.reg-info .val{color:#555}
+/* ===== Dashboard ===== */
+.inst-header{background:linear-gradient(135deg,#2c5f7c,#4a8ba8);border-radius:16px;padding:20px;color:#fff;margin-bottom:16px}
+.inst-top{display:flex;align-items:center;margin-bottom:16px}
+.inst-avatar{width:48px;height:48px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-right:14px;flex-shrink:0}
+.inst-info{flex:1}
+.inst-name{font-size:18px;font-weight:bold;color:#fff;display:block}
+.inst-status{display:flex;align-items:center;gap:4px;margin-top:4px}
+.inst-dot{width:8px;height:8px;background:#4caf50;border-radius:50%}
+.inst-status-text{font-size:11px;color:rgba(255,255,255,0.8)}
+.inst-rating{font-size:14px;color:#ffd700;font-weight:bold}
+.inst-stats{display:flex;background:rgba(255,255,255,0.1);border-radius:10px;padding:12px 0}
+.inst-stat{flex:1;text-align:center}
+.inst-stat-num{font-size:20px;font-weight:bold;display:block;color:#fff}
+.inst-stat-lbl{font-size:10px;color:rgba(255,255,255,0.7);display:block;margin-top:2px}
+.inst-stat-div{width:1px;height:30px;background:rgba(255,255,255,0.15);flex-shrink:0;align-self:center}
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.data-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);cursor:pointer}
+.data-card:hover{transform:scale(0.97)}
+.data-card .icon{font-size:28px;margin-bottom:8px}
+.data-card .num{font-size:28px;font-weight:bold;color:#2C5F7C;display:block}
+.data-card .num.orange{color:#ff9800}
+.data-card .num.red{color:#f44336}
+.data-card .num.purple{color:#9c27b0}
+.data-card .lbl{font-size:11px;color:#999;display:block;margin-top:2px}
+.quick-grid{display:flex;gap:10px;margin-bottom:16px}
+.quick-card{flex:1;background:#fff;border-radius:14px;padding:14px 8px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);cursor:pointer}
+.quick-card:hover{transform:scale(0.97)}
+.quick-card .icon{font-size:24px;margin-bottom:4px}
+.quick-card .name{font-size:12px;font-weight:bold;color:#333;display:block}
+.quick-card .desc{font-size:10px;color:#bbb;display:block;margin-top:2px}
+.sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sec-header .more{font-size:12px;color:#A5D7E8;cursor:pointer}
+.case-item{background:#f8faff;border-radius:12px;padding:14px;border:1px solid #eef4ff;margin-bottom:10px;cursor:pointer}
+.case-item:hover{transform:scale(0.98)}
+.case-item-top{display:flex;align-items:center;margin-bottom:8px}
+.case-item .avatar{width:36px;height:36px;border-radius:50%;background:#f0f0f0;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.case-item .meta{flex:1}
+.case-item .pname{font-size:14px;font-weight:bold;color:#333;display:block}
+.case-item .oname{font-size:11px;color:#999;display:block;margin-top:2px}
+.sev-tag{font-size:11px;padding:2px 12px;border-radius:12px;background:#f0f0f0;color:#666}
+.sev-tag.light{background:#e8f5e9;color:#4caf50}
+.sev-tag.medium{background:#fff3e0;color:#ff9800}
+.sev-tag.heavy{background:#ffebee;color:#f44336}
+.case-item .disease{font-size:13px;color:#555;display:block;margin-bottom:4px}
+.case-item .date{font-size:11px;color:#bbb;display:block}
+/* ===== Cases List ===== */
+.filter-bar{display:flex;gap:8px;padding:12px 0;overflow-x:auto}
+.filter-chip{padding:6px 18px;border-radius:20px;background:#f0f0f0;color:#666;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.filter-chip.active{background:#A5D7E8;color:#fff;font-weight:bold}
+.case-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.case-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.card-pet{display:flex;align-items:center;gap:10px}
+.card-pet .avatar{width:40px;height:40px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.card-pet .name{font-size:15px;font-weight:bold;color:#333;display:block}
+.card-pet .breed{font-size:11px;color:#999;display:block;margin-top:2px}
+.card-symp{background:#f8f9fa;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#555;line-height:1.5}
+.card-ai{margin-bottom:10px}
+.card-ai-title{font-size:11px;color:#999;margin-bottom:6px;display:block}
+.ai-tags{display:flex;gap:6px;flex-wrap:wrap}
+.ai-tag{font-size:10px;padding:3px 10px;border-radius:8px;background:#f0f0f0;color:#666}
+.ai-tag.top1{background:#e3f2fd;color:#1565c0}
+.ai-tag.top2{background:#f3e5f5;color:#7b1fa2}
+.ai-tag.top3{background:#fff3e0;color:#e65100}
+.card-foot{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.card-foot .meta{font-size:11px;color:#bbb;display:flex;gap:12px}
+.card-status{font-size:11px;padding:3px 12px;border-radius:12px}
+.card-status.pending{background:#fff3e0;color:#ff9800}
+.card-status.done{background:#e8f5e9;color:#4caf50}
+.case-actions{display:flex;gap:8px}
+.case-actions .act{flex:1;height:36px;border-radius:18px;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.case-actions .act.primary{background:#A5D7E8;color:#fff}
+.case-actions .act.primary:hover{background:#8bc7d8}
+.case-actions .act.sec{background:#f0f7ff;color:#2C5F7C}
+.case-actions .act.sec:hover{background:#e0f0ff}
+.case-actions .act.outline{background:transparent;color:#A5D7E8;border:1px solid #A5D7E8}
+.empty{padding:60px 0;text-align:center;color:#bbb;font-size:14px}
+/* ===== Detail ===== */
+.module{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.module h3{font-size:15px;color:#2C5F7C;margin-bottom:14px;font-weight:bold}
+.pet-prof{display:flex;gap:14px;margin-bottom:12px}
+.pet-img-lg{width:80px;height:80px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
+.pet-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1}
+.pet-grid-item{display:flex;flex-direction:column}
+.pet-grid-item .lbl{font-size:10px;color:#999}
+.pet-grid-item .val{font-size:13px;color:#333;font-weight:500}
+.pet-hist{background:#f8f9fa;border-radius:10px;padding:10px 14px;font-size:12px;color:#555;margin-bottom:6px;line-height:1.5}
+.pet-hist .hl{color:#999}
+.symp-box{background:#fff8e1;border-radius:10px;padding:14px;font-size:13px;color:#555;line-height:1.6;margin-bottom:12px}
+.symp-grid{display:flex;flex-wrap:wrap;gap:8px}
+.symp-tag{background:#f0f7ff;border-radius:10px;padding:8px 14px;flex:1;min-width:80px}
+.symp-tag .tl{font-size:10px;color:#999;display:block;margin-bottom:2px}
+.symp-tag .tv{font-size:12px;color:#2C5F7C;font-weight:500;display:block}
+.img-tabs{display:flex;gap:12px;margin-bottom:12px}
+.img-tab{padding:4px 16px;border-radius:16px;font-size:12px;background:#f0f0f0;color:#666;cursor:pointer}
+.img-tab.active{background:#A5D7E8;color:#fff}
+.imgs{display:flex;gap:8px;flex-wrap:wrap}
+.imgs .img{width:80px;height:80px;border-radius:8px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:24px;color:#ccc;cursor:pointer}
+.diag-card{background:linear-gradient(135deg,#f0f9ff,#e8f4f8);border:1px solid #d0ebf4}
+.diag-item{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.diag-rank{font-size:10px;color:#999;margin-bottom:4px}
+.diag-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.diag-info .dn{font-size:14px;font-weight:bold;color:#333}
+.diag-info .dp{font-size:14px;font-weight:bold}
+.diag-item.t1 .dp{color:#1565c0}
+.diag-item.t2 .dp{color:#7b1fa2}
+.diag-item.t3 .dp{color:#e65100}
+.diag-bar{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.diag-bar .fill{height:100%;border-radius:3px}
+.diag-item.t1 .fill{background:#1565c0}
+.diag-item.t2 .fill{background:#7b1fa2}
+.diag-item.t3 .fill{background:#e65100}
+.diag-sum{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.diag-sum .row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px}
+.diag-sum .row .lbl{color:#999}
+.diag-sum .row .val{font-weight:bold;color:#333}
+.diag-sum .row .green{color:#4caf50}
+.diag-sum .row .red{color:#f44336}
+.sev-hdr{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.sev-badge{font-size:18px;font-weight:bold;padding:8px 24px;border-radius:24px}
+.sev-badge.light{background:#e8f5e9;color:#4caf50}
+.sev-badge.medium{background:#fff3e0;color:#ff9800}
+.sev-badge.heavy{background:#ffebee;color:#f44336}
+.sev-score{text-align:center}
+.sev-score .n{font-size:28px;font-weight:bold;color:#2C5F7C;display:block}
+.sev-score .l{font-size:11px;color:#999;display:block}
+.score-list{display:flex;flex-direction:column;gap:10px}
+.score-row{display:flex;align-items:center;gap:10px}
+.score-row .lbl{width:100px;font-size:11px;color:#666;flex-shrink:0}
+.score-row .bar{flex:1;height:10px;background:#f0f0f0;border-radius:5px;overflow:hidden}
+.score-row .bar .fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#4caf50,#ff9800)}
+.score-row .val{width:40px;font-size:11px;color:#999;text-align:right}
+.action6{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.action6 .a{background:#f8faff;border:1px solid #eef4ff;border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer}
+.action6 .a:hover{transform:scale(0.95)}
+.action6 .a .ic{font-size:22px;display:block;margin-bottom:4px}
+.action6 .a .tx{font-size:11px;color:#2C5F7C;font-weight:500;display:block}
+.note-box{background:#fff8e1;border-radius:10px;padding:12px 14px;margin-top:12px;font-size:12px;color:#555;display:none}
+.note-box.show{display:block}
+/* ===== Appointments ===== */
+.status-tabs{display:flex;gap:8px;padding:12px 0;overflow-x:auto}
+.status-tab{padding:6px 16px;border-radius:20px;background:#f0f0f0;color:#666;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0}
+.status-tab.active{background:#A5D7E8;color:#fff;font-weight:bold}
+.status-tab .cnt{font-size:10px;background:rgba(255,255,255,0.3);color:#fff;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.status-tab:not(.active) .cnt{background:#ff6b6b;color:#fff}
+.appt-card{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.appt-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.appt-hdr .name{font-size:15px;font-weight:bold;color:#333;display:block}
+.appt-hdr .owner{font-size:11px;color:#999;display:block;margin-top:2px}
+.appt-badge{font-size:11px;padding:3px 12px;border-radius:12px}
+.appt-badge.pending{background:#fff3e0;color:#ff9800}
+.appt-badge.confirmed{background:#e3f2fd;color:#1976d2}
+.appt-badge.today{background:#ffebee;color:#f44336}
+.appt-badge.completed{background:#e8f5e9;color:#4caf50}
+.appt-badge.cancelled{background:#f0f0f0;color:#999}
+.appt-body{background:#f8f9fa;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.appt-row{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;color:#555}
+.appt-row .ic{width:20px;text-align:center}
+/* Visit notes */
+.visit-notes{margin-top:12px;padding:14px 16px;background:#f0f9ff;border-radius:12px;border:1px solid #d0ebf4}
+.notes-title{font-size:13px;font-weight:bold;color:#2C5F7C;display:block;margin-bottom:8px}
+.notes-text{font-size:12px;color:#555;display:block;margin-bottom:4px;line-height:1.5}
+.appt-acts{display:flex;gap:8px}
+.appt-acts button{flex:1;height:34px;border-radius:17px;font-size:11px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px}
+.appt-acts button:hover{opacity:0.85}
+.appt-acts .confirm{background:#A5D7E8;color:#fff}
+.appt-acts .resched{background:#f0f7ff;color:#2C5F7C}
+.appt-acts .contact{background:transparent;color:#A5D7E8;border:1px solid #A5D7E8}
+.appt-acts .arrived{background:#4caf50;color:#fff}
+.appt-acts .cancel{background:#ffebee;color:#f44336}
+.appt-acts .complete{background:#4caf50;color:#fff}
+.appt-acts .report{background:#f0f7ff;color:#2C5F7C}
+/* Modal overlay */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;align-items:center;justify-content:center}
+.modal-box{background:#fff;border-radius:20px;padding:28px 24px;width:90%;max-width:440px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+/* Tab bar */
+.tab-bar{height:56px;background:#fff;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-around;flex-shrink:0;padding:0 8px}
+.tab-bar-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;opacity:0.5;padding:4px 8px;border-radius:8px}
+.tab-bar-item.active{opacity:1;background:#f0f7ff}
+.tab-bar-item .ic{font-size:20px}
+.tab-bar-item .lb{font-size:9px;color:#999}
+.tab-bar-item.active .lb{color:#A5D7E8}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;z-index:9999;display:none;white-space:nowrap}
+.toast.show{display:block;animation:fadeInOut 2s forwards}
+@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}10%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+@media (max-width:1100px){.app-wrap{max-width:100%}}
+@media (max-width:600px){.scroll{padding:12px 14px 20px}}
+</style>
+</head>
+<body>
+
+<div class="app-wrap">
+  <div class="nav-bar">
+    <button class="nav-back" id="navBack" onclick="goBack()" style="display:none">&#8249;</button>
+    <span class="nav-title" id="navTitle">机构工作台</span>
+  </div>
+
+  <!-- Page: Dashboard -->
+  <div class="page active" id="pageDashboard">
+    <div class="scroll" id="dashboardContent"></div>
+    <div class="tab-bar">
+      <div class="tab-bar-item active" onclick="showPage('dashboard')"><span class="ic">🏠</span><span class="lb">工作台</span></div>
+      <div class="tab-bar-item" onclick="navigateToPage('cases','all')"><span class="ic">📋</span><span class="lb">预问诊</span></div>
+      <div class="tab-bar-item" onclick="navigateToPage('appointments','pending')"><span class="ic">📅</span><span class="lb">预约</span></div>
+      <div class="tab-bar-item" onclick="navigateToPage('register','')"><span class="ic">🏪</span><span class="lb">入驻</span></div>
+    </div>
+  </div>
+
+  <!-- Page: Cases -->
+  <div class="page" id="pageCases">
+    <div class="scroll">
+      <div class="filter-bar" id="casesFilter"></div>
+      <div id="casesList"></div>
+    </div>
+  </div>
+
+  <!-- Page: Case Detail -->
+  <div class="page" id="pageDetail">
+    <div class="scroll" id="detailContent"></div>
+  </div>
+
+  <!-- Page: Appointments -->
+  <div class="page" id="pageAppointments">
+    <div class="scroll">
+      <div class="status-tabs" id="apptTabs"></div>
+      <div id="apptList"></div>
+    </div>
+  </div>
+
+  <!-- Page: Register -->
+  <div class="page" id="pageRegister">
+    <div class="scroll" id="registerContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Mock Data =====
+const mockCases = [
+  {_id:'c1',petId:{name:'奶茶',avatar:'',species:'猫',breed:'布偶',age:2,gender:'雌性'},userId:{nickName:'王女士',phoneNumber:'138****1234'},severity:'中',weight:4.2,allergies:'无',sterilized:'已绝育',deworming:'近一个月未体外驱虫',symptoms:'最近3天耳后掉毛，宠物一直抓挠，局部发红，家里新接触过一只流浪猫。',skinDiseaseHistory:[{diseaseName:'真菌感染',symptoms:['掉毛','红肿','瘙痒'],affectedAreas:['耳后'],medication:'',isCured:'否',startDate:'2026-05-14'}],recentContact:'接触流浪猫',images:[{url:'',annotatedUrl:''}],aiSummary:'患宠：奶茶（猫）；宠主：王女士；症状：耳后掉毛、红肿、瘙痒3天，有流浪猫接触史。',severityAI:'中',trend:'初次就诊，建议持续观察并按时用药。',followUp:{needed:true,date:'2026-05-21',note:'复查皮肤恢复情况',completed:false},createdAt:'2026-05-14T08:00:00Z'},
+  {_id:'c2',petId:{name:'豆豆',avatar:'',species:'犬',breed:'金毛',age:3,gender:'雄性'},userId:{nickName:'张女士',phoneNumber:'139****5678'},severity:'中',weight:28.5,allergies:'花粉',sterilized:'是',symptoms:'背部红斑、瘙痒，持续一周',skinDiseaseHistory:[{diseaseName:'湿疹',symptoms:['红斑','瘙痒','掉毛'],affectedAreas:['背部','腹部'],medication:'红霉素软膏',isCured:'否',startDate:'2026-04-15'}],recentContact:'近期去过宠物公园',images:[],aiSummary:'患宠：豆豆（犬）；宠主：张女士；体重：28.5kg；诊断疾病：湿疹。',severityAI:'中',trend:'初次就诊，症状表现为中度皮肤红斑和瘙痒，建议持续观察。',followUp:{needed:true,date:'2026-05-20',note:'复查皮肤恢复情况',completed:false},createdAt:'2026-04-15T10:00:00Z'},
+  {_id:'c3',petId:{name:'旺财',avatar:'',species:'犬',breed:'柯基',age:4,gender:'雄性'},userId:{nickName:'王先生',phoneNumber:'137****9012'},severity:'重',weight:12,allergies:'食物过敏',sterilized:'否',symptoms:'全身多处渗液、结痂，严重瘙痒',skinDiseaseHistory:[{diseaseName:'肿皮症',symptoms:['渗液','结痂','红斑','瘙痒'],affectedAreas:['全身','爪缝'],medication:'抗生素+药浴',isCured:'否',startDate:'2026-05-01'},{diseaseName:'过敏性皮炎',symptoms:['红斑','瘙痒'],affectedAreas:['腹部'],medication:'抗组胺药',isCured:'是',startDate:'2026-01-10'}],recentContact:'家中新养了一只猫',images:[],aiSummary:'患宠：旺财（犬）；宠主：王先生；体重：12kg；诊断疾病：肿皮症；有食物过敏史。',severityAI:'重',trend:'该宠物共有2次就诊记录，目前肿皮症正在治疗中。',followUp:{needed:true,date:'2026-05-25',note:'复查肿皮症恢复情况',completed:false},createdAt:'2026-05-01T09:00:00Z'},
+  {_id:'c4',petId:{name:'呼咕',avatar:'',species:'猫',breed:'英短',age:2,gender:'雌性'},userId:{nickName:'李先生',phoneNumber:'139****5678'},severity:'轻',weight:4.2,allergies:'无',sterilized:'是',symptoms:'面部掉毛、结痂',skinDiseaseHistory:[{diseaseName:'猫癣',symptoms:['掉毛','结痂'],affectedAreas:['面部'],medication:'特比奈芬',isCured:'是',startDate:'2026-03-01'}],recentContact:'',images:[],aiSummary:'患宠：呼咕（猫）；宠主：李先生；诊断疾病：猫癣；已治愈。',severityAI:'轻',trend:'1次就诊记录，已痊愈。',followUp:{needed:false,completed:false},createdAt:'2026-03-01T14:00:00Z'},
+  {_id:'c5',petId:{name:'小白',avatar:'',species:'犬',breed:'比熊',age:1.5,gender:'雌性'},userId:{nickName:'赵女士',phoneNumber:'136****3456'},severity:'轻',weight:5.8,allergies:'无',sterilized:'是',symptoms:'面部红斑、泪痕',skinDiseaseHistory:[{diseaseName:'泪痕炎',symptoms:['红斑'],affectedAreas:['面部'],medication:'氯霉素眼药水',isCured:'是',startDate:'2026-02-20'}],recentContact:'',images:[],aiSummary:'患宠：小白（犬）；宠主：赵女士；已治愈。',severityAI:'轻',trend:'初次就诊，已痊愈。',followUp:{needed:false,completed:false},createdAt:'2026-02-20T16:00:00Z'},
+];
+
+const mockAppointments = [
+  {id:'a1',caseId:'c1',petName:'奶茶',ownerName:'王女士',date:new Date().toISOString(),serviceType:'皮肤病复核',severity:'中',hasReport:true,status:'pending',notes:''},
+  {id:'a2',caseId:'c3',petName:'旺财',ownerName:'王先生',date:new Date(Date.now()+86400000).toISOString(),serviceType:'皮肤病复核',severity:'重',hasReport:false,status:'confirmed',notes:''},
+  {id:'a3',caseId:'',petName:'呼咕',ownerName:'李先生',date:new Date().toISOString(),serviceType:'洗护护理',severity:'轻',hasReport:true,status:'today',notes:'',visitNotes:{diagnosis:'猫癣已痊愈，建议定期检查'}},
+  {id:'a4',caseId:'c5',petName:'小白',ownerName:'赵女士',date:new Date(Date.now()-86400000).toISOString(),serviceType:'皮肤病复核',severity:'轻',hasReport:true,status:'completed',notes:'',visitNotes:{diagnosis:'湿疹（轻度），建议保持环境干燥',suggestTest:true,suggestFollowUp:true,followUpNote:'7天后复诊',remarks:'患处有扩散趋势',arrivedAt:'14:20'}},
+  {id:'a5',caseId:'',petName:'团子',ownerName:'刘女士',date:new Date(Date.now()-86400000).toISOString(),serviceType:'皮肤病复核',severity:'中',hasReport:false,status:'cancelled',notes:''},
+];
+
+let institutionInfo = null;
+let currentFilter = 'all';
+let currentStatus = 'pending';
+let detailId = null;
+let pageStack = ['dashboard'];
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.remove('show');void t.offsetWidth;t.classList.add('show')}
+
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const el=document.getElementById('page'+name.charAt(0).toUpperCase()+name.slice(1));if(el)el.classList.add('active');document.querySelectorAll('.tab-bar-item').forEach(t=>t.classList.toggle('active',t.textContent.includes(name==='dashboard'?'工作台':name==='cases'?'预问诊':name==='appointments'?'预约':'入驻')))}
+
+function navigateToPage(page,param){pageStack.push(page);document.getElementById('navBack').style.display='flex';if(page==='cases'){showPage('cases');renderCasesFilter();renderCases(param||'all')}else if(page==='appointments'){showPage('appointments');renderApptTabs();renderAppointments(param||'pending')}else if(page==='register'){showPage('register');renderRegister()}else{showPage(page);renderDashboard()}}
+function goBack(){pageStack.pop();const prev=pageStack[pageStack.length-1]||'dashboard';if(pageStack.length<=1)document.getElementById('navBack').style.display='none';if(prev==='dashboard'){showPage('dashboard');renderDashboard()}else if(prev==='cases'){showPage('cases');renderCasesFilter();renderCases(currentFilter)}else if(prev==='appointments'){showPage('appointments');renderApptTabs();renderAppointments(currentStatus)}else if(prev==='register'){showPage('register');renderRegister()}else{showPage('dashboard');renderDashboard()}}
+
+// ===== Dashboard =====
+function renderDashboard(){const el=document.getElementById('dashboardContent');const inst=institutionInfo;const todayA=mockAppointments.filter(a=>{const d=new Date(a.date);const t=new Date();return d.toDateString()===t.toDateString()&&a.status!=='cancelled'}).length;const pending=mockCases.filter(c=>!c.aiSummary).length;const high=mockCases.filter(c=>c.severity==='重').length;const fu=mockCases.filter(c=>c.followUp?.needed&&!c.followUp?.completed).length;
+el.innerHTML=`
+<div class="inst-header">
+  <div class="inst-top">
+    <div class="inst-avatar">🏥</div>
+    <div class="inst-info">
+      <span class="inst-name">${inst?inst.name:'PetDerma 合作机构'}</span>
+      <div class="inst-status"><div class="inst-dot"></div><span class="inst-status-text">今日营业中</span></div>
+    </div>
+    <span class="inst-rating">★ ${inst?'4.8':'4.5'}</span>
+  </div>
+  <div class="inst-stats">
+    <div class="inst-stat"><span class="inst-stat-num">${todayA||3}</span><span class="inst-stat-lbl">今日预约</span></div>
+    <div class="inst-stat-div"></div>
+    <div class="inst-stat"><span class="inst-stat-num" style="color:#ffb74d">${pending||2}</span><span class="inst-stat-lbl">待处理</span></div>
+    <div class="inst-stat-div"></div>
+    <div class="inst-stat"><span class="inst-stat-num" style="color:#ff6b6b">${high||1}</span><span class="inst-stat-lbl">高风险</span></div>
+  </div>
+</div>
+<div class="data-grid">
+  <div class="data-card" onclick="navigateToPage('appointments','today')"><div class="icon">📅</div><span class="num">${todayA||3}</span><span class="lbl">今日预约</span></div>
+  <div class="data-card" onclick="navigateToPage('cases','pending')"><div class="icon">📋</div><span class="num orange">${pending||2}</span><span class="lbl">待处理预问诊</span></div>
+  <div class="data-card" onclick="navigateToPage('cases','highrisk')"><div class="icon">⚠️</div><span class="num red">${high||1}</span><span class="lbl">高风险病例</span></div>
+  <div class="data-card" onclick="navigateToPage('cases','booked')"><div class="icon">🔄</div><span class="num purple">${fu||2}</span><span class="lbl">待复诊提醒</span></div>
+</div>
+<div class="quick-grid">
+  <div class="quick-card" onclick="navigateToPage('cases','all')"><div class="icon">📋</div><span class="name">AI预问诊</span><span class="desc">查看用户报告</span></div>
+  <div class="quick-card" onclick="navigateToPage('appointments','pending')"><div class="icon">📅</div><span class="name">预约管理</span><span class="desc">处理预约请求</span></div>
+  <div class="quick-card" onclick="navigateToPage('cases','booked')"><div class="icon">🔄</div><span class="name">复诊跟踪</span><span class="desc">管理复诊计划</span></div>
+  <div class="quick-card" onclick="navigateToPage('register','')"><div class="icon">🏪</div><span class="name">门店主页</span><span class="desc">编辑机构信息</span></div>
+</div>
+<div class="section-card">
+  <div class="sec-header"><span class="section-title">最近病例</span><span class="more" onclick="navigateToPage('cases','all')">查看全部 ></span></div>
+  <div>${mockCases.slice(0,3).map(c=>renderCaseItem(c)).join('')||'<div class="empty">暂无病例</div>'}</div>
+</div>
+${!inst?'<div style="text-align:center;padding:16px;background:#fff8e1;border-radius:12px;border:1px solid #ffe082;font-size:12px;color:#f57c00;cursor:pointer" onclick="navigateToPage(\'register\',\'\')">尚未完善机构信息，点击去入驻 ></div>':''}
+`;renderPageTitle('机构工作台')}
+
+function renderCaseItem(c){return `<div class="case-item" onclick="showDetail('${c._id}')"><div class="case-item-top"><div class="avatar">${c.petId?.species==='猫'?'🐱':'🐶'}</div><div class="meta"><span class="pname">${c.petId?.name||'未知'}</span><span class="oname">${c.userId?.nickName||'未知'}</span></div><span class="sev-tag ${sevClass(c.severity)}">${c.severity||'待评估'}</span></div><span class="disease">${c.skinDiseaseHistory?.[c.skinDiseaseHistory.length-1]?.diseaseName||'暂无诊断'}</span><span class="date">${fmt(c.createdAt)}</span></div>`}
+
+// ===== Cases =====
+function renderCasesFilter(){const el=document.getElementById('casesFilter');const filters=['all','pending','contacted','booked','highrisk','care'];const labels={all:'全部',pending:'待处理',contacted:'已联系',booked:'已预约',highrisk:'高风险',care:'护理咨询'};el.innerHTML=filters.map(f=>`<span class="filter-chip ${f===currentFilter?'active':''}" onclick="renderCases('${f}')">${labels[f]}</span>`).join('')}
+
+function renderCases(filter){currentFilter=filter;renderCasesFilter();const el=document.getElementById('casesList');let list=mockCases;if(filter==='pending')list=mockCases.filter(c=>!c.aiSummary);else if(filter==='contacted')list=[];else if(filter==='booked')list=mockCases.filter(c=>c.followUp?.needed);else if(filter==='highrisk')list=mockCases.filter(c=>c.severity==='重');else if(filter==='care')list=mockCases.filter(c=>c.severity==='轻');
+
+if(list.length===0){el.innerHTML='<div class="empty">暂无病例</div>';renderPageTitle('AI预问诊管理');return}
+el.innerHTML=list.map(c=>`
+<div class="case-card">
+  <div class="case-card-top">
+    <div class="card-pet">
+      <div class="avatar">${c.petId?.species==='猫'?'🐱':'🐶'}</div>
+      <div><span class="name">${c.petId?.name||'未知'}</span><span class="breed">${c.petId?.species||''} / ${c.petId?.breed||''} / ${c.petId?.age||'?'}岁</span></div>
+    </div>
+    <span class="sev-tag ${sevClass(c.severity)}">${c.severity||'待评估'}</span>
+  </div>
+  <div class="card-symp"><strong style="color:#999;font-size:11px">主诉：</strong>${c.symptoms||'暂无'}</div>
+  <div class="card-ai">
+    <span class="card-ai-title">AI结果</span>
+    <div class="ai-tags">
+      <span class="ai-tag top1">真菌感染 0.72</span>
+      <span class="ai-tag top2">过敏性皮炎 0.58</span>
+      <span class="ai-tag top3">蜮虫感染 0.41</span>
+    </div>
+  </div>
+  <div class="card-foot">
+    <div class="meta"><span>📅 ${fmt(c.createdAt)}</span><span>📍 2.1km</span></div>
+    <span class="card-status ${c.aiSummary?'done':'pending'}">${c.aiSummary?'已处理':'待处理'}</span>
+  </div>
+  <div class="case-actions">
+    <button class="act primary" onclick="showDetail('${c._id}')">查看报告</button>
+    <button class="act sec" onclick="contactOwner('${c._id}')">联系用户</button>
+    <button class="act outline" onclick="suggestBooking('${c._id}')">建议预约</button>
+  </div>
+</div>`).join('');renderPageTitle('AI预问诊管理')}
+
+function showDetail(id){detailId=id;pageStack.push('detail');document.getElementById('navBack').style.display='flex';showPage('detail');renderDetail(id)}
+function renderPageTitle(t){document.getElementById('navTitle').textContent=t}
+
+function contactOwner(id){const c=mockCases.find(x=>x._id===id);toast(c?.userId?.phoneNumber?`联系电话：${c.userId.phoneNumber}`:'暂无联系方式')}
+function suggestBooking(id){const c=mockCases.find(x=>x._id===id);if(!c)return;const a={id:'a_'+Date.now(),caseId:c._id,petName:c.petId?.name||'未知',ownerName:c.userId?.nickName||'未知',date:new Date().toISOString(),serviceType:'皮肤病复核',severity:c.severity||'待评估',hasReport:!!c.aiSummary,status:'pending',notes:''};mockAppointments.unshift(a);toast('已创建预约建议')}
+
+// ===== Detail =====
+function renderDetail(id){const el=document.getElementById('detailContent');const c=mockCases.find(x=>x._id===id);if(!c){el.innerHTML='<div class="empty">未找到病例</div>';return};const sv=0.63;renderPageTitle('AI预问诊报告详情')
+el.innerHTML=`
+<div class="module"><h3>🐾 宠物基本信息</h3>
+  <div class="pet-prof"><div class="pet-img-lg">${c.petId?.species==='猫'?'🐱':'🐶'}</div>
+    <div class="pet-grid">
+      <div class="pet-grid-item"><span class="lbl">昵称</span><span class="val">${c.petId?.name||'未知'}</span></div>
+      <div class="pet-grid-item"><span class="lbl">类型</span><span class="val">${c.petId?.species||'未知'}</span></div>
+      <div class="pet-grid-item"><span class="lbl">品种</span><span class="val">${c.petId?.breed||'未知'}</span></div>
+      <div class="pet-grid-item"><span class="lbl">年龄</span><span class="val">${c.petId?.age||'?'}岁</span></div>
+      <div class="pet-grid-item"><span class="lbl">性别</span><span class="val">${c.petId?.gender||'未知'}</span></div>
+      <div class="pet-grid-item"><span class="lbl">绝育</span><span class="val">${c.sterilized||'未知'}</span></div>
+      <div class="pet-grid-item"><span class="lbl">体重</span><span class="val">${c.weight||'?'}kg</span></div>
+      <div class="pet-grid-item"><span class="lbl">过敏史</span><span class="val">${c.allergies||'无'}</span></div>
+    </div>
+  </div>
+  ${c.skinDiseaseHistory?.length?`<div class="pet-hist"><span class="hl">既往病史：</span>${c.skinDiseaseHistory.map(h=>h.diseaseName).join('、')}</div>`:''}
+  ${c.deworming?`<div class="pet-hist"><span class="hl">驱虫记录：</span>${c.deworming}</div>`:''}
+</div>
+<div class="module"><h3>📝 用户症状描述</h3>
+  <div class="symp-box">${c.symptoms||'暂无症状描述'}</div>
+  <div class="symp-grid">
+    <div class="symp-tag"><span class="tl">持续时间</span><span class="tv">3天</span></div>
+    <div class="symp-tag"><span class="tl">症状</span><span class="tv">${c.skinDiseaseHistory?.[0]?.symptoms?.slice(0,3).join('、')||'瘙痒'}</span></div>
+    <div class="symp-tag"><span class="tl">患处</span><span class="tv">${c.skinDiseaseHistory?.[0]?.affectedAreas?.join('、')||'未知'}</span></div>
+    <div class="symp-tag"><span class="tl">接触史</span><span class="tv">${c.recentContact||'无'}</span></div>
+    <div class="symp-tag"><span class="tl">精神状态</span><span class="tv">正常</span></div>
+    <div class="symp-tag"><span class="tl">食欲</span><span class="tv">正常</span></div>
+  </div>
+</div>
+<div class="module"><h3>📷 患处图片</h3>
+  <div class="img-tabs"><span class="img-tab active">原图</span><span class="img-tab">病灶标注</span></div>
+  <div class="imgs"><div class="img">📷</div></div>
+</div>
+<div class="module diag-card"><h3>🤖 AI诊断结果</h3>
+  <div class="diag-item t1"><div class="diag-rank">Top 1</div><div class="diag-info"><span class="dn">真菌感染</span><span class="dp">72%</span></div><div class="diag-bar"><div class="fill" style="width:72%"></div></div></div>
+  <div class="diag-item t2"><div class="diag-rank">Top 2</div><div class="diag-info"><span class="dn">过敏性皮炎</span><span class="dp">58%</span></div><div class="diag-bar"><div class="fill" style="width:58%"></div></div></div>
+  <div class="diag-item t3"><div class="diag-rank">Top 3</div><div class="diag-info"><span class="dn">蜮虫感染</span><span class="dp">41%</span></div><div class="diag-bar"><div class="fill" style="width:41%"></div></div></div>
+  <div class="diag-sum" style="margin-top:10px">
+    <div class="row"><span class="lbl">最高置信度</span><span class="val">72%</span></div>
+    <div class="row"><span class="lbl">结果可靠性</span><span class="val green">中高</span></div>
+    <div class="row"><span class="lbl">建议</span><span class="val red">线下检查确认病因</span></div>
+  </div>
+</div>
+<div class="module"><h3>📊 严重程度评分</h3>
+  <div class="sev-hdr"><span class="sev-badge ${sevClass(c.severity)}">${c.severity||'待评估'}</span><div class="sev-score"><span class="n">${sv}</span><span class="l">综合评分</span></div></div>
+  <div class="score-list">
+    <div class="score-row"><span class="lbl">模型置信度</span><div class="bar"><div class="fill" style="width:72%"></div></div><span class="val">0.72</span></div>
+    <div class="score-row"><span class="lbl">病灶面积比例</span><div class="bar"><div class="fill" style="width:31%"></div></div><span class="val">0.31</span></div>
+    <div class="score-row"><span class="lbl">红肿比例</span><div class="bar"><div class="fill" style="width:46%"></div></div><span class="val">0.46</span></div>
+    <div class="score-row"><span class="lbl">炎症指标</span><div class="bar"><div class="fill" style="width:57%"></div></div><span class="val">0.57</span></div>
+  </div>
+</div>
+<div class="module"><h3>🔧 机构处理建议</h3>
+  <div class="action6">
+    <div class="a" onclick="toast('已发送到店检查建议')"><span class="ic">🏥</span><span class="tx">建议到店检查</span></div>
+    <div class="a" onclick="contactOwner('${c._id}')"><span class="ic">📞</span><span class="tx">联系用户</span></div>
+    <div class="a" onclick="toast('已标记为高风险')"><span class="ic">⚠️</span><span class="tx">标记高风险</span></div>
+    <div class="a" onclick="toast('已设置复诊提醒')"><span class="ic">🔄</span><span class="tx">建议复诊跟踪</span></div>
+    <div class="a" onclick="suggestBooking('${c._id}');renderDetail('${c._id}')"><span class="ic">📅</span><span class="tx">转为预约</span></div>
+    <div class="a" onclick="addNote(this)"><span class="ic">📝</span><span class="tx">添加备注</span></div>
+  </div>
+  <div class="note-box" id="noteBox"><strong style="color:#999;font-size:11px">内部备注：</strong><br><span id="noteText"></span></div>
+</div>`}
+
+function addNote(el){const n=prompt('输入内部备注：');if(n){document.getElementById('noteText').textContent=n;document.getElementById('noteBox').classList.add('show');toast('备注已保存')}}
+
+// ===== Enhanced Appointments =====
+function renderApptTabs(){const el=document.getElementById('apptTabs');const statuses=['pending','confirmed','today','completed','cancelled'];const labels={pending:'待确认',confirmed:'已确认',today:'今日到店',completed:'已完成',cancelled:'已取消'};const cnts={};statuses.forEach(s=>cnts[s]=mockAppointments.filter(a=>a.status===s).length);el.innerHTML=statuses.map(s=>`<span class="status-tab ${s===currentStatus?'active':''}" onclick="renderAppointments('${s}')">${labels[s]}${cnts[s]>0?`<span class="cnt">${cnts[s]}</span>`:''}</span>`).join('')}
+
+function renderAppointments(status){currentStatus=status;renderApptTabs();const el=document.getElementById('apptList');let list=mockAppointments.filter(a=>a.status===status);if(list.length===0){el.innerHTML='<div class="empty">暂无预约</div>';renderPageTitle('预约管理');return}
+el.innerHTML=list.map(a=>{
+const statusTexts={pending:'待确认',confirmed:'已确认',today:'今日到店',completed:'已完成',cancelled:'已取消'};const d=new Date(a.date);const dateStr=`${d.getMonth()+1}月${d.getDate()}日 周${'日一二三四五六'[d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+let acts='';
+if(a.status==='pending')acts=`<div class="appt-acts"><button class="confirm" onclick="updateAppt('${a.id}','confirmed')">确认预约</button><button class="resched" onclick="reschedule('${a.id}')">修改时间</button><button class="contact" onclick="contactApptOwner('${a.id}')">联系用户</button></div>`;
+else if(a.status==='confirmed')acts=`<div class="appt-acts"><button class="arrived" onclick="showArrivalModal('${a.id}')">标记到店</button><button class="resched" onclick="reschedule('${a.id}')">修改时间</button><button class="cancel" onclick="updateAppt('${a.id}','cancelled')">取消预约</button></div>`;
+else if(a.status==='today')acts=`<div class="appt-acts"><button class="complete" onclick="showCompletionModal('${a.id}')">填写到店记录</button><button class="report" onclick="viewApptReport('${a.id}')">查看AI报告</button></div>`;
+else if(a.status==='completed')acts=`<div class="appt-acts"><button class="report" onclick="viewApptReport('${a.id}')">查看AI报告</button></div>`;
+let visit='';
+if(a.status==='completed'&&a.visitNotes){
+const vn=a.visitNotes;const arrivalTime=vn.arrivedAt?`到店时间：${vn.arrivedAt}`:'';
+visit=`<div class="visit-notes"><span class="notes-title">到店诊断记录</span>
+<span class="notes-text">实际判断：${vn.diagnosis||'未记录'}</span>
+${arrivalTime?`<span class="notes-text">${arrivalTime}</span>`:''}
+<span class="notes-text">建议检查：${vn.suggestTest?'是':'否'}</span>
+<span class="notes-text">建议复诊：${vn.suggestFollowUp?(vn.followUpNote||'是'):'否'}</span>
+${vn.remarks?`<span class="notes-text">备注：${vn.remarks}</span>`:''}</div>`}
+return `<div class="appt-card"><div class="appt-hdr"><div><span class="name">${a.petName}</span><span class="owner">${a.ownerName}</span></div><span class="appt-badge ${a.status}">${statusTexts[a.status]}</span></div>
+<div class="appt-body"><div class="appt-row"><span class="ic">📅</span>${dateStr}</div><div class="appt-row"><span class="ic">🔧</span>${a.serviceType||'皮肤病复核'}</div><div class="appt-row"><span class="ic">⚠️</span>AI严重程度：<span style="color:${a.severity==='重'?'#f44336':a.severity==='中'?'#ff9800':'#4caf50'};font-weight:bold">${a.severity||'待评估'}</span></div>${a.hasReport?'<div class="appt-row"><span class="ic">📋</span>已发送AI报告</div>':''}${a.arrivedAt?`<div class="appt-row"><span class="ic">⏱</span>到店时间：${a.arrivedAt}</div>`:''}</div>${acts}${visit}</div>`
+}).join('');renderPageTitle('预约管理')}
+
+function updateAppt(id,status){const a=mockAppointments.find(x=>x.id===id);if(a){a.status=status;renderAppointments(currentStatus);toast(status==='confirmed'?'已确认预约':status==='today'?'已标记到店':status==='cancelled'?'已取消':'已更新')}}
+function reschedule(id){const t=prompt('输入新的预约时间（如：2026-05-20 14:30）：');if(t){const a=mockAppointments.find(x=>x.id===id);if(a){a.date=new Date(t).toISOString()||a.date;renderAppointments(currentStatus);toast('时间已修改')}}}
+function contactApptOwner(id){const a=mockAppointments.find(x=>x.id===id);const c=mockCases.find(x=>x._id===a?.caseId);toast(c?.userId?.phoneNumber?`联系电话：${c.userId.phoneNumber}`:'暂无联系方式')}
+
+// Arrival confirmation modal
+function showArrivalModal(id){
+  const a=mockAppointments.find(x=>x.id===id);if(!a)return;
+  const now=new Date();const timeStr=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  closeModal();
+  const overlay=document.createElement('div');overlay.className='modal-overlay';overlay.style.display='flex';
+  overlay.innerHTML=`
+    <div class="modal-box" style="text-align:left">
+      <h3 style="font-size:18px;margin-bottom:16px;color:#2C5F7C">确认到店</h3>
+      <div style="background:#f0f9ff;border-radius:12px;padding:16px;margin-bottom:16px;font-size:13px;color:#555;line-height:1.8">
+        <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px">${a.petName}</div>
+        <div>宠主：${a.ownerName}</div>
+        <div>服务：${a.serviceType||'皮肤病复核'}</div>
+        <div>严重程度：${a.severity||'待评估'}</div>
+        <div>到店时间：<strong>${timeStr}</strong></div>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;color:#555;display:block;margin-bottom:6px">到店备注（选填）</label>
+        <input id="arrivalNote" placeholder="如：宠主已到店，正在等候" style="width:100%;height:40px;background:#f8f8f8;border:2px solid #e5e5e5;border-radius:10px;padding:0 14px;font-size:14px;outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn secondary" onclick="closeModal()" style="flex:1">取消</button>
+        <button class="btn primary" onclick="confirmArrival('${id}')" style="flex:1">确认到店</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay)
+}
+function confirmArrival(id){
+  const a=mockAppointments.find(x=>x.id===id);if(!a)return;
+  const note=document.getElementById('arrivalNote')?.value||'';
+  const now=new Date();const timeStr=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  a.status='today';a.arrivedAt=timeStr;a.arrivalNote=note;
+  closeModal();renderAppointments(currentStatus);toast('已确认到店')
+}
+function closeModal(){document.querySelectorAll('.modal-overlay').forEach(el=>el.remove())}
+
+// Completion form modal
+function showCompletionModal(id){
+  const a=mockAppointments.find(x=>x.id===id);if(!a)return;
+  closeModal();
+  const overlay=document.createElement('div');overlay.className='modal-overlay';overlay.style.display='flex';
+  overlay.innerHTML=`
+    <div class="modal-box" style="text-align:left;max-height:90vh;overflow-y:auto">
+      <h3 style="font-size:18px;margin-bottom:16px;color:#2C5F7C">填写到店诊断记录</h3>
+      <div style="background:#f0f9ff;border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:#555;line-height:1.6">
+        <strong style="color:#2C5F7C">${a.petName}</strong> — ${a.ownerName} · ${a.serviceType||'皮肤病复核'}
+        ${a.arrivedAt?`<br>到店时间：${a.arrivedAt}`:''}
+      </div>
+      <div class="form-group">
+        <label>实际判断 <span class="required">*</span></label>
+        <input id="compDiagnosis" placeholder="如：真菌感染、湿疹等" value="${a.visitNotes?.diagnosis||''}">
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="compSuggestTest" ${a.visitNotes?.suggestTest!==false?'checked':''}> 建议做进一步检查
+        </label>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="compSuggestFU" ${a.visitNotes?.suggestFollowUp!==false?'checked':''}> 建议复诊跟踪
+        </label>
+      </div>
+      <div class="form-group" id="fuNoteGroup">
+        <label>复诊时间</label>
+        <input id="compFUNote" placeholder="如：7天后复诊" value="${a.visitNotes?.followUpNote||'7天后复诊'}">
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <input id="compRemarks" placeholder="其他需要记录的信息" value="${a.visitNotes?.remarks||''}">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn secondary" onclick="closeModal()" style="flex:1">取消</button>
+        <button class="btn primary" onclick="confirmCompletion('${id}')" style="flex:1">保存记录</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay)
+  // Toggle follow-up note visibility
+  setTimeout(()=>{
+    const cb=document.getElementById('compSuggestFU');
+    const g=document.getElementById('fuNoteGroup');
+    if(cb&&g){g.style.display=cb.checked?'block':'none';cb.addEventListener('change',()=>{g.style.display=cb.checked?'block':'none'})}
+  },50)
+}
+function confirmCompletion(id){
+  const a=mockAppointments.find(x=>x.id===id);if(!a)return;
+  const diagnosis=document.getElementById('compDiagnosis')?.value?.trim();
+  if(!diagnosis){toast('请填写实际判断');return}
+  a.status='completed';
+  a.visitNotes={
+    diagnosis:diagnosis,
+    suggestTest:document.getElementById('compSuggestTest')?.checked||false,
+    suggestFollowUp:document.getElementById('compSuggestFU')?.checked||false,
+    followUpNote:document.getElementById('compFUNote')?.value?.trim()||'',
+    remarks:document.getElementById('compRemarks')?.value?.trim()||'',
+    arrivedAt:a.arrivedAt||''
+  };
+  closeModal();renderAppointments(currentStatus);toast('到店记录已保存')
+}
+
+// View AI report from appointments
+function viewApptReport(id){
+  const a=mockAppointments.find(x=>x.id===id);if(!a)return;
+  if(a.caseId){showDetail(a.caseId);return}
+  closeModal();
+  const overlay=document.createElement('div');overlay.className='modal-overlay';overlay.style.display='flex';
+  overlay.innerHTML=`
+    <div class="modal-box" style="text-align:left;max-height:80vh;overflow-y:auto">
+      <h3 style="font-size:18px;margin-bottom:16px;color:#2C5F7C">AI诊断报告</h3>
+      <div style="background:#f0f9ff;border-radius:12px;padding:16px;margin-bottom:16px;font-size:13px;color:#555;line-height:1.8">
+        <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:4px">${a.petName}</div>
+        <div>宠主：${a.ownerName}</div>
+        <div>服务类型：${a.serviceType||'皮肤病复核'}</div>
+        <div>严重程度：${a.severity||'待评估'}</div>
+        ${a.visitNotes?.diagnosis?`<div>实际诊断：${a.visitNotes.diagnosis}</div>`:''}
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:13px;color:#999;margin-bottom:8px">AI诊断结果（Top-3）</div>
+        <div class="diag-item t1" style="background:#fff;border-radius:10px;padding:12px;margin-bottom:8px">
+          <div class="diag-info"><span class="dn" style="font-size:14px;font-weight:bold;color:#1565c0">真菌感染</span><span class="dp" style="font-size:14px;font-weight:bold;color:#1565c0">72%</span></div>
+          <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#1565c0;width:72%"></div></div>
+        </div>
+        <div class="diag-item t2" style="background:#fff;border-radius:10px;padding:12px;margin-bottom:8px">
+          <div class="diag-info"><span class="dn" style="font-size:14px;font-weight:bold;color:#7b1fa2">过敏性皮炎</span><span class="dp" style="font-size:14px;font-weight:bold;color:#7b1fa2">58%</span></div>
+          <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#7b1fa2;width:58%"></div></div>
+        </div>
+        <div class="diag-item t3" style="background:#fff;border-radius:10px;padding:12px">
+          <div class="diag-info"><span class="dn" style="font-size:14px;font-weight:bold;color:#e65100">螨虫感染</span><span class="dp" style="font-size:14px;font-weight:bold;color:#e65100">41%</span></div>
+          <div class="diag-bar" style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div class="fill" style="height:100%;border-radius:3px;background:#e65100;width:41%"></div></div>
+        </div>
+      </div>
+      <button class="btn primary" onclick="closeModal()" style="width:100%">关闭</button>
+    </div>`;
+  document.body.appendChild(overlay)
+}
+
+// ===== Register =====
+function renderRegister(){const el=document.getElementById('registerContent');renderPageTitle('机构入驻认证');if(institutionInfo){el.innerHTML=`
+<div class="section-card reg-success">
+  <div class="icon">✅</div>
+  <h3>已入驻 PetDerma 合作机构</h3>
+  <div class="name">${institutionInfo.name}</div>
+  <div class="type">${institutionInfo.type==='hospital'?'宠物医院':'宠物护理店'}</div>
+  <div class="reg-divider"></div>
+  ${['name','contact','phone','hours','address','services'].map(f=>{const labels={name:'机构名称',contact:'联系人',phone:'联系电话',hours:'营业时间',address:'地址',services:'服务范围'};return`<div class="reg-info"><span class="lbl">${labels[f]}</span><span class="val">${institutionInfo[f]||'-'}</span></div>`}).join('')}
+  <button class="btn primary" style="width:100%;margin-top:20px" onclick="showPage('dashboard');renderDashboard()">进入机构工作台</button>
+</div>`;return}
+el.innerHTML=`
+<div class="steps">
+  <div><div class="step-dot active" id="s1d">1</div><div class="step-label" id="s1l">选择类型</div></div>
+  <div class="step-line" id="s1line"></div>
+  <div><div class="step-dot" id="s2d">2</div><div class="step-label" id="s2l">填写信息</div></div>
+  <div class="step-line" id="s2line"></div>
+  <div><div class="step-dot" id="s3d">3</div><div class="step-label" id="s3l">提交审核</div></div>
+</div>
+<div id="step1">
+  <div class="section-card">
+    <div class="section-title">选择机构类型</div>
+    <div class="type-grid">
+      <div class="type-card" onclick="selectType('hospital')" id="typeHospital"><div class="type-icon">🏥</div><span class="type-name">宠物医院</span><span class="type-desc">有执业兽医、可线下诊疗</span></div>
+      <div class="type-card" onclick="selectType('care')" id="typeCare"><div class="type-icon">✂️</div><span class="type-name">宠物护理店</span><span class="type-desc">洗护、美容、基础皮肤护理</span></div>
+    </div>
+    <button class="btn primary" id="nextBtn" disabled onclick="goStep2()">下一步</button>
+  </div>
+</div>
+<div id="step2" style="display:none">
+  <div class="section-card">
+    <div class="section-title">机构信息</div>
+    ${['name','contact','phone','hours','address','services'].map(f=>{const labels={name:'机构名称',contact:'联系人',phone:'联系电话',hours:'营业时间',address:'机构地址',services:'服务范围'};const ph={name:'如：XX宠物医院',contact:'如：张医生',phone:'手机号',hours:'9:00-21:00',address:'详细地址',services:'皮肤病诊疗、洗护、驱虫'};return`<div class="form-group"><label>${labels[f]} <span class="required">*</span></label><input id="f_${f}" placeholder="${ph[f]}" oninput="checkForm()"></div>`}).join('')}
+    <div class="form-group"><label>资质证明</label><div class="upload-box" id="certBox" onclick="uploadCert()">+ 上传营业执照/许可证</div></div>
+    <div class="form-group"><label>门店照片</label><div class="upload-box" id="photoBox" onclick="uploadPhoto()">+ 上传门头/环境照片</div></div>
+    <div class="form-row"><label>接受AI预问诊转诊</label><div class="switch on" id="sReferral" onclick="toggleSwitch(this)"></div></div>
+    <div class="form-row"><label>支持线上预约</label><div class="switch on" id="sBooking" onclick="toggleSwitch(this)"></div></div>
+    <div class="btn-group"><button class="btn secondary" onclick="goStep1()">上一步</button><button class="btn primary" id="submitBtn" disabled onclick="submitReg()">提交审核</button></div>
+  </div>
+</div>
+<div id="step3" style="display:none">
+  <div class="section-card reg-success">
+    <div class="icon">✅</div>
+    <h3>已入驻 PetDerma 合作机构</h3>
+    <div class="name" id="regName"></div>
+    <div class="type" id="regType"></div>
+    <button class="btn primary" style="width:100%;margin-top:20px" onclick="showPage('dashboard');renderDashboard()">进入机构工作台</button>
+  </div>
+</div>`}
+let selectedType='';let certUploaded=false;let photoUploaded=false;
+function selectType(t){selectedType=t;document.querySelectorAll('.type-card').forEach(c=>c.classList.toggle('selected',c.textContent.includes(t==='hospital'?'宠物医院':'宠物护理店')));document.getElementById('nextBtn').disabled=false}
+function goStep1(){document.getElementById('step1').style.display='block';document.getElementById('step2').style.display='none';document.getElementById('s1d').className='step-dot active';document.getElementById('s1line').className='step-line'}
+function goStep2(){if(!selectedType)return;document.getElementById('step1').style.display='none';document.getElementById('step2').style.display='block';document.getElementById('s1d').className='step-dot done';document.getElementById('s1d').textContent='✓';document.getElementById('s1line').className='step-line done';document.getElementById('s2d').className='step-dot active'}
+function checkForm(){const fields=['name','contact','phone','hours','address','services'];const ok=fields.every(f=>document.getElementById('f_'+f).value.trim());document.getElementById('submitBtn').disabled=!ok}
+function uploadCert(){certUploaded=true;document.getElementById('certBox').textContent='✓ 已上传';document.getElementById('certBox').classList.add('done')}
+function uploadPhoto(){photoUploaded=true;document.getElementById('photoBox').textContent='✓ 已上传';document.getElementById('photoBox').classList.add('done')}
+function toggleSwitch(el){el.classList.toggle('on')}
+function submitReg(){const fields=['name','contact','phone','hours','address','services'];const labels={name:'机构名称',contact:'联系人',phone:'联系电话',hours:'营业时间',address:'机构地址',services:'服务范围'};const form={};fields.forEach(f=>form[f]=document.getElementById('f_'+f).value.trim());form.type=selectedType;form.cert=certUploaded;form.photo=photoUploaded;form.acceptReferral=document.getElementById('sReferral').classList.contains('on');form.acceptBooking=document.getElementById('sBooking').classList.contains('on');institutionInfo={...form,rating:'4.8',registeredAt:new Date().toISOString(),status:'approved'};
+document.getElementById('step2').style.display='none';document.getElementById('step3').style.display='block';document.getElementById('s2d').className='step-dot done';document.getElementById('s2d').textContent='✓';document.getElementById('s2line').className='step-line done';document.getElementById('s3d').className='step-dot active';document.getElementById('regName').textContent=form.name;document.getElementById('regType').textContent=selectedType==='hospital'?'宠物医院':'宠物护理店';toast('入驻成功！')}
+
+function sevClass(s){if(s==='轻')return'light';if(s==='中')return'medium';if(s==='重')return'heavy';return''}
+function fmt(d){if(!d)return'';const date=new Date(d);const m=date.getMonth()+1;const day=date.getDate();return m+'月'+day+'日'}
+
+// Init
+renderDashboard();
+</script>
+</body>
+</html>

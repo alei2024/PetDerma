@@ -1,76 +1,112 @@
-<navigation-bar title="宠医辅助台" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<navigation-bar title="机构工作台" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y>
   <view class="container">
-    <!-- 医生信息 -->
-    <view class="doctor-header">
-      <image class="doctor-avatar" src="{{doctorAvatar}}" mode="aspectFill" binderror="onAvatarError"></image>
-      <view class="doctor-info">
-        <text class="doctor-name">{{doctorName || '合作医生'}}</text>
-        <text class="doctor-title">PetDerma 机构端工作台</text>
+
+    <!-- 顶部机构卡片 -->
+    <view class="institution-header">
+      <view class="institution-top">
+        <view class="institution-avatar">🏥</view>
+        <view class="institution-info">
+          <text class="institution-name">{{institution.name || 'PetDerma 合作机构'}}</text>
+          <view class="institution-status">
+            <text class="status-dot"></text>
+            <text class="status-text">今日营业中</text>
+          </view>
+        </view>
+        <view class="institution-rating">
+          <text class="rating-num">★ {{institution.rating || '4.8'}}</text>
+        </view>
+      </view>
+      <view class="institution-stats-row">
+        <view class="stat-item">
+          <text class="stat-val">{{stats.todayAppointments || 0}}</text>
+          <text class="stat-lbl">今日预约</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-val warning">{{stats.pendingCases || 0}}</text>
+          <text class="stat-lbl">待处理</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-val danger">{{stats.highRisk || 0}}</text>
+          <text class="stat-lbl">高风险</text>
+        </view>
       </view>
     </view>
 
-    <!-- 数据概览 -->
-    <view class="stats-grid">
-      <view class="stat-card" bindtap="viewCases">
-        <text class="stat-number">{{stats.total}}</text>
-        <text class="stat-label">全部病例</text>
+    <!-- 核心数据卡片 -->
+    <view class="data-grid">
+      <view class="data-card" bindtap="navigateTo" data-url="/pages/doctor/appointments/appointments">
+        <view class="data-icon blue">📅</view>
+        <text class="data-num">{{stats.todayAppointments || 0}}</text>
+        <text class="data-label">今日预约</text>
       </view>
-      <view class="stat-card pending" bindtap="viewPendingCases">
-        <text class="stat-number">{{stats.pendingReview}}</text>
-        <text class="stat-label">待处理</text>
+      <view class="data-card" bindtap="navigateTo" data-url="/pages/doctor/cases/cases?filter=pending">
+        <view class="data-icon orange">📋</view>
+        <text class="data-num orange">{{stats.pendingCases || 0}}</text>
+        <text class="data-label">待处理预问诊</text>
       </view>
-      <view class="stat-card followup" bindtap="viewFollowUpCases">
-        <text class="stat-number">{{stats.followUpNeeded}}</text>
-        <text class="stat-label">需复诊</text>
+      <view class="data-card" bindtap="navigateTo" data-url="/pages/doctor/cases/cases?filter=highrisk">
+        <view class="data-icon red">⚠️</view>
+        <text class="data-num red">{{stats.highRisk || 0}}</text>
+        <text class="data-label">高风险病例</text>
+      </view>
+      <view class="data-card" bindtap="navigateTo" data-url="/pages/doctor/cases/cases?filter=followup">
+        <view class="data-icon purple">🔄</view>
+        <text class="data-num purple">{{stats.followUp || 0}}</text>
+        <text class="data-label">待复诊提醒</text>
       </view>
     </view>
 
-    <!-- 快捷操作 -->
-    <view class="section">
-      <text class="section-title">快捷操作</text>
-      <view class="action-grid">
-        <view class="action-item" bindtap="viewCases">
-          <view class="action-icon blue">📋</view>
-          <text class="action-name">病例列表</text>
-          <text class="action-desc">查看授权病例</text>
-        </view>
-        <view class="action-item" bindtap="refreshData">
-          <view class="action-icon green">🔄</view>
-          <text class="action-name">刷新数据</text>
-          <text class="action-desc">同步最新病例</text>
-        </view>
-        <view class="action-item" bindtap="generateMockData">
-          <view class="action-icon orange">📊</view>
-          <text class="action-name">导入测试数据</text>
-          <text class="action-desc">生成演示病例</text>
-        </view>
+    <!-- 快捷入口 -->
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="navigateTo" data-url="/pages/doctor/cases/cases">
+        <view class="quick-icon blue">📋</view>
+        <text class="quick-name">AI预问诊</text>
+        <text class="quick-desc">查看用户报告</text>
+      </view>
+      <view class="quick-item" bindtap="navigateTo" data-url="/pages/doctor/appointments/appointments">
+        <view class="quick-icon green">📅</view>
+        <text class="quick-name">预约管理</text>
+        <text class="quick-desc">处理预约请求</text>
+      </view>
+      <view class="quick-item" bindtap="navigateTo" data-url="/pages/doctor/cases/cases?filter=followup">
+        <view class="quick-icon orange">🔄</view>
+        <text class="quick-name">复诊跟踪</text>
+        <text class="quick-desc">管理复诊计划</text>
+      </view>
+      <view class="quick-item" bindtap="editStorefront">
+        <view class="quick-icon purple">🏪</view>
+        <text class="quick-name">门店主页</text>
+        <text class="quick-desc">编辑机构信息</text>
       </view>
     </view>
 
     <!-- 最近病例 -->
-    <view class="section">
+    <view class="section-card">
       <view class="section-header">
         <text class="section-title">最近病例</text>
-        <text class="section-more" bindtap="viewCases">查看全部 ></text>
+        <text class="section-more" bindtap="navigateTo" data-url="/pages/doctor/cases/cases">查看全部 ></text>
       </view>
       <view class="case-list">
         <view class="case-card" wx:for="{{recentCases}}" wx:key="_id" bindtap="viewCaseDetail" data-id="{{item._id}}">
           <view class="case-header">
-            <image class="case-pet-avatar" src="{{item.petId?.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
-            <view class="case-pet-info">
-              <text class="case-pet-name">{{item.petId?.name || '未知宠物'}}</text>
+            <image class="case-avatar" src="{{item.petId?.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
+            <view class="case-meta">
+              <text class="case-pet">{{item.petId?.name || '未知宠物'}}</text>
               <text class="case-owner">{{item.userId?.nickName || '未知宠主'}}</text>
             </view>
             <view class="case-severity {{severityClass(item.severity)}}">{{item.severity || '待评估'}}</view>
           </view>
           <view class="case-body">
             <text class="case-disease">{{item.skinDiseaseHistory?.[item.skinDiseaseHistory.length - 1]?.diseaseName || '暂无诊断'}}</text>
-            <text class="case-date">建档：{{formatTime(item.createdAt)}}</text>
+            <text class="case-date">{{formatTime(item.createdAt)}}</text>
           </view>
-          <view class="case-footer">
-            <view class="case-tag" wx:if="{{item.aiSummary}}">已生成摘要</view>
-            <view class="case-tag followup" wx:if="{{item.followUp?.needed && !item.followUp?.completed}}">待复诊</view>
+          <view class="case-tags">
+            <text class="tag tag-blue" wx:if="{{item.aiSummary}}">AI报告</text>
+            <text class="tag tag-orange" wx:if="{{!item.aiSummary}}">待处理</text>
+            <text class="tag tag-red" wx:if="{{item.followUp?.needed && !item.followUp?.completed}}">待复诊</text>
           </view>
         </view>
         <view wx:if="{{recentCases.length === 0}}" class="empty-state">
@@ -79,5 +115,11 @@
         </view>
       </view>
     </view>
+
+    <!-- 未入驻提示 -->
+    <view wx:if="{{!institution.name}}" class="register-hint" bindtap="goRegister">
+      <text class="register-hint-text">尚未完善机构信息，点击去入驻 ></text>
+    </view>
+
   </view>
 </scroll-view>

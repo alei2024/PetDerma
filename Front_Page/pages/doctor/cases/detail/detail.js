@@ -1,12 +1,10 @@
 Page({
   data: {
-    caseId: "",
+    caseId: '',
     caseData: {},
-    generating: false,
-    showFollowUpForm: false,
-    formNeeded: false,
-    formDate: "",
-    formNote: "",
+    severityScore: '0.63',
+    imageView: 'original',
+    internalNote: '',
   },
 
   onLoad(options) {
@@ -17,301 +15,40 @@ Page({
   },
 
   loadCaseDetail(id) {
-    const token = wx.getStorageSync("token");
-    if (!token) return;
+    const token = wx.getStorageSync('token');
+    if (!token) return this.loadMockDetail(id);
 
     const app = getApp();
-    const baseUrl =
-      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
-      "https://petderma.onrender.com";
-
-    wx.showLoading({ title: "加载中...", mask: true });
-
     wx.request({
-      url: `${baseUrl}/api/doctor/cases/${id}`,
-      method: "GET",
-      header: {
-        Authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
+      url: `${app.globalData.baseURL || app.globalData.baseUrl}/api/doctor/cases/${id}`,
+      method: 'GET',
+      header: { Authorization: `Bearer ${token}` },
       success: (res) => {
-        wx.hideLoading();
-        if (res.statusCode === 200 && res.data && res.data.success) {
+        if (res.data?.success) {
           this.setData({ caseData: res.data.data });
-        } else {
-          this.loadMockDetail(id);
+          return;
         }
-      },
-      fail: () => {
-        wx.hideLoading();
         this.loadMockDetail(id);
       },
+      fail: () => this.loadMockDetail(id),
     });
   },
 
   loadMockDetail(id) {
     try {
-      const stored = wx.getStorageSync("doctorMockCases");
+      const stored = wx.getStorageSync('doctorMockCases');
       if (stored) {
         const cases = JSON.parse(stored);
-        const caseData = cases.find((c) => c._id === id);
-        if (caseData) {
-          this.setData({ caseData });
-        }
+        const caseData = cases.find(c => c._id === id);
+        if (caseData) this.setData({ caseData });
       }
-    } catch (e) {
-      console.error("加载模拟详情失败:", e);
-    }
+    } catch (e) {}
   },
 
-  // 生成 AI 摘要
-  generateSummary() {
-    const { caseId } = this.data;
-    const token = wx.getStorageSync("token");
-    if (!token) return;
-
-    this.setData({ generating: true });
-
-    const app = getApp();
-    const baseUrl =
-      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
-      "https://petderma.onrender.com";
-
-    wx.request({
-      url: `${baseUrl}/api/doctor/cases/${caseId}/summary`,
-      method: "POST",
-      header: {
-        Authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
-      success: (res) => {
-        this.setData({ generating: false });
-        if (res.statusCode === 200 && res.data && res.data.success) {
-          const { aiSummary, severity, trend } = res.data.data;
-          const caseData = this.data.caseData;
-          caseData.aiSummary = aiSummary;
-          caseData.severity = severity;
-          caseData.trend = trend;
-          this.setData({ caseData });
-          wx.showToast({ title: "摘要生成成功", icon: "success" });
-        } else {
-          this.generateMockSummary();
-        }
-      },
-      fail: () => {
-        this.setData({ generating: false });
-        this.generateMockSummary();
-      },
-    });
-  },
-
-  generateMockSummary() {
-    const { caseData } = this.data;
-    const pet = caseData.petId || {};
-    const owner = caseData.userId || {};
-    const history = caseData.skinDiseaseHistory || [];
-    const latest = history.length > 0 ? history[history.length - 1] : null;
-
-    const lines = [];
-    if (pet.name) lines.push(`患宠：${pet.name}（${pet.species || "未知"}）`);
-    if (owner.nickName) lines.push(`宠主：${owner.nickName}`);
-    if (caseData.weight) lines.push(`体重：${caseData.weight}kg`);
-    if (latest) {
-      lines.push(`诊断疾病：${latest.diseaseName || "未知"}`);
-      if (latest.symptoms && latest.symptoms.length > 0) {
-        lines.push(`症状表现：${latest.symptoms.join("、")}`);
-      }
-    }
-
-    const severity = latest
-      ? (latest.symptoms || []).length + (latest.affectedAreas || []).length >= 4
-        ? "重"
-        : (latest.symptoms || []).length + (latest.affectedAreas || []).length >= 2
-        ? "中"
-        : "轻"
-      : "未知";
-
-    const trend =
-      history.length > 1
-        ? `该宠物共有 ${history.length} 次就诊记录，病情发展已追踪。`
-        : "初次就诊，建议持续观察。";
-
-    caseData.aiSummary = lines.join("；");
-    caseData.severity = severity;
-    caseData.trend = trend;
-    this.setData({ caseData });
-    wx.showToast({ title: "摘要生成成功", icon: "success" });
-  },
-
-  // 复诊管理
-  showFollowUpFormAction() {
-    const { caseData } = this.data;
-    const followUp = caseData.followUp || {};
-    this.setData({
-      showFollowUpForm: true,
-      formNeeded: followUp.needed || false,
-      formDate: followUp.date
-        ? followUp.date.substring(0, 10)
-        : "",
-      formNote: followUp.note || "",
-    });
-  },
-
-  toggleNeeded(e) {
-    this.setData({ formNeeded: e.detail.value });
-  },
-
-  chooseDate(e) {
-    this.setData({ formDate: e.detail.value });
-  },
-
-  inputNote(e) {
-    this.setData({ formNote: e.detail.value });
-  },
-
-  cancelFollowUp() {
-    this.setData({ showFollowUpForm: false });
-  },
-
-  saveFollowUp() {
-    const { caseId, formNeeded, formDate, formNote } = this.data;
-    const token = wx.getStorageSync("token");
-    if (!token) return;
-
-    const app = getApp();
-    const baseUrl =
-      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
-      "https://petderma.onrender.com";
-
-    wx.request({
-      url: `${baseUrl}/api/doctor/cases/${caseId}/follow-up`,
-      method: "PUT",
-      header: {
-        Authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
-      data: {
-        needed: formNeeded,
-        date: formDate || null,
-        note: formNote,
-      },
-      success: (res) => {
-        if (res.statusCode === 200 && res.data && res.data.success) {
-          this.handleFollowUpSaved(res.data.data.followUp);
-        } else {
-          this.saveMockFollowUp();
-        }
-      },
-      fail: () => {
-        this.saveMockFollowUp();
-      },
-    });
-  },
-
-  saveMockFollowUp() {
-    const { formNeeded, formDate, formNote } = this.data;
-    const caseData = this.data.caseData;
-    caseData.followUp = {
-      needed: formNeeded,
-      date: formDate,
-      note: formNote,
-      completed: false,
-    };
-    this.setData({ caseData, showFollowUpForm: false });
-    wx.showToast({ title: "复诊提醒已更新", icon: "success" });
-  },
-
-  handleFollowUpSaved(followUp) {
-    const caseData = this.data.caseData;
-    caseData.followUp = followUp;
-    this.setData({ caseData, showFollowUpForm: false });
-    wx.showToast({ title: "复诊提醒已更新", icon: "success" });
-  },
-
-  removeFollowUp() {
-    const { caseId } = this.data;
-    const token = wx.getStorageSync("token");
-    if (!token) return;
-
-    const app = getApp();
-    const baseUrl =
-      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
-      "https://petderma.onrender.com";
-
-    wx.request({
-      url: `${baseUrl}/api/doctor/cases/${caseId}/follow-up`,
-      method: "PUT",
-      header: {
-        Authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
-      data: { needed: false },
-      success: (res) => {
-        if (res.statusCode === 200 && res.data && res.data.success) {
-          const caseData = this.data.caseData;
-          caseData.followUp = { needed: false, completed: false };
-          this.setData({ caseData, showFollowUpForm: false });
-          wx.showToast({ title: "已取消复诊", icon: "success" });
-        } else {
-          this.removeMockFollowUp();
-        }
-      },
-      fail: () => this.removeMockFollowUp(),
-    });
-  },
-
-  removeMockFollowUp() {
-    const caseData = this.data.caseData;
-    caseData.followUp = { needed: false, completed: false };
-    this.setData({ caseData, showFollowUpForm: false });
-    wx.showToast({ title: "已取消复诊", icon: "success" });
-  },
-
-  // 完成复诊
-  completeFollowUp() {
-    const { caseId } = this.data;
-    const token = wx.getStorageSync("token");
-    if (!token) return;
-
-    const app = getApp();
-    const baseUrl =
-      (app && (app.globalData.baseURL || app.globalData.baseUrl)) ||
-      "https://petderma.onrender.com";
-
-    wx.showModal({
-      title: "确认完成",
-      content: "确认该复诊已完成？",
-      success: (modal) => {
-        if (modal.confirm) {
-          wx.request({
-            url: `${baseUrl}/api/doctor/cases/${caseId}/follow-up/complete`,
-            method: "PUT",
-            header: {
-              Authorization: `Bearer ${token}`,
-              "content-type": "application/json",
-            },
-            success: (res) => {
-              if (res.statusCode === 200 && res.data && res.data.success) {
-                const caseData = this.data.caseData;
-                caseData.followUp.completed = true;
-                this.setData({ caseData });
-                wx.showToast({ title: "复诊已完成", icon: "success" });
-              } else {
-                this.completeMockFollowUp();
-              }
-            },
-            fail: () => this.completeMockFollowUp(),
-          });
-        }
-      },
-    });
-  },
-
-  completeMockFollowUp() {
-    const caseData = this.data.caseData;
-    caseData.followUp.completed = true;
-    this.setData({ caseData });
-    wx.showToast({ title: "复诊已完成", icon: "success" });
+  // 图片视图切换
+  switchImageView(e) {
+    const view = e.currentTarget.dataset.view;
+    this.setData({ imageView: view });
   },
 
   // 预览图片
@@ -320,14 +57,104 @@ Page({
     wx.previewImage({ urls: [url] });
   },
 
-  severityClass(severity) {
-    if (severity === "轻") return "light";
-    if (severity === "中") return "medium";
-    if (severity === "重") return "heavy";
-    return "";
+  // 建议到店检查
+  suggestClinic() {
+    wx.showModal({
+      title: '建议到店检查',
+      content: '将给用户发送到店检查建议？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.showToast({ title: '已发送建议', icon: 'success' });
+        }
+      },
+    });
   },
 
-  formatTime(date) {
-    return getApp().formatTime(date);
+  // 联系用户
+  contactOwner() {
+    const phone = this.data.caseData.userId?.phoneNumber || '';
+    wx.showModal({
+      title: '联系用户',
+      content: phone ? `联系电话：${phone}` : '暂无联系方式',
+      confirmText: phone ? '拨打电话' : '知道了',
+      success: (res) => {
+        if (res.confirm && phone) {
+          wx.makePhoneCall({ phoneNumber: phone });
+        }
+      },
+    });
+  },
+
+  // 标记高风险
+  markHighRisk() {
+    wx.showToast({ title: '已标记为高风险', icon: 'none' });
+  },
+
+  // 建议复诊
+  suggestFollowUp() {
+    wx.showModal({
+      title: '设置复诊提醒',
+      content: '是否为此病例创建复诊提醒？',
+      success: (res) => {
+        if (res.confirm) {
+          const caseData = this.data.caseData;
+          caseData.followUp = {
+            needed: true,
+            date: new Date(Date.now() + 7 * 86400000).toISOString(),
+            note: '建议复诊检查恢复情况',
+            completed: false,
+          };
+          this.setData({ caseData });
+          wx.showToast({ title: '复诊提醒已设置', icon: 'success' });
+        }
+      },
+    });
+  },
+
+  // 转为预约
+  convertToAppointment() {
+    const { caseData } = this.data;
+    const appointments = wx.getStorageSync('doctorAppointments')
+      ? JSON.parse(wx.getStorageSync('doctorAppointments'))
+      : [];
+
+    const newAppt = {
+      id: `appt_${Date.now()}`,
+      caseId: caseData._id,
+      petName: caseData.petId?.name || '未知宠物',
+      ownerName: caseData.userId?.nickName || '未知用户',
+      date: new Date().toISOString(),
+      serviceType: '皮肤病复核',
+      severity: caseData.severity || '待评估',
+      hasReport: !!caseData.aiSummary,
+      status: 'pending',
+      notes: '',
+    };
+
+    appointments.unshift(newAppt);
+    wx.setStorageSync('doctorAppointments', JSON.stringify(appointments));
+    wx.showToast({ title: '已转为预约', icon: 'success' });
+  },
+
+  // 添加备注
+  addNote() {
+    wx.showModal({
+      title: '添加内部备注',
+      editable: true,
+      placeholderText: '输入内部备注内容...',
+      success: (res) => {
+        if (res.confirm && res.content) {
+          this.setData({ internalNote: res.content });
+          wx.showToast({ title: '备注已保存', icon: 'success' });
+        }
+      },
+    });
+  },
+
+  severityClass(severity) {
+    if (severity === '轻') return 'light';
+    if (severity === '中') return 'medium';
+    if (severity === '重') return 'heavy';
+    return '';
   },
 });

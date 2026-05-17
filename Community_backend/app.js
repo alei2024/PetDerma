@@ -149,6 +149,16 @@ app.get("/health", (req, res) => {
 app.get("/doctor-preview", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "doctor-preview.html"));
 });
+
+// 首页预览（展示入口1 机构端卡片）
+app.get("/home-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "home-preview.html"));
+});
+
+// ToB 端完整预览（5个页面）
+app.get("/tob-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "tob-preview.html"));
+});
 app.get("/doctor-preview.css", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "doctor-preview.css"));
 });
