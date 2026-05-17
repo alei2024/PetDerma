@@ -472,6 +472,197 @@ const getPopularTags = async (req, res) => {
   }
 };
 
+// 图像相似度搜索
+const imageSearch = async (req, res) => {
+  try {
+    const { image, page = 1, limit = 10 } = req.body;
+    const skip = (page - 1) * limit;
+
+    if (!image) {
+      return res.status(400).json({
+        success: false,
+        message: "请提供搜索图片",
+      });
+    }
+
+    console.log(`🔍 开始图像相似度搜索，页码: ${page}, 限制: ${limit}`);
+
+    // 获取所有包含图片的帖子
+    const postsWithImages = await Post.find({
+      status: "published",
+      images: { $exists: true, $ne: [] },
+    })
+      .populate("authorId", "nickName avatar")
+      .populate("images", "-data") // 排除二进制数据，只获取元数据
+      .sort({ createdAt: -1 });
+
+    console.log(`📊 找到 ${postsWithImages.length} 个包含图片的帖子`);
+
+    if (postsWithImages.length === 0) {
+      return res.json({
+        success: true,
+        data: {
+          posts: [],
+          pagination: {
+            current: parseInt(page),
+            total: 0,
+            count: 0,
+          },
+        },
+      });
+    }
+
+    // 计算图像相似度
+    const Image = require("../models/Image");
+    const ImageComparisonService = require("../services/imageComparisonService");
+    const similarityResults = [];
+
+    // 获取推荐阈值
+    const threshold = ImageComparisonService.getRecommendedThreshold("pet");
+    console.log(`📊 使用相似度阈值: ${threshold}`);
+
+    let processedCount = 0;
+    let validSimilarityCount = 0;
+
+    for (const post of postsWithImages) {
+      let maxSimilarity = 0;
+      processedCount++;
+
+      // 对每个帖子的每张图片计算相似度
+      for (const imageId of post.images) {
+        try {
+          const imageDoc = await Image.findById(imageId);
+          if (imageDoc && imageDoc.data) {
+            // 使用改进的图像相似度计算服务 - 改为hash方法
+            const similarity = await ImageComparisonService.calculateSimilarity(
+              image,
+              imageDoc.data.toString("base64"),
+              "hash" // 使用改进的感知哈希方法
+            );
+
+            if (similarity > 0) {
+              console.log(
+                `📊 帖子 ${post._id} 图片相似度: ${(similarity * 100).toFixed(
+                  2
+                )}%`
+              );
+            }
+
+            maxSimilarity = Math.max(maxSimilarity, similarity);
+          }
+        } catch (error) {
+          console.error(`计算图片 ${imageId} 相似度失败:`, error);
+        }
+      }
+
+      if (maxSimilarity > threshold) {
+        validSimilarityCount++;
+        similarityResults.push({
+          post: post,
+          similarity: maxSimilarity,
+        });
+        console.log(
+          `✅ 找到相似帖子: ${post._id}, 相似度: ${(
+            maxSimilarity * 100
+          ).toFixed(2)}%`
+        );
+      }
+    }
+
+    console.log(
+      `📈 处理了 ${processedCount} 个帖子，找到 ${validSimilarityCount} 个相似结果`
+    );
+    console.log(`🎯 使用阈值: ${(threshold * 100).toFixed(1)}%`);
+
+    // 按相似度排序
+    similarityResults.sort((a, b) => b.similarity - a.similarity);
+
+    // 分页处理
+    const paginatedResults = similarityResults.slice(
+      skip,
+      skip + parseInt(limit)
+    );
+    const posts = paginatedResults.map((result) => ({
+      ...result.post.toObject(),
+      similarity: result.similarity,
+    }));
+
+    console.log(`✅ 图像搜索完成，找到 ${similarityResults.length} 个相似结果`);
+
+    res.json({
+      success: true,
+      data: {
+        posts,
+        pagination: {
+          current: parseInt(page),
+          total: Math.ceil(similarityResults.length / limit),
+          count: similarityResults.length,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("图像搜索错误:", error);
+    res.status(500).json({
+      success: false,
+      message: "服务器内部错误",
+    });
+  }
+};
+
+// 简化的图像相似度计算函数
+async function calculateImageSimilarity(image1Base64, image2Base64) {
+  try {
+    // 这里使用简化的相似度计算方法
+    // 在实际项目中，您可以使用更复杂的图像相似度算法
+
+    // 方法1: 基于图像哈希的相似度
+    const hash1 = simpleImageHash(image1Base64);
+    const hash2 = simpleImageHash(image2Base64);
+
+    // 计算汉明距离
+    const hammingDistance = calculateHammingDistance(hash1, hash2);
+    const maxDistance = hash1.length;
+    const similarity = 1 - hammingDistance / maxDistance;
+
+    return similarity;
+  } catch (error) {
+    console.error("计算图像相似度失败:", error);
+    return 0;
+  }
+}
+
+// 简单的图像哈希函数
+function simpleImageHash(base64Image) {
+  // 这是一个非常简化的哈希函数
+  // 实际项目中建议使用更专业的图像哈希算法，如pHash、dHash等
+  const crypto = require("crypto");
+  const hash = crypto.createHash("md5").update(base64Image).digest("hex");
+
+  // 转换为二进制字符串（简化处理）
+  let binaryHash = "";
+  for (let i = 0; i < Math.min(hash.length, 32); i++) {
+    binaryHash += parseInt(hash[i], 16).toString(2).padStart(4, "0");
+  }
+
+  return binaryHash.substring(0, 64); // 返回64位哈希
+}
+
+// 计算汉明距离
+function calculateHammingDistance(hash1, hash2) {
+  if (hash1.length !== hash2.length) {
+    return hash1.length; // 如果长度不同，返回最大距离
+  }
+
+  let distance = 0;
+  for (let i = 0; i < hash1.length; i++) {
+    if (hash1[i] !== hash2[i]) {
+      distance++;
+    }
+  }
+
+  return distance;
+}
+
 module.exports = {
   createPost,
   getPosts,
@@ -483,4 +674,5 @@ module.exports = {
   getUserComments,
   getMyPosts,
   getPopularTags,
+  imageSearch,
 };

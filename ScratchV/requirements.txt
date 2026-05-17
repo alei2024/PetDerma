@@ -1,0 +1,29 @@
+# ScratchV 依赖
+# 安装: pip install -r ScratchV/requirements.txt
+
+# ===== 核心依赖 =====
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.21
+opencv-python>=4.5
+Pillow>=9.0
+
+# ===== ONNX =====
+onnx>=1.14
+onnxruntime-gpu>=1.15    # GPU 版本（推荐）
+# onnxruntime>=1.15       # CPU 版本（GPU不可用时替代）
+
+# ===== API 服务 =====
+flask>=2.3
+gunicorn>=20.1
+
+# ===== 量化 =====
+# onnxconverter-common>=1.13  # FP16 量化
+
+# ===== 优化 =====
+# onnx-simplifier>=0.4    # ONNX 图简化
+
+# ===== 开发工具 =====
+# jupyter                 # 模型训练 notebook
+# matplotlib              # 可视化
+# tqdm                    # 进度条

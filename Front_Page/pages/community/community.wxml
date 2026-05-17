@@ -17,9 +17,25 @@
         bindconfirm="onSearch"
         confirm-type="search"
       />
-      <view wx:if="{{searchKeyword}}" class="clear-btn" bindtap="clearSearch">×</view>
+      <view class="search-icons">
+        <view wx:if="{{searchKeyword}}" class="clear-btn" bindtap="clearSearch">×</view>
+        <image class="camera-icon" src="/images/camera_icon.png" mode="aspectFit" bindtap="startImageSearch"></image>
+      </view>
     </view>
-    <button class="search-btn" bindtap="doSearch" disabled="{{!searchKeyword}}">搜索</button>
+    <button class="search-btn" bindtap="doSearch" disabled="{{!searchKeyword && !isImageSearchMode}}">
+      {{isImageSearchMode ? '图像搜索' : '搜索'}}
+    </button>
+  </view>
+
+  <!-- 图像搜索预览 -->
+  <view wx:if="{{searchImage}}" class="image-search-preview">
+    <view class="preview-container">
+      <image class="preview-image" src="{{searchImage}}" mode="aspectFit"></image>
+      <view class="preview-actions">
+        <text class="preview-text">图像搜索模式</text>
+        <view class="preview-btn" bindtap="clearImageSearch">×</view>
+      </view>
+    </view>
   </view>
   
   <!-- 帖子列表 -->

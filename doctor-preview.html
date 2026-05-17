@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PetDerma 宠医辅助台</title>
+<link rel="stylesheet" href="/doctor-preview.css">
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="header" id="pageHeader">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h1 id="headerTitle">宠医辅助台</h1>
+      <p id="headerSub">PetDerma 机构端工作台</p>
+    </div>
+    <button class="back" id="backBtn">← 返回</button>
+  </div>
+</div>
+
+<!-- Login -->
+<div class="page-nav show" id="pageLogin">
+  <div class="auth-box">
+    <h2>🏥 宠医辅助台</h2>
+    <p style="text-align:center;color:#999;margin-bottom:24px;font-size:13px;">登录以查看授权病例</p>
+    <div id="loginForm">
+      <div class="input-group">
+        <label>手机号</label>
+        <input type="text" id="loginPhone" placeholder="13800138000" value="13800138000">
+      </div>
+      <div class="input-group">
+        <label>密码</label>
+        <input type="password" id="loginPassword" placeholder="输入密码" value="test123456">
+      </div>
+      <button class="btn btn-primary btn-block" data-action="login">登录</button>
+      <p style="text-align:center;margin-top:12px;font-size:12px;color:#999;">
+        没有账号？<a href="#" data-action="showRegister" style="color:#A5D7E8;">注册</a>
+      </p>
+    </div>
+    <div id="registerForm" style="display:none;">
+      <div class="input-group">
+        <label>手机号</label>
+        <input type="text" id="regPhone" placeholder="13800138000" value="13800138000">
+      </div>
+      <div class="input-group">
+        <label>用户名</label>
+        <input type="text" id="regNick" placeholder="如：张医生" value="测试医生">
+      </div>
+      <div class="input-group">
+        <label>密码</label>
+        <input type="password" id="regPassword" placeholder="至少6位" value="test123456">
+      </div>
+      <div class="input-group">
+        <label>确认密码</label>
+        <input type="password" id="regConfirm" placeholder="再次输入密码" value="test123456">
+      </div>
+      <button class="btn btn-primary btn-block" data-action="register">注册</button>
+      <p style="text-align:center;margin-top:12px;font-size:12px;color:#999;">
+        已有账号？<a href="#" data-action="showLogin" style="color:#A5D7E8;">去登录</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="page-nav" id="pageDashboard">
+  <div style="margin: 0 16px; padding: 12px 0;">
+    <div class="user-bar">
+      <div class="user-avatar">👨‍⚕️</div>
+      <div class="user-detail">
+        <div class="user-name" id="doctorName">合作医生</div>
+        <div class="user-id" id="doctorId">ID: ---</div>
+      </div>
+      <div class="user-logout" data-action="logout">退出</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stats">
+      <div class="stat-item" data-action="showCases" data-filter="all">
+        <span class="stat-num" id="statTotal">0</span>
+        <span class="stat-label">全部病例</span>
+      </div>
+      <div class="stat-item pending" data-action="viewPending">
+        <span class="stat-num" id="statPending">0</span>
+        <span class="stat-label">待处理</span>
+      </div>
+      <div class="stat-item followup" data-action="viewFollowup">
+        <span class="stat-num" id="statFollowup">0</span>
+        <span class="stat-label">需复诊</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">快捷操作</div>
+    <div class="actions">
+      <div class="action-btn" data-action="showCases" data-filter="all">
+        <span class="icon">📋</span> 病例列表
+        <span class="sub">查看所有授权病例</span>
+      </div>
+      <div class="action-btn" data-action="seedDemo">
+        <span class="icon">📊</span> 导入测试数据
+        <span class="sub">生成演示病例</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="card-title" style="margin-bottom:0;">最近病例</div>
+      <span style="font-size:12px;color:#A5D7E8;cursor:pointer;" data-action="showCases" data-filter="all">查看全部 ></span>
+    </div>
+    <div id="recentCases"><div class="empty"><span class="icon">📭</span><span class="text">暂无数据</span></div></div>
+  </div>
+</div>
+
+<!-- Cases List -->
+<div class="page-nav" id="pageCases">
+  <div style="margin:12px 16px;">
+    <div class="tabs">
+      <button class="tab active" data-action="switchFilter" data-filter="all">全部</button>
+      <button class="tab" data-action="switchFilter" data-filter="pending">待处理</button>
+      <button class="tab" data-action="switchFilter" data-filter="followup">需复诊</button>
+    </div>
+    <div id="casesList"><div class="empty"><span class="icon">📋</span><span class="text">暂无病例</span></div></div>
+  </div>
+</div>
+
+<!-- Case Detail -->
+<div class="page-nav" id="pageDetail">
+  <div style="margin:12px 16px;">
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<div class="loading" id="loading"><span class="spinner"></span> 加载中...</div>
+
+<script src="/doctor-preview.js"></script>
+</body>
+</html>

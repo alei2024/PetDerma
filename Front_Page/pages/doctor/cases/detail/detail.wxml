@@ -1,0 +1,213 @@
+<navigation-bar title="AI预问诊报告详情" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+
+    <!-- 模块1：宠物基本信息 -->
+    <view class="module-card">
+      <view class="module-header">
+        <text class="module-title">🐾 宠物基本信息</text>
+      </view>
+      <view class="pet-profile">
+        <image class="pet-avatar-lg" src="{{caseData.petId?.avatar || '/images/user_default.png'}}" mode="aspectFill"></image>
+        <view class="pet-info-grid">
+          <view class="pet-info-item">
+            <text class="pet-info-label">昵称</text>
+            <text class="pet-info-value">{{caseData.petId?.name || '未知'}}</text>
+          </view>
+          <view class="pet-info-item">
+            <text class="pet-info-label">类型</text>
+            <text class="pet-info-value">{{caseData.petId?.species || '未知'}}</text>
+          </view>
+          <view class="pet-info-item">
+            <text class="pet-info-label">品种</text>
+            <text class="pet-info-value">{{caseData.petId?.breed || '未知'}}</text>
+          </view>
+          <view class="pet-info-item">
+            <text class="pet-info-label">年龄</text>
+            <text class="pet-info-value">{{caseData.petId?.age || '?'}}岁</text>
+          </view>
+          <view class="pet-info-item">
+            <text class="pet-info-label">性别</text>
+            <text class="pet-info-value">{{caseData.petId?.gender || '未知'}}</text>
+          </view>
+          <view class="pet-info-item">
+            <text class="pet-info-label">绝育</text>
+            <text class="pet-info-value">{{caseData.sterilized || '未知'}}</text>
+          </view>
+          <view class="pet-info-item">
+            <text class="pet-info-label">体重</text>
+            <text class="pet-info-value">{{caseData.weight || '?'}}kg</text>
+          </view>
+          <view class="pet-info-item">
+            <text class="pet-info-label">过敏史</text>
+            <text class="pet-info-value">{{caseData.allergies || '无'}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="pet-history" wx:if="{{caseData.skinDiseaseHistory && caseData.skinDiseaseHistory.length > 0}}">
+        <text class="history-title">既往病史：</text>
+        <text class="history-text">{{caseData.skinDiseaseHistory.map(h => h.diseaseName).join('、')}}</text>
+      </view>
+      <view class="pet-history" wx:if="{{caseData.deworming}}">
+        <text class="history-title">驱虫记录：</text>
+        <text class="history-text">{{caseData.deworming}}</text>
+      </view>
+    </view>
+
+    <!-- 模块2：用户症状描述 -->
+    <view class="module-card">
+      <view class="module-header">
+        <text class="module-title">📝 用户症状描述</text>
+      </view>
+      <view class="symptom-desc">
+        <text>{{caseData.symptoms || caseData.skinDiseaseHistory?.[0]?.symptoms?.join('、') || '暂无症状描述'}}</text>
+      </view>
+      <view class="symptom-tags">
+        <view class="symptom-tag"><text class="tag-label">持续时间</text><text class="tag-val">3天</text></view>
+        <view class="symptom-tag"><text class="tag-label">症状</text><text class="tag-val">{{caseData.skinDiseaseHistory?.[0]?.symptoms?.slice(0,3).join('、') || '瘙痒'}}</text></view>
+        <view class="symptom-tag"><text class="tag-label">患处</text><text class="tag-val">{{caseData.skinDiseaseHistory?.[0]?.affectedAreas?.join('、') || '未知'}}</text></view>
+        <view class="symptom-tag"><text class="tag-label">接触史</text><text class="tag-val">{{caseData.recentContact || '无'}}</text></view>
+        <view class="symptom-tag"><text class="tag-label">精神状态</text><text class="tag-val">正常</text></view>
+        <view class="symptom-tag"><text class="tag-label">食欲</text><text class="tag-val">正常</text></view>
+      </view>
+    </view>
+
+    <!-- 模块3：患处图片 -->
+    <view class="module-card" wx:if="{{caseData.images && caseData.images.length > 0}}">
+      <view class="module-header">
+        <text class="module-title">📷 患处图片</text>
+      </view>
+      <view class="image-tabs">
+        <view class="image-tab {{imageView === 'original' ? 'active' : ''}}" bindtap="switchImageView" data-view="original">原图</view>
+        <view class="image-tab {{imageView === 'annotated' ? 'active' : ''}}" bindtap="switchImageView" data-view="annotated">病灶标注</view>
+      </view>
+      <view class="image-grid">
+        <image class="case-image" wx:for="{{caseData.images}}" wx:key="index"
+          src="{{imageView === 'annotated' && item.annotatedUrl ? item.annotatedUrl : item.url}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.url}}"></image>
+      </view>
+    </view>
+
+    <!-- 模块4：AI诊断结果 -->
+    <view class="module-card diagnosis-card">
+      <view class="module-header">
+        <text class="module-title">🤖 AI诊断结果</text>
+      </view>
+      <view class="diagnosis-list">
+        <view class="diagnosis-item top1">
+          <view class="diagnosis-rank">Top 1</view>
+          <view class="diagnosis-info">
+            <text class="diagnosis-name">真菌感染</text>
+            <text class="diagnosis-prob">72%</text>
+          </view>
+          <view class="diagnosis-bar"><view class="bar-fill" style="width:72%"></view></view>
+        </view>
+        <view class="diagnosis-item top2">
+          <view class="diagnosis-rank">Top 2</view>
+          <view class="diagnosis-info">
+            <text class="diagnosis-name">过敏性皮炎</text>
+            <text class="diagnosis-prob">58%</text>
+          </view>
+          <view class="diagnosis-bar"><view class="bar-fill" style="width:58%"></view></view>
+        </view>
+        <view class="diagnosis-item top3">
+          <view class="diagnosis-rank">Top 3</view>
+          <view class="diagnosis-info">
+            <text class="diagnosis-name">螨虫感染</text>
+            <text class="diagnosis-prob">41%</text>
+          </view>
+          <view class="diagnosis-bar"><view class="bar-fill" style="width:41%"></view></view>
+        </view>
+      </view>
+      <view class="diagnosis-summary">
+        <view class="summary-row">
+          <text class="summary-label">最高置信度</text>
+          <text class="summary-val">72%</text>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">结果可靠性</text>
+          <text class="summary-val reliability">中高</text>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">建议</text>
+          <text class="summary-val suggest">线下检查确认病因</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 模块5：严重程度评分 -->
+    <view class="module-card">
+      <view class="module-header">
+        <text class="module-title">📊 严重程度评分</text>
+      </view>
+      <view class="severity-header">
+        <view class="severity-badge-lg {{severityClass(caseData.severity)}}">{{caseData.severity || '待评估'}}</view>
+        <view class="severity-score">
+          <text class="score-num">{{severityScore}}</text>
+          <text class="score-label">综合评分</text>
+        </view>
+      </view>
+      <view class="score-details">
+        <view class="score-item">
+          <text class="score-item-label">模型置信度</text>
+          <view class="score-bar"><view class="bar-fill" style="width:72%"></view></view>
+          <text class="score-item-val">0.72</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-label">病灶面积比例</text>
+          <view class="score-bar"><view class="bar-fill" style="width:31%"></view></view>
+          <text class="score-item-val">0.31</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-label">红肿比例</text>
+          <view class="score-bar"><view class="bar-fill" style="width:46%"></view></view>
+          <text class="score-item-val">0.46</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-label">炎症指标</text>
+          <view class="score-bar"><view class="bar-fill" style="width:57%"></view></view>
+          <text class="score-item-val">0.57</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 模块6：机构处理建议 -->
+    <view class="module-card">
+      <view class="module-header">
+        <text class="module-title">🔧 机构处理建议</text>
+      </view>
+      <view class="action-grid-6">
+        <view class="action-item-6" bindtap="suggestClinic">
+          <text class="action-icon-6">🏥</text>
+          <text class="action-text-6">建议到店检查</text>
+        </view>
+        <view class="action-item-6" bindtap="contactOwner">
+          <text class="action-icon-6">📞</text>
+          <text class="action-text-6">联系用户</text>
+        </view>
+        <view class="action-item-6" bindtap="markHighRisk">
+          <text class="action-icon-6">⚠️</text>
+          <text class="action-text-6">标记高风险</text>
+        </view>
+        <view class="action-item-6" bindtap="suggestFollowUp">
+          <text class="action-icon-6">🔄</text>
+          <text class="action-text-6">建议复诊</text>
+        </view>
+        <view class="action-item-6" bindtap="convertToAppointment">
+          <text class="action-icon-6">📅</text>
+          <text class="action-text-6">转为预约</text>
+        </view>
+        <view class="action-item-6" bindtap="addNote">
+          <text class="action-icon-6">📝</text>
+          <text class="action-text-6">添加备注</text>
+        </view>
+      </view>
+
+      <!-- 内部备注 -->
+      <view class="internal-note" wx:if="{{internalNote}}">
+        <text class="note-label">内部备注：</text>
+        <text class="note-text">{{internalNote}}</text>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>

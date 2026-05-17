@@ -38,5 +38,6 @@
     "ignore": [],
     "include": []
   },
-  "libVersion": "3.8.10"
+  "libVersion": "3.8.10",
+  "projectname": "Front_Page"
 }

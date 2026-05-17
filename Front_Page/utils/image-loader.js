@@ -13,7 +13,7 @@ function processImageUrl(imageObj) {
   const baseUrl =
     app.globalData?.baseUrl ||
     app.globalData?.baseURL ||
-    "http://192.168.31.247:3000";
+    "https://petderma.onrender.com";
 
   // 如果是字符串
   if (typeof imageObj === "string") {

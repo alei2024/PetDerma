@@ -2,13 +2,12 @@
 Page({
   data: {
     postContent: "",
-    imageList: [],
+    imageList: [], // 存储本地路径或服务器URL
     selectedTags: [],
     customTagInput: "",
     isPublishing: false,
     canPublish: false,
 
-    // 预设标签
     petTypeTags: ["猫咪", "狗狗"],
     problemTags: [
       "过敏性皮炎",
@@ -30,12 +29,8 @@ Page({
     ],
   },
 
-  onLoad: function () {
-    // 页面加载时的初始化
-  },
-
-  // 内容输入
-  onContentInput: function (e) {
+  // 输入内容
+  onContentInput(e) {
     const content = e.detail.value;
     this.setData({
       postContent: content,
@@ -47,13 +42,13 @@ Page({
     });
   },
 
-  // 检查是否可以发布
-  checkCanPublish: function (content, images, tags) {
+  // 判断是否可发
+  checkCanPublish(content, images, tags) {
     return content.trim().length > 0 || images.length > 0;
   },
 
   // 选择图片
-  chooseImage: function () {
+  chooseImage() {
     const that = this;
     const remainingCount = 9 - this.data.imageList.length;
 
@@ -61,14 +56,14 @@ Page({
       count: remainingCount,
       mediaType: ["image"],
       sourceType: ["album", "camera"],
-      success: function (res) {
-        const newImages = res.tempFiles.map((file) => file.tempFilePath);
-        const updatedImageList = [...that.data.imageList, ...newImages];
+      success(res) {
+        const newImages = res.tempFiles.map((f) => f.tempFilePath);
+        const updated = [...that.data.imageList, ...newImages];
         that.setData({
-          imageList: updatedImageList,
+          imageList: updated,
           canPublish: that.checkCanPublish(
             that.data.postContent,
-            updatedImageList,
+            updated,
             that.data.selectedTags
           ),
         });
@@ -77,144 +72,103 @@ Page({
   },
 
   // 删除图片
-  deleteImage: function (e) {
+  deleteImage(e) {
     const index = e.currentTarget.dataset.index;
-    const imageList = [...this.data.imageList];
-    imageList.splice(index, 1);
+    const list = [...this.data.imageList];
+    list.splice(index, 1);
     this.setData({
-      imageList: imageList,
+      imageList: list,
       canPublish: this.checkCanPublish(
         this.data.postContent,
-        imageList,
+        list,
         this.data.selectedTags
       ),
     });
   },
 
-  // 切换标签
-  toggleTag: function (e) {
+  // 标签逻辑
+  toggleTag(e) {
     const tag = e.currentTarget.dataset.tag;
-    let selectedTags = [...this.data.selectedTags];
+    let selected = [...this.data.selectedTags];
+    const idx = selected.indexOf(tag);
 
-    const index = selectedTags.indexOf(tag);
-    if (index >= 0) {
-      selectedTags.splice(index, 1);
-    } else {
-      if (selectedTags.length < 5) {
-        selectedTags.push(tag);
-      } else {
-        wx.showToast({
-          title: "最多只能选择5个标签",
-          icon: "none",
-        });
-        return;
-      }
+    if (idx >= 0) selected.splice(idx, 1);
+    else if (selected.length < 5) selected.push(tag);
+    else {
+      wx.showToast({ title: "最多选择5个标签", icon: "none" });
+      return;
     }
 
     this.setData({
-      selectedTags: selectedTags,
+      selectedTags: selected,
       canPublish: this.checkCanPublish(
         this.data.postContent,
         this.data.imageList,
-        selectedTags
+        selected
       ),
     });
   },
 
-  // 移除标签
-  removeTag: function (e) {
+  removeTag(e) {
     const tag = e.currentTarget.dataset.tag;
-    const selectedTags = this.data.selectedTags.filter((t) => t !== tag);
+    const selected = this.data.selectedTags.filter((t) => t !== tag);
     this.setData({
-      selectedTags: selectedTags,
+      selectedTags: selected,
       canPublish: this.checkCanPublish(
         this.data.postContent,
         this.data.imageList,
-        selectedTags
+        selected
       ),
     });
   },
 
-  // 自定义标签输入
-  onCustomTagInput: function (e) {
-    this.setData({
-      customTagInput: e.detail.value,
-    });
+  onCustomTagInput(e) {
+    this.setData({ customTagInput: e.detail.value });
   },
 
-  // 添加自定义标签
-  addCustomTag: function () {
+  addCustomTag() {
     const tag = this.data.customTagInput.trim();
-    if (!tag) {
-      wx.showToast({
-        title: "请输入标签内容",
-        icon: "none",
-      });
-      return;
-    }
+    if (!tag) return wx.showToast({ title: "请输入标签内容", icon: "none" });
+    if (this.data.selectedTags.includes(tag))
+      return wx.showToast({ title: "标签已存在", icon: "none" });
+    if (this.data.selectedTags.length >= 5)
+      return wx.showToast({ title: "最多5个标签", icon: "none" });
 
-    if (this.data.selectedTags.includes(tag)) {
-      wx.showToast({
-        title: "标签已存在",
-        icon: "none",
-      });
-      return;
-    }
-
-    if (this.data.selectedTags.length >= 5) {
-      wx.showToast({
-        title: "最多只能选择5个标签",
-        icon: "none",
-      });
-      return;
-    }
-
-    const selectedTags = [...this.data.selectedTags, tag];
+    const selected = [...this.data.selectedTags, tag];
     this.setData({
-      selectedTags: selectedTags,
+      selectedTags: selected,
       customTagInput: "",
       canPublish: this.checkCanPublish(
         this.data.postContent,
         this.data.imageList,
-        selectedTags
+        selected
       ),
     });
   },
 
-  // 发布帖子
-  publishPost: function () {
-    if (!this.data.canPublish) {
-      wx.showToast({
-        title: "请输入内容或添加图片",
-        icon: "none",
-      });
-      return;
-    }
+  // 发布按钮
+  publishPost() {
+    if (!this.data.canPublish)
+      return wx.showToast({ title: "请输入内容或添加图片", icon: "none" });
 
-    this.setData({
-      isPublishing: true,
-    });
-
-    // 直接上传图片并发布帖子
+    this.setData({ isPublishing: true });
     this.uploadImagesAndPublish();
   },
 
-  // 上传图片并发布帖子
-  uploadImagesAndPublish: async function () {
+  // 上传图片 + 发帖
+  async uploadImagesAndPublish() {
     const app = getApp();
     const { postContent, imageList, selectedTags } = this.data;
+    const token = wx.getStorageSync("token");
 
     try {
       let uploadedImageIds = [];
 
-      // 如果有图片，先上传图片到数据库
       if (imageList.length > 0) {
         wx.showLoading({ title: "上传图片中..." });
 
-        // 批量上传图片到数据库
-        const uploadPromises = imageList.map((imagePath) => {
+        const uploadPromises = imageList.map((imagePath, idx) => {
           return new Promise((resolve, reject) => {
-            const token = wx.getStorageSync("token");
             wx.uploadFile({
               url: `${app.globalData.baseUrl}/api/images/upload`,
               filePath: imagePath,
@@ -222,19 +176,54 @@ Page({
               header: {
                 Authorization: `Bearer ${token}`,
               },
+              timeout: 30000, // ⏱️ 延长超时30s
               success: (res) => {
                 try {
                   const data = JSON.parse(res.data);
-                  if (data.success) {
-                    resolve(data.data.id); // 现在收集图片ID而不是URL
-                  } else {
-                    reject(new Error(data.message || "上传失败"));
-                  }
-                } catch (e) {
+                  if (data.success && data.data) {
+                    // ✅ 用服务器返回的 HTTPS 地址替换本地路径
+                    const imageUrl =
+                      data.data.url ||
+                      `${app.globalData.baseUrl}/api/images/${data.data.id}`;
+                    const newList = [...this.data.imageList];
+                    newList[idx] = imageUrl;
+                    this.setData({ imageList: newList });
+                    resolve(data.data.id || data.data.imageId);
+                  } else reject(new Error(data.message || "上传失败"));
+                } catch {
                   reject(new Error("解析上传结果失败"));
                 }
               },
-              fail: reject,
+              fail: (err) => {
+                // ⏱️ 超时重试一次
+                if (err.errMsg.includes("timeout")) {
+                  console.warn("⚠️ 上传超时，重试一次:", imagePath);
+                  wx.uploadFile({
+                    url: `${app.globalData.baseUrl}/api/images/upload`,
+                    filePath: imagePath,
+                    name: "file",
+                    header: { Authorization: `Bearer ${token}` },
+                    timeout: 30000,
+                    success: (r2) => {
+                      try {
+                        const data2 = JSON.parse(r2.data);
+                        if (data2.success && data2.data) {
+                          const url2 =
+                            data2.data.url ||
+                            `${app.globalData.baseUrl}/api/images/${data2.data.id}`;
+                          const newList = [...this.data.imageList];
+                          newList[idx] = url2;
+                          this.setData({ imageList: newList });
+                          resolve(data2.data.id || data2.data.imageId);
+                        } else reject(new Error("上传重试失败"));
+                      } catch {
+                        reject(new Error("上传重试解析失败"));
+                      }
+                    },
+                    fail: reject,
+                  });
+                } else reject(err);
+              },
             });
           });
         });
@@ -243,16 +232,15 @@ Page({
         wx.hideLoading();
       }
 
-      // 发布帖子
+      // 🟢 发帖请求
       wx.showLoading({ title: "发布中..." });
-
       const postData = {
         title:
           postContent.length > 50
             ? postContent.substring(0, 50) + "..."
             : postContent,
         content: postContent,
-        images: uploadedImageIds, // 发送图片ID数组
+        images: uploadedImageIds,
         tags: selectedTags,
       };
 
@@ -264,62 +252,37 @@ Page({
 
       wx.hideLoading();
 
-      if (res.data && res.data.success) {
-        // 发布成功，通知社区页面刷新
+      if (res.data?.success) {
         const eventChannel = this.getOpenerEventChannel();
-        if (eventChannel) {
+        if (eventChannel)
           eventChannel.emit("postPublished", {
             post: res.data.data,
             message: "新帖子发布成功",
           });
-        }
 
-        // 设置全局标记，用于页面返回时刷新
-        const app = getApp();
         app.globalData.needRefreshCommunity = true;
-
-        wx.showToast({
-          title: "发布成功",
-          icon: "success",
-          duration: 1500,
-        });
-
-        setTimeout(() => {
-          wx.navigateBack();
-        }, 1500);
-      } else {
-        throw new Error(res.data?.message || "发布失败");
-      }
-    } catch (error) {
+        wx.showToast({ title: "发布成功", icon: "success", duration: 1500 });
+        setTimeout(() => wx.navigateBack(), 1500);
+      } else throw new Error(res.data?.message || "发布失败");
+    } catch (err) {
       wx.hideLoading();
-      console.error("发布帖子失败:", error);
-
+      console.error("发布帖子失败:", err);
       wx.showModal({
         title: "发布失败",
-        content: error.message || "网络错误，请重试",
+        content: err.message || "网络错误，请重试",
         showCancel: false,
       });
     } finally {
-      this.setData({
-        isPublishing: false,
-      });
+      this.setData({ isPublishing: false });
     }
   },
 
   // 预览图片
-  previewImage: function (e) {
+  previewImage(e) {
     const current = e.currentTarget.dataset.src;
     wx.previewImage({
       urls: this.data.imageList,
-      current: current,
+      current,
     });
-  },
-
-  // 页面卸载时的处理
-  onUnload: function () {
-    // 如果有未发布的内容，询问是否保存草稿
-    if (this.data.postContent.trim() || this.data.imageList.length > 0) {
-      // 可以在这里实现草稿保存功能
-    }
   },
 });

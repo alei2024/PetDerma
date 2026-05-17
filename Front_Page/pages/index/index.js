@@ -325,6 +325,17 @@ Page({
     wx.navigateTo({ url });
   },
 
+  // 跳转到机构端（已入驻→工作台，未入驻→入驻页）
+  navigateToInstitution: function () {
+    let registered = false;
+    try {
+      registered = !!wx.getStorageSync('doctorInstitutionInfo');
+    } catch (e) {}
+    wx.navigateTo({
+      url: registered ? "/pages/doctor/doctor" : "/pages/doctor/register/register",
+    });
+  },
+
   // 跳转到知识科普页面
   navigateToKnowledge: function () {
     wx.navigateTo({

@@ -107,6 +107,26 @@
       </view>
     </view>
 
+    <!-- ===== 机构端入口（ToB） ===== -->
+    <view class="institution-card" bindtap="navigateToInstitution">
+      <view class="institution-header">
+        <view class="institution-icon">
+          <image src="/images/institution_icon.svg" mode="aspectFit"></image>
+        </view>
+        <view class="institution-header-text">
+          <text class="institution-title">机构服务</text>
+          <text class="institution-subtitle">宠物医院 / 护理店入驻</text>
+        </view>
+      </view>
+      <view class="institution-desc">
+        <text>AI预问诊管理 · 预约转化 · 复诊跟踪</text>
+      </view>
+      <view class="institution-btn">
+        <text class="institution-btn-text">机构工作台</text>
+        <text class="institution-arrow">›</text>
+      </view>
+    </view>
+
     <!-- ===== 每日科普 ===== -->
     <view class="daily-card" bindtap="navigateToKnowledge">
       <view class="daily-deco deco-1"></view>

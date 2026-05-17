@@ -23,6 +23,11 @@
     "pages/hospital/hospital",
     "pages/hospital/detail/detail",
     "pages/dashboard/dashboard",
+    "pages/doctor/doctor",
+    "pages/doctor/cases/cases",
+    "pages/doctor/cases/detail/detail",
+    "pages/doctor/register/register",
+    "pages/doctor/appointments/appointments",
     "pages/message/message"
   ],
   "window": {

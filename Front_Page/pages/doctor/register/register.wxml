@@ -1,0 +1,143 @@
+<!-- 机构入驻页 -->
+<navigation-bar title="机构入驻认证" back="{{true}}" color="white" background="#A5D7E8"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+
+    <!-- 已入驻状态 -->
+    <view wx:if="{{registered}}" class="registered-card">
+      <view class="registered-icon">✅</view>
+      <text class="registered-title">已入驻 PetDerma 合作机构</text>
+      <text class="registered-name">{{institutionInfo.name}}</text>
+      <text class="registered-type">{{institutionInfo.type === 'hospital' ? '宠物医院' : '宠物护理店'}}</text>
+      <view class="registered-divider"></view>
+      <view class="registered-info-row">
+        <text class="info-label">联系人</text>
+        <text class="info-value">{{institutionInfo.contact}}</text>
+      </view>
+      <view class="registered-info-row">
+        <text class="info-label">联系电话</text>
+        <text class="info-value">{{institutionInfo.phone}}</text>
+      </view>
+      <view class="registered-info-row">
+        <text class="info-label">营业时间</text>
+        <text class="info-value">{{institutionInfo.hours}}</text>
+      </view>
+      <view class="registered-info-row">
+        <text class="info-label">服务范围</text>
+        <text class="info-value">{{institutionInfo.services}}</text>
+      </view>
+      <button class="enter-btn" bindtap="enterDashboard">进入机构工作台</button>
+    </view>
+
+    <!-- 入驻表单 -->
+    <view wx:else>
+      <!-- 步骤指示 -->
+      <view class="step-indicator">
+        <view class="step {{step === 1 ? 'active' : (step > 1 ? 'done' : '')}}">
+          <text class="step-num">{{step > 1 ? '✓' : '1'}}</text>
+          <text class="step-label">选择类型</text>
+        </view>
+        <view class="step-line {{step > 1 ? 'done' : ''}}"></view>
+        <view class="step {{step === 2 ? 'active' : (step > 2 ? 'done' : '')}}">
+          <text class="step-num">{{step > 2 ? '✓' : '2'}}</text>
+          <text class="step-label">填写信息</text>
+        </view>
+        <view class="step-line {{step > 2 ? 'done' : ''}}"></view>
+        <view class="step {{step === 3 ? 'active' : ''}}">
+          <text class="step-num">3</text>
+          <text class="step-label">提交审核</text>
+        </view>
+      </view>
+
+      <!-- 步骤1：选择类型 -->
+      <view wx:if="{{step === 1}}" class="step-content">
+        <text class="section-title">选择机构类型</text>
+        <view class="type-selector">
+          <view class="type-card {{selectedType === 'hospital' ? 'selected' : ''}}" bindtap="selectType" data-type="hospital">
+            <view class="type-icon">🏥</view>
+            <text class="type-name">宠物医院</text>
+            <text class="type-desc">有执业兽医，可线下诊疗</text>
+          </view>
+          <view class="type-card {{selectedType === 'care' ? 'selected' : ''}}" bindtap="selectType" data-type="care">
+            <view class="type-icon">✂️</view>
+            <text class="type-name">宠物护理店</text>
+            <text class="type-desc">洗护、美容、基础皮肤护理</text>
+          </view>
+        </view>
+        <button class="next-btn" disabled="{{!selectedType}}" bindtap="nextStep">下一步</button>
+      </view>
+
+      <!-- 步骤2：填写信息 -->
+      <view wx:if="{{step === 2}}" class="step-content">
+        <text class="section-title">机构信息</text>
+
+        <view class="form-group">
+          <text class="form-label">机构名称 <text class="required">*</text></text>
+          <input class="form-input" placeholder="如：XX宠物医院" value="{{form.name}}" bindinput="onInput" data-field="name" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">机构类型</text>
+          <view class="form-static">{{selectedType === 'hospital' ? '宠物医院' : '宠物护理店'}}</view>
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">联系人 <text class="required">*</text></text>
+          <input class="form-input" placeholder="如：张医生" value="{{form.contact}}" bindinput="onInput" data-field="contact" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">联系电话 <text class="required">*</text></text>
+          <input class="form-input" type="number" placeholder="手机号" value="{{form.phone}}" bindinput="onInput" data-field="phone" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">营业时间 <text class="required">*</text></text>
+          <input class="form-input" placeholder="如：9:00-21:00" value="{{form.hours}}" bindinput="onInput" data-field="hours" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">机构地址 <text class="required">*</text></text>
+          <input class="form-input" placeholder="详细地址" value="{{form.address}}" bindinput="onInput" data-field="address" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">服务范围 <text class="required">*</text></text>
+          <input class="form-input" placeholder="如：皮肤病诊疗、洗护、驱虫" value="{{form.services}}" bindinput="onInput" data-field="services" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">资质证明</text>
+          <view class="upload-area" bindtap="uploadCert">
+            <text wx:if="{{!form.cert}}" class="upload-hint">+ 上传营业执照/许可证</text>
+            <text wx:if="{{form.cert}}" class="upload-done">✓ 已上传</text>
+          </view>
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">门店照片</text>
+          <view class="upload-area" bindtap="uploadPhoto">
+            <text wx:if="{{!form.photo}}" class="upload-hint">+ 上传门头/环境照片</text>
+            <text wx:if="{{form.photo}}" class="upload-done">✓ 已上传</text>
+          </view>
+        </view>
+
+        <view class="form-group switch-row">
+          <text class="form-label">接受AI预问诊转诊</text>
+          <switch checked="{{form.acceptReferral}}" color="#A5D7E8" bindchange="toggleSwitch" data-field="acceptReferral" />
+        </view>
+
+        <view class="form-group switch-row">
+          <text class="form-label">支持线上预约</text>
+          <switch checked="{{form.acceptBooking}}" color="#A5D7E8" bindchange="toggleSwitch" data-field="acceptBooking" />
+        </view>
+
+        <view class="form-actions">
+          <button class="prev-btn" bindtap="prevStep">上一步</button>
+          <button class="next-btn" disabled="{{!canSubmit}}" bindtap="submitForm">提交审核</button>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>

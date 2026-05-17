@@ -1,0 +1,288 @@
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+.container {
+  padding: 20rpx 30rpx 60rpx;
+}
+
+/* 步骤指示器 */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 0;
+  margin-bottom: 20rpx;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+.step-num {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #999;
+  font-size: 24rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step.active .step-num {
+  background: #A5D7E8;
+  color: white;
+}
+.step.done .step-num {
+  background: #4caf50;
+  color: white;
+}
+.step-label {
+  font-size: 22rpx;
+  color: #999;
+}
+.step.active .step-label {
+  color: #2C5F7C;
+  font-weight: bold;
+}
+.step-line {
+  width: 80rpx;
+  height: 4rpx;
+  background: #e0e0e0;
+  margin: 0 16rpx;
+  margin-top: -20rpx;
+}
+.step-line.done {
+  background: #4caf50;
+}
+
+/* 类型选择 */
+.type-selector {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+.type-card {
+  flex: 1;
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx 20rpx;
+  text-align: center;
+  border: 3rpx solid #e0e0e0;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  transition: all 0.2s;
+}
+.type-card.selected {
+  border-color: #A5D7E8;
+  background: #f0f9ff;
+  box-shadow: 0 4rpx 20rpx rgba(165,215,232,0.3);
+}
+.type-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+}
+.type-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+.type-desc {
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.4;
+}
+
+/* 表单 */
+.step-content {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2C5F7C;
+  display: block;
+  margin-bottom: 24rpx;
+}
+.form-group {
+  margin-bottom: 24rpx;
+}
+.form-label {
+  font-size: 26rpx;
+  color: #555;
+  display: block;
+  margin-bottom: 10rpx;
+}
+.required {
+  color: #f44336;
+}
+.form-input {
+  width: 100%;
+  height: 76rpx;
+  background: #f8f8f8;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 26rpx;
+  box-sizing: border-box;
+}
+.form-static {
+  height: 76rpx;
+  background: #f0f7ff;
+  border: 2rpx solid #d0ebf4;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 26rpx;
+  line-height: 76rpx;
+  color: #2C5F7C;
+}
+.switch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.switch-row .form-label {
+  margin-bottom: 0;
+}
+
+/* 上传区域 */
+.upload-area {
+  width: 100%;
+  height: 120rpx;
+  background: #f8f8f8;
+  border: 2rpx dashed #d0d0d0;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload-hint {
+  font-size: 26rpx;
+  color: #bbb;
+}
+.upload-done {
+  font-size: 26rpx;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+/* 按钮 */
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+.next-btn, .prev-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+.next-btn {
+  background: #A5D7E8;
+  color: white;
+  box-shadow: 0 4rpx 16rpx rgba(165,215,232,0.4);
+}
+.next-btn:active {
+  background: #8bc7d8;
+}
+.next-btn[disabled] {
+  background: #d0d0d0;
+  box-shadow: none;
+}
+.prev-btn {
+  background: #f0f0f0;
+  color: #666;
+}
+.prev-btn:active {
+  background: #e0e0e0;
+}
+
+/* 已入驻卡片 */
+.registered-card {
+  background: white;
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+  margin-top: 20rpx;
+}
+.registered-icon {
+  font-size: 72rpx;
+  margin-bottom: 16rpx;
+}
+.registered-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2C5F7C;
+  display: block;
+  margin-bottom: 20rpx;
+}
+.registered-name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+.registered-type {
+  font-size: 26rpx;
+  color: #A5D7E8;
+  display: block;
+  margin-bottom: 20rpx;
+}
+.registered-divider {
+  height: 2rpx;
+  background: #f0f0f0;
+  margin: 20rpx 0;
+}
+.registered-info-row {
+  display: flex;
+  padding: 10rpx 0;
+  text-align: left;
+}
+.registered-info-row .info-label {
+  width: 140rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+.registered-info-row .info-value {
+  flex: 1;
+  font-size: 24rpx;
+  color: #555;
+}
+.enter-btn {
+  width: 100%;
+  height: 80rpx;
+  background: linear-gradient(135deg, #2c5f7c, #4a8ba8);
+  color: white;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-top: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+.enter-btn:active {
+  opacity: 0.9;
+}
