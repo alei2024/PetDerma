@@ -1,5 +1,6 @@
 // 图片加载工具 - 微信小程序兼容
 const app = getApp();
+const env = require("../config/environment");
 
 /**
  * 处理图片URL，确保微信小程序能正常显示
@@ -13,7 +14,8 @@ function processImageUrl(imageObj) {
   const baseUrl =
     app.globalData?.baseUrl ||
     app.globalData?.baseURL ||
-    "http://192.168.31.247:3000";
+    env.baseUrl ||
+    "http://127.0.0.1:3000";
 
   // 如果是字符串
   if (typeof imageObj === "string") {
@@ -79,7 +81,7 @@ async function getImageBase64(imageId) {
   try {
     const response = await new Promise((resolve, reject) => {
       wx.request({
-        url: `${app.globalData.baseUrl}/api/images/${imageId}/base64`,
+        url: `${app.globalData.baseUrl || app.globalData.baseURL || env.baseUrl}/api/images/${imageId}/base64`,
         method: "GET",
         success: resolve,
         fail: reject,

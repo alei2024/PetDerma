@@ -2,14 +2,17 @@
 // 复制此文件为 environment.js 并修改为您的配置
 const ENV = {
   development: {
-
     baseUrl: "http://192.168.1.104:3000",
     wsUrl: "ws://192.168.1.104:3000",
+    amapWebKey: "YOUR_AMAP_WEB_KEY",
+    amapMiniProgramKey: "YOUR_AMAP_MINIPROGRAM_KEY",
     debug: true,
   },
   production: {
     baseUrl: "http://192.168.1.104:3000",
     wsUrl: "ws://192.168.1.104:3000",
+    amapWebKey: "YOUR_AMAP_WEB_KEY",
+    amapMiniProgramKey: "YOUR_AMAP_MINIPROGRAM_KEY",
     debug: false,
   },
 };

@@ -456,8 +456,9 @@ Page({
   // 跳到附近医院页(带诊断作为推荐过滤)
   findHospital: function () {
     const disease = this.data.diagnosisResult?.diseaseName || "";
+    const reportId = this.data.diagnosisRecordId || wx.getStorageSync("currentDiagnosisRecordId") || "";
     wx.navigateTo({
-      url: `/pages/hospital/hospital?disease=${encodeURIComponent(disease)}`,
+      url: `/pages/hospital/hospital?disease=${encodeURIComponent(disease)}&reportId=${encodeURIComponent(reportId)}`,
     });
   },
 

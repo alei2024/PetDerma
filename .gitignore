@@ -47,6 +47,7 @@ desktop.ini
 # ================================
 # 私有配置文件
 Front_Page/project.private.config.json
+Front_Page/project.config.json
 
 # ================================
 # 测试和调试文件
@@ -57,6 +58,14 @@ Front_Page/utils/network-debug.js
 # ================================
 # 其他
 # ================================
+# 根目录临时 lock 文件（非前后端子项目）
+/package-lock.json
+
+# 模型训练产物（仅本地保留）
+model_tr/*.ipynb
+model_tr/*.pth
+model_tr/*.png
+
 # 备份文件
 *.bak
 *.backup

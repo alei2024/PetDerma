@@ -85,5 +85,6 @@
     "scope.userLocation": {
       "desc": "您的位置信息将用于查找附近的宠物医院"
     }
-  }
+  },
+  "requiredPrivateInfos": ["getLocation"]
 }

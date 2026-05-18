@@ -28,7 +28,7 @@
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
-  "appid": "wx2722998458634bd3",
+  "appid": "wxaf8803105a23dc33",
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
@@ -38,5 +38,6 @@
     "ignore": [],
     "include": []
   },
-  "libVersion": "3.8.10"
+  "libVersion": "3.8.10",
+  "projectname": "Front_Page"
 }
