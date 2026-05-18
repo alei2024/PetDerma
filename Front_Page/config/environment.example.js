@@ -2,14 +2,17 @@
 // 复制此文件为 environment.js 并修改为您的配置
 const ENV = {
   development: {
-
     baseUrl: "https://petderma.onrender.com",
     wsUrl: "wss://petderma.onrender.com",
+    amapWebKey: "YOUR_AMAP_WEB_KEY",
+    amapMiniProgramKey: "YOUR_AMAP_MINIPROGRAM_KEY",
     debug: true,
   },
   production: {
     baseUrl: "https://petderma.onrender.com",
     wsUrl: "wss://petderma.onrender.com",
+    amapWebKey: "YOUR_AMAP_WEB_KEY",
+    amapMiniProgramKey: "YOUR_AMAP_MINIPROGRAM_KEY",
     debug: false,
   },
 };

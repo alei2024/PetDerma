@@ -14,20 +14,24 @@ view, scroll-view, image, text, map {
   box-sizing: border-box;
 }
 
+navigation-bar {
+  display: block;
+  margin-top: -43rpx;
+}
+
 .page {
-  height: 100vh;
+  height: calc(100vh + 70rpx);
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 16rpx 22rpx 0;
+  padding: 12rpx 12rpx 0 14rpx;
 }
 
-/* ===== Hero ===== */
 .hero {
   position: relative;
   border-radius: 28rpx;
   padding: 28rpx 28rpx 24rpx;
-  margin-bottom: 18rpx;
+  margin-bottom: 14rpx;
   background:
     radial-gradient(120% 120% at 100% 0%, rgba(168, 230, 207, 0.4) 0%, rgba(168, 230, 207, 0) 60%),
     linear-gradient(135deg, #4a90b8 0%, #2c5f7c 100%);
@@ -50,15 +54,7 @@ view, scroll-view, image, text, map {
   letter-spacing: 5rpx;
   opacity: 0.85;
   display: block;
-  margin-bottom: 8rpx;
-}
-.hero-title {
-  position: relative;
-  font-size: 46rpx;
-  font-weight: 800;
-  display: block;
-  margin-bottom: 18rpx;
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.18);
+  margin-bottom: 10rpx;
 }
 .recommend-banner {
   position: relative;
@@ -87,13 +83,12 @@ view, scroll-view, image, text, map {
   margin: 0 4rpx;
 }
 
-/* ===== Tab ===== */
 .tab-bar {
   display: flex;
   background: #ffffff;
   border-radius: 18rpx;
   padding: 6rpx;
-  margin-bottom: 18rpx;
+  margin-bottom: 10rpx;
   box-shadow: 0 4rpx 14rpx rgba(74, 144, 184, 0.06);
   flex-shrink: 0;
 }
@@ -105,7 +100,6 @@ view, scroll-view, image, text, map {
   color: var(--text-gray);
   border-radius: 14rpx;
   font-weight: 600;
-  transition: all 0.2s ease;
 }
 .tab.active {
   background: linear-gradient(135deg, #4a90b8, #2c5f7c);
@@ -113,8 +107,39 @@ view, scroll-view, image, text, map {
   box-shadow: 0 4rpx 12rpx rgba(44, 95, 124, 0.25);
 }
 
-/* ===== Map ===== */
+.tool-row {
+  display: flex;
+  gap: 10rpx;
+  overflow-x: auto;
+  padding: 2rpx 0 10rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
+  background: transparent;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 54rpx;
+  padding: 0 18rpx;
+  border-radius: 27rpx;
+  background: #ffffff;
+  color: var(--text-gray);
+  border: 2rpx solid rgba(74, 144, 184, 0.16);
+  font-size: 22rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.pill-active {
+  background: rgba(74, 144, 184, 0.12);
+  color: var(--accent-deep);
+  border-color: rgba(74, 144, 184, 0.45);
+}
+
 .map-wrap {
+  position: relative;
   flex: 1;
   border-radius: 24rpx;
   overflow: hidden;
@@ -126,11 +151,52 @@ view, scroll-view, image, text, map {
   width: 100%;
   height: 100%;
 }
+.map-card-wrap {
+  position: absolute;
+  left: 20rpx;
+  right: 20rpx;
+  bottom: calc(150rpx + env(safe-area-inset-bottom));
+  z-index: 12;
+}
+.map-hospital-card {
+  margin-bottom: 0;
+  max-height: 30vh;
+  overflow-y: auto;
+  padding-bottom: 16rpx;
+}
+.map-btn {
+  margin-top: 10rpx;
+  height: 78rpx;
+  border-radius: 39rpx;
+  background: linear-gradient(135deg, #4a90b8, #2c5f7c);
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 22rpx rgba(44, 95, 124, 0.3);
+}
+.map-btn-ghost {
+  background: #ffffff;
+  color: var(--accent-deep);
+  border: 2rpx solid rgba(74, 144, 184, 0.32);
+  box-shadow: none;
+}
 
-/* ===== List ===== */
 .list-scroll {
   flex: 1;
-  padding-bottom: 30rpx;
+  min-height: 0;
+  margin-right: -34rpx;
+  padding-right: 2rpx;
+  padding-bottom: calc(230rpx + env(safe-area-inset-bottom));
+}
+
+.empty {
+  text-align: center;
+  padding: 80rpx 0;
+  font-size: 24rpx;
+  color: var(--text-light);
 }
 
 .hospital-card {
@@ -147,6 +213,11 @@ view, scroll-view, image, text, map {
 .hospital-card.card-matched {
   border: 2rpx solid rgba(238, 108, 77, 0.5);
   background: linear-gradient(135deg, #fff8f3 0%, #ffffff 50%);
+}
+.hospital-card.card-selected {
+  border: 2rpx solid #2c5f7c;
+  background: linear-gradient(135deg, #eef7fc 0%, #f7fbff 100%);
+  box-shadow: 0 8rpx 18rpx rgba(44, 95, 124, 0.16);
 }
 
 .match-badge {
@@ -211,9 +282,13 @@ view, scroll-view, image, text, map {
   background: rgba(238, 108, 77, 0.12);
   color: var(--accent-warn);
 }
-.tag-recommended {
-  background: rgba(168, 230, 207, 0.32);
+.tag-open {
+  background: rgba(168, 230, 207, 0.3);
   color: #1d6d4a;
+}
+.tag-recommended {
+  background: rgba(165, 215, 232, 0.26);
+  color: #2c5f7c;
 }
 .hc-distance {
   font-size: 22rpx;
@@ -264,4 +339,43 @@ view, scroll-view, image, text, map {
 }
 .act-call:active, .act-nav:active {
   transform: scale(0.97);
+}
+
+.report-action {
+  margin-top: 12rpx;
+}
+.report-btn {
+  width: 100%;
+  height: 70rpx;
+  border-radius: 14rpx;
+  background: rgba(44, 95, 124, 0.08);
+  color: var(--accent-deep);
+  font-size: 24rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-send-wrap {
+  position: fixed;
+  right: 24rpx;
+  bottom: calc(34rpx + env(safe-area-inset-bottom));
+  z-index: 20;
+}
+.floating-send-btn {
+  height: 84rpx;
+  padding: 0 28rpx;
+  border-radius: 42rpx;
+  background: linear-gradient(135deg, #4a90b8, #2c5f7c);
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 22rpx rgba(44, 95, 124, 0.28);
+}
+.floating-send-btn-disabled {
+  opacity: 0.55;
 }

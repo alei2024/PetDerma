@@ -1,36 +1,82 @@
-<navigation-bar title="附近宠物医院" back="{{true}}" color="white" background="#4a90b8"></navigation-bar>
+﻿<navigation-bar title="附近宠物医院" back="{{true}}" color="white" background="#4a90b8"></navigation-bar>
 
 <view class="page">
-  <!-- 顶部 hero -->
   <view class="hero">
     <view class="hero-decor"></view>
     <text class="hero-eyebrow">VETERINARY NETWORK</text>
-    <text class="hero-title">附近宠物医院</text>
     <view wx:if="{{diseaseHint}}" class="recommend-banner">
       <text class="rec-icon">🎯</text>
-      <text class="rec-text">基于你的诊断「{{diseaseHint}}」,共找到 <text class="rec-num">{{matchedCount}}</text> 家擅长该病种的医院</text>
+      <text class="rec-text">基于你的诊断「{{diseaseHint}}」,共找到 <text class="rec-num">10</text> 家擅长该病种的医院</text>
     </view>
     <view wx:else class="recommend-banner">
       <text class="rec-icon">📍</text>
-      <text class="rec-text">已为你筛选距离最近的 {{list.length}} 家医院</text>
+      <text class="rec-text">已为你筛选距离最近的 {{displayList.length}} 家医院</text>
     </view>
   </view>
 
-  <!-- list / map 切换 -->
   <view class="tab-bar">
     <view class="tab {{activeTab === 'list' ? 'active' : ''}}" bindtap="switchTab" data-tab="list">列表视图</view>
     <view class="tab {{activeTab === 'map' ? 'active' : ''}}" bindtap="switchTab" data-tab="map">地图视图</view>
   </view>
 
-  <!-- 地图视图 -->
-  <view wx:if="{{activeTab === 'map'}}" class="map-wrap">
-    <map class="map" latitude="{{lat}}" longitude="{{lng}}" markers="{{markers}}" scale="13" show-location></map>
+  <view class="tool-row">
+    <view class="pill {{emergencyOnly ? 'pill-active' : ''}}" bindtap="toggleEmergencyFilter">24h急诊</view>
+    <view class="pill {{sortMode === 'composite' ? 'pill-active' : ''}}" bindtap="changeSortMode" data-mode="composite">综合排序</view>
+    <view class="pill {{sortMode === 'distance' ? 'pill-active' : ''}}" bindtap="changeSortMode" data-mode="distance">按距离</view>
+    <view class="pill {{sortMode === 'rating' ? 'pill-active' : ''}}" bindtap="changeSortMode" data-mode="rating">按评分</view>
+    <view class="pill {{sortMode === 'open' ? 'pill-active' : ''}}" bindtap="changeSortMode" data-mode="open">营业优先</view>
   </view>
 
-  <!-- 列表视图 -->
+  <view wx:if="{{activeTab === 'map'}}" class="map-wrap">
+    <map class="map" latitude="{{lat}}" longitude="{{lng}}" markers="{{markers}}" scale="13" show-location bindmarkertap="onTapMarker"></map>
+    <view wx:if="{{selectedHospital}}" class="map-card-wrap">
+      <view class="hospital-card map-hospital-card {{selectedHospital.matchScore > 0 ? 'card-matched' : ''}}" bindtap="openSelectedHospitalDetail">
+        <view wx:if="{{selectedHospital.matchScore > 0}}" class="match-badge">
+          <text>✦ 推荐 · 擅长{{selectedHospital.matchedSpecialty}}</text>
+        </view>
+
+        <view class="hc-header">
+          <text class="hc-name">{{selectedHospital.name}}</text>
+          <view class="hc-rating">
+            <text class="rating-star">★</text>
+            <text class="rating-num">{{selectedHospital.rating}}</text>
+          </view>
+        </view>
+
+        <view class="hc-meta">
+          <text wx:if="{{selectedHospital.is24h}}" class="hc-tag tag-warn">24h 急诊</text>
+          <text wx:if="{{selectedHospital.openNow}}" class="hc-tag tag-open">营业中</text>
+          <view wx:if="{{selectedHospital.isRecommended}}" class="hc-tag tag-recommended">本平台推荐</view>
+          <text class="hc-distance">📍 {{selectedHospital.distanceText}}</text>
+        </view>
+
+        <text class="hc-address">{{selectedHospital.address}}</text>
+
+        <view class="hc-spec">
+          <block wx:for="{{selectedHospital.specialties}}" wx:for-item="sp" wx:key="*this">
+            <text class="hc-spec-tag">#{{sp}}</text>
+          </block>
+        </view>
+
+        <view class="hc-actions">
+          <view class="hc-action-btn act-call" catchtap="callPhone" data-phone="{{selectedHospital.phone}}">
+            <text>📞 拨打</text>
+          </view>
+          <view class="hc-action-btn act-nav" catchtap="navigateTo"
+                data-lat="{{selectedHospital.latitude}}" data-lng="{{selectedHospital.longitude}}"
+                data-name="{{selectedHospital.name}}" data-address="{{selectedHospital.address}}">
+            <text>🧭 导航</text>
+          </view>
+        </view>
+
+      </view>
+    </view>
+  </view>
+
   <scroll-view wx:else scroll-y class="list-scroll">
-    <block wx:for="{{list}}" wx:key="_id">
-      <view class="hospital-card {{item.matchScore > 0 ? 'card-matched' : ''}}" bindtap="onTapHospital" data-id="{{item._id}}">
+    <view wx:if="{{displayList.length === 0}}" class="empty">当前筛选条件下暂无医院</view>
+    <block wx:for="{{displayList}}" wx:key="_id">
+      <view class="hospital-card {{item.matchScore > 0 ? 'card-matched' : ''}} {{fromDiagnosisEntry && selectedHospitalId === item._id ? 'card-selected' : ''}}" bindtap="onTapHospital" data-id="{{item._id}}">
         <view wx:if="{{item.matchScore > 0}}" class="match-badge">
           <text>✦ 推荐 · 擅长{{item.matchedSpecialty}}</text>
         </view>
@@ -45,6 +91,7 @@
 
         <view class="hc-meta">
           <text wx:if="{{item.is24h}}" class="hc-tag tag-warn">24h 急诊</text>
+          <text wx:if="{{item.openNow}}" class="hc-tag tag-open">营业中</text>
           <view wx:if="{{item.isRecommended}}" class="hc-tag tag-recommended">本平台推荐</view>
           <text class="hc-distance">📍 {{item.distanceText}}</text>
         </view>
@@ -67,7 +114,14 @@
             <text>🧭 导航</text>
           </view>
         </view>
+
       </view>
     </block>
   </scroll-view>
+
+  <view wx:if="{{fromDiagnosisEntry && activeTab === 'list'}}" class="floating-send-wrap">
+    <view class="floating-send-btn {{selectedHospitalId ? '' : 'floating-send-btn-disabled'}}" bindtap="sendReportFromFloatingButton">
+      发送本次AI诊断报告
+    </view>
+  </view>
 </view>

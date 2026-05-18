@@ -1,4 +1,5 @@
 const Hospital = require("../models/Hospital");
+const DiagnosisRecord = require("../models/DiagnosisRecord");
 
 // 球面距离(单位:公里)
 function haversine(lat1, lng1, lat2, lng2) {
@@ -113,5 +114,107 @@ exports.recommendHospitals = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+function isOpenNowFromText(openHours) {
+  if (!openHours) return false;
+  const text = String(openHours).trim();
+  if (/24\s*小时|24h/i.test(text)) return true;
+  const m = text.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+  if (!m) return false;
+  const now = new Date();
+  const cur = now.getHours() * 60 + now.getMinutes();
+  const start = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  const end = parseInt(m[3], 10) * 60 + parseInt(m[4], 10);
+  if (start === end) return true;
+  if (start < end) return cur >= start && cur <= end;
+  return cur >= start || cur <= end;
+}
+
+// POST /api/hospitals/:id/share-diagnosis
+exports.shareDiagnosisReport = async (req, res) => {
+  try {
+    const hospitalId = req.params.id;
+    const userId = req.user?.userId;
+    const { diagnosisRecordId, consent } = req.body || {};
+
+    if (!consent) {
+      return res.status(400).json({
+        success: false,
+        message: "请先授权发送诊断报告",
+      });
+    }
+
+    const hospital = await Hospital.findById(hospitalId).lean();
+    if (!hospital) {
+      return res.status(404).json({ success: false, message: "医院不存在" });
+    }
+
+    let record;
+    if (diagnosisRecordId) {
+      record = await DiagnosisRecord.findOne({
+        _id: diagnosisRecordId,
+        userId,
+        status: "active",
+      })
+        .populate("images")
+        .lean();
+    } else {
+      record = await DiagnosisRecord.findOne({
+        userId,
+        status: "active",
+      })
+        .sort({ createdAt: -1 })
+        .populate("images")
+        .lean();
+    }
+
+    if (!record) {
+      return res.status(400).json({
+        success: false,
+        message: "未找到可发送的诊断记录，请先完成并保存一次诊断",
+      });
+    }
+
+    const material = {
+      hospital: {
+        id: hospital._id,
+        name: hospital.name,
+        address: hospital.address,
+        is24h: hospital.is24h,
+        openNow: isOpenNowFromText(hospital.openHours),
+      },
+      diagnosis: {
+        recordId: record._id,
+        diseaseName: record.diagnosisResult?.diseaseName || "未知疾病",
+        confidence: record.diagnosisResult?.confidence || 0,
+        severity: record.diagnosisResult?.severity || 1,
+        symptomDescription: record.symptomDescription || "",
+        warning: record.diagnosisResult?.warning || "",
+        suggestions: record.diagnosisResult?.suggestions || {},
+      },
+      pet: {
+        petId: record.petId,
+        petName: record.petName,
+        petType: record.petType,
+      },
+      images: (record.images || []).map((img) => ({
+        id: img?._id,
+        url: img?.url || "",
+      })),
+      sharedAt: new Date().toISOString(),
+      deliveryStatus: "accepted",
+      deliveryChannel: "PetDerma-Hospital-Referral",
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "诊断报告已发送给该机构",
+      data: material,
+    });
+  } catch (err) {
+    console.error("shareDiagnosisReport 失败:", err);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
