@@ -33,10 +33,11 @@ router.post("/register", register);
 // 手机号密码登录
 router.post("/phone-password-login", phonePasswordLogin);
 
-// 开发环境：快速获取测试token
+// 开发环境：快速获取测试token（仅当 NODE_ENV 显式为 "development" 时放过；
+// 未设置或任何其他值都直接 403，避免在生产/测试环境被滥用派发 7 天 JWT）
 router.get("/dev-token", async (req, res) => {
-  if (process.env.NODE_ENV === "production") {
-    return res.status(403).json({ success: false, message: "生产环境禁用" });
+  if (process.env.NODE_ENV !== "development") {
+    return res.status(403).json({ success: false, message: "仅开发环境可用" });
   }
   try {
     // 查找或创建测试用户

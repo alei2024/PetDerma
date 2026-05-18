@@ -126,7 +126,8 @@ app.use(
     res.header("X-Content-Type-Options", "nosniff");
     next();
   },
-  express.static(path.join(__dirname, "..", "images_cases"))
+  // 病例图片库实际位于 Front_Page/images_cases/（根目录的重复副本已在合并时删除）
+  express.static(path.join(__dirname, "..", "Front_Page", "images_cases"))
 );
 
 /* ------------------------------------------------------------------
