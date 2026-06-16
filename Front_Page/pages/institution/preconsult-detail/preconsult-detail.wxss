@@ -1,0 +1,290 @@
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+.container {
+  padding: 0 30rpx 40rpx;
+  padding-bottom: 160rpx;
+}
+
+/* 报告头部 */
+.report-header-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin: 20rpx 0;
+}
+.report-pet-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.report-pet-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+.report-pet-detail {
+  flex: 1;
+}
+.report-pet-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+}
+.report-pet-breed {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.8);
+  display: block;
+  margin-top: 4rpx;
+}
+.report-owner-info {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.report-owner-label {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.6);
+}
+.report-owner-name {
+  font-size: 26rpx;
+  color: #fff;
+  font-weight: bold;
+}
+.report-owner-phone {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.8);
+}
+
+/* 通用区域 */
+.section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 20rpx;
+}
+.section-header .section-title {
+  margin-bottom: 0;
+}
+.report-badge {
+  font-size: 22rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  background: #fff3e0;
+  color: #ff9800;
+}
+.report-badge.read {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+.report-badge.completed {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+
+/* 诊断卡片 */
+.diagnosis-card {
+  background: #f8faff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+.diag-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.diag-row:last-child {
+  margin-bottom: 0;
+}
+.diag-label {
+  font-size: 26rpx;
+  color: #999;
+  width: 140rpx;
+  flex-shrink: 0;
+}
+.diag-value {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+.diag-value.highlight {
+  color: #667eea;
+  font-size: 34rpx;
+}
+
+/* 严重程度 */
+.severity-tag {
+  font-size: 24rpx;
+  padding: 4rpx 20rpx;
+  border-radius: 20rpx;
+  background: #f0f0f0;
+  color: #666;
+}
+.severity-tag.light {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+.severity-tag.medium {
+  background: #fff3e0;
+  color: #ff9800;
+}
+.severity-tag.heavy {
+  background: #ffebee;
+  color: #f44336;
+}
+
+/* 可信度 */
+.confidence-bar-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.confidence-bar-bg {
+  flex: 1;
+  height: 14rpx;
+  background: #eee;
+  border-radius: 7rpx;
+  overflow: hidden;
+  margin-right: 12rpx;
+}
+.confidence-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 7rpx;
+}
+.confidence-value {
+  font-size: 26rpx;
+  color: #667eea;
+  font-weight: bold;
+  min-width: 70rpx;
+  text-align: right;
+}
+
+/* AI摘要 */
+.ai-summary {
+  background: #f0f4ff;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  border-left: 4rpx solid #667eea;
+}
+.summary-label {
+  font-size: 24rpx;
+  color: #667eea;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+.summary-text {
+  font-size: 26rpx;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* 标签 */
+.symptom-tags, .area-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+.symptom-tag, .area-tag {
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  background: #f0f4ff;
+  color: #667eea;
+  border: 1rpx solid #dde8ff;
+}
+
+/* 宠物档案 */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+.profile-item {
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 16rpx;
+}
+.profile-label {
+  font-size: 22rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 6rpx;
+}
+.profile-value {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  display: block;
+}
+
+/* 图片 */
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.grid-image {
+  width: calc(33.33% - 12rpx);
+  height: 200rpx;
+  border-radius: 12rpx;
+  background: #f0f0f0;
+}
+
+/* 操作按钮 */
+.action-bar {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 10rpx;
+  padding-bottom: 20rpx;
+}
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22rpx 0;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+.action-btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 4rpx 20rpx rgba(102,126,234,0.3);
+}
+.action-btn.outline {
+  border: 2rpx solid #667eea;
+  color: #667eea;
+  background: #fff;
+}
+.action-btn:active {
+  transform: scale(0.97);
+}

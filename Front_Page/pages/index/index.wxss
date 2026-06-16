@@ -293,6 +293,93 @@ page {
   font-weight: 500;
 }
 
+/* 机构端入口样式 */
+.institution-entry {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16rpx;
+  padding: 28rpx;
+  margin: 0 0 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.3);
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+.institution-entry:active {
+  transform: scale(0.98);
+}
+.institution-entry-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.institution-entry-icon {
+  width: 64rpx;
+  height: 64rpx;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+.institution-entry-icon image {
+  width: 40rpx;
+  height: 40rpx;
+  filter: brightness(0) invert(1);
+}
+.institution-entry-text {
+  flex: 1;
+}
+.institution-entry-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #ffffff;
+  display: block;
+  margin-bottom: 4rpx;
+}
+.institution-entry-desc {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.85);
+  display: block;
+}
+.institution-entry-features {
+  background: rgba(255,255,255,0.12);
+  border-radius: 10rpx;
+  padding: 14rpx 18rpx;
+  margin-bottom: 16rpx;
+}
+.institution-feature-text {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+  display: block;
+  text-align: center;
+}
+.institution-entry-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.institution-entry-btn {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 30rpx;
+  padding: 12rpx 24rpx;
+  flex-shrink: 0;
+}
+.institution-entry-btn text {
+  font-size: 26rpx;
+  color: #ffffff;
+  font-weight: bold;
+}
+.institution-entry-btn .arrow-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-left: 6rpx;
+  filter: brightness(0) invert(1);
+}
+
 /* 温馨提示样式 */
 .tips-section {
   width: 100%;

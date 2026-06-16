@@ -1,0 +1,67 @@
+<navigation-bar title="预约管理" back="{{true}}" color="white" background="#667eea"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 日期选择 -->
+    <view class="date-bar">
+      <view class="date-item {{selectedDate === 'today' ? 'active' : ''}}" bindtap="selectDate" data-date="today">
+        <text class="date-day">今天</text>
+        <text class="date-num">{{dateStats.today}}</text>
+      </view>
+      <view class="date-item {{selectedDate === 'tomorrow' ? 'active' : ''}}" bindtap="selectDate" data-date="tomorrow">
+        <text class="date-day">明天</text>
+        <text class="date-num">{{dateStats.tomorrow}}</text>
+      </view>
+      <view class="date-item {{selectedDate === 'week' ? 'active' : ''}}" bindtap="selectDate" data-date="week">
+        <text class="date-day">本周</text>
+        <text class="date-num">{{dateStats.week}}</text>
+      </view>
+    </view>
+
+    <!-- 统计卡片 -->
+    <view class="stats-cards">
+      <view class="stat-mini">
+        <text class="stat-mini-num">{{stats.pending}}</text>
+        <text class="stat-mini-label">待确认</text>
+      </view>
+      <view class="stat-mini">
+        <text class="stat-mini-num">{{stats.confirmed}}</text>
+        <text class="stat-mini-label">已确认</text>
+      </view>
+      <view class="stat-mini">
+        <text class="stat-mini-num">{{stats.completed}}</text>
+        <text class="stat-mini-label">已完成</text>
+      </view>
+      <view class="stat-mini">
+        <text class="stat-mini-num">{{stats.cancelled}}</text>
+        <text class="stat-mini-label">已取消</text>
+      </view>
+    </view>
+
+    <!-- 预约列表 -->
+    <view class="appointment-list">
+      <view class="appointment-card" wx:for="{{filteredAppointments}}" wx:key="id">
+        <view class="apt-time">
+          <text class="apt-time-text">{{item.time}}</text>
+        </view>
+        <view class="apt-body">
+          <view class="apt-header">
+            <text class="apt-pet-name">{{item.petName}}</text>
+            <view class="apt-status {{item.status}}">{{item.statusText}}</view>
+          </view>
+          <text class="apt-owner">{{item.ownerName}} · {{item.petType}}</text>
+          <text class="apt-service" wx:if="{{item.service}}">服务：{{item.service}}</text>
+          <view class="apt-actions" wx:if="{{item.status === 'pending'}}">
+            <view class="apt-btn confirm" bindtap="confirmAppointment" data-id="{{item.id}}">确认</view>
+            <view class="apt-btn reject" bindtap="rejectAppointment" data-id="{{item.id}}">拒绝</view>
+          </view>
+          <view class="apt-actions" wx:elif="{{item.status === 'confirmed'}}">
+            <view class="apt-btn complete" bindtap="completeAppointment" data-id="{{item.id}}">完成服务</view>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{filteredAppointments.length === 0}}" class="empty-state">
+        <text class="empty-text">暂无预约</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>

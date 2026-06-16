@@ -265,6 +265,42 @@ Page({
     }
   },
   
+  // 预约附近宠物医院复核
+  bookOfflineReview: function() {
+    const { diagnosisResult, petName } = this.data;
+    // 保存当前诊断结果到本地，供其他页面使用
+    wx.setStorageSync('latestDiagnosisResult', {
+      petName,
+      diseaseName: diagnosisResult.diseaseName,
+      confidence: diagnosisResult.confidence,
+      severity: diagnosisResult.severity,
+      description: diagnosisResult.description,
+      fromResultPage: true,
+      time: new Date().toISOString(),
+    });
+    wx.navigateTo({
+      url: `/pages/doctor/doctor`,
+    });
+  },
+
+  // 发送给护理店获取护理建议
+  sendToCareShop: function() {
+    const { diagnosisResult, petName } = this.data;
+    wx.setStorageSync('latestDiagnosisResult', {
+      petName,
+      diseaseName: diagnosisResult.diseaseName,
+      confidence: diagnosisResult.confidence,
+      severity: diagnosisResult.severity,
+      description: diagnosisResult.description,
+      fromResultPage: true,
+      time: new Date().toISOString(),
+      needCareAdvice: true,
+    });
+    wx.navigateTo({
+      url: `/pages/doctor/doctor`,
+    });
+  },
+
   // 开始智能问诊
   startChat: function() {
     // 跳转到智能问诊页面，并传递相关参数

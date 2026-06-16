@@ -1,0 +1,35 @@
+<navigation-bar title="AI预问诊列表" back="{{true}}" color="white" background="#667eea"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 筛选栏 -->
+    <view class="filter-bar">
+      <view class="filter-item {{filter === 'all' ? 'active' : ''}}" bindtap="setFilter" data-filter="all">全部</view>
+      <view class="filter-item {{filter === 'pending' ? 'active' : ''}}" bindtap="setFilter" data-filter="pending">待处理</view>
+      <view class="filter-item {{filter === 'read' ? 'active' : ''}}" bindtap="setFilter" data-filter="read">已查看</view>
+      <view class="filter-item {{filter === 'completed' ? 'active' : ''}}" bindtap="setFilter" data-filter="completed">已完成</view>
+    </view>
+
+    <!-- 报告列表 -->
+    <view class="report-list">
+      <view class="report-card" wx:for="{{filteredReports}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}">
+        <view class="card-top">
+          <view class="card-info">
+            <text class="card-pet-name">{{item.petName}}</text>
+            <text class="card-disease">{{item.diseaseName}}</text>
+          </view>
+          <view class="card-status {{item.status}}">{{item.statusText}}</view>
+        </view>
+        <view class="card-mid">
+          <text class="card-owner">{{item.ownerName}}</text>
+          <text class="card-time">{{item.time}}</text>
+        </view>
+        <view class="card-bottom" wx:if="{{item.aiSummary}}">
+          <text class="card-summary">AI摘要：{{item.aiSummary}}</text>
+        </view>
+      </view>
+      <view wx:if="{{filteredReports.length === 0}}" class="empty-state">
+        <text class="empty-text">暂无{{filter === 'all' ? '' : '符合条件的'}}预问诊报告</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>

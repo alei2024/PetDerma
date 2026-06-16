@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -16,6 +17,8 @@ const uploadRoutes = require("./routes/upload");
 const imageRoutes = require("./routes/images");
 const petRoutes = require("./routes/pets");
 const healthRoutes = require("./routes/health");
+const doctorRoutes = require("./routes/doctor");
+const institutionRoutes = require("./routes/institution");
 
 // 导入中间件
 const { handleUploadError } = require("./middleware/upload");
@@ -58,7 +61,7 @@ setTimeout(async () => {
 /* ------------------------------------------------------------------
  ✅ 安全、CORS、日志、限流中间件（位置保持不变）
 ------------------------------------------------------------------- */
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(
   cors({
@@ -143,12 +146,54 @@ app.get("/health", (req, res) => {
   });
 });
 
+// B 端预览页面
+app.get("/doctor-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "doctor-preview.html"));
+});
+app.get("/doctor-preview.css", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "doctor-preview.css"));
+});
+app.get("/doctor-preview.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "doctor-preview.js"));
+});
+
+// 机构端预览页面
+app.get("/institution-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "institution-preview.html"));
+});
+
+// 首页预览页面（入口1：机构端入口）
+app.get("/home-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "home-preview.html"));
+});
+
+// 地图导航页预览（入口2：发送AI报告给机构）
+app.get("/map-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "map-preview.html"));
+});
+
+// 诊断结果页预览（入口3：预约线下复核）
+app.get("/result-preview", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "result-preview.html"));
+});
+
+// 主页入口（首页重定向）
+app.get("/", (req, res) => {
+  res.redirect("/home-preview");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/interactions", interactionRoutes);
 app.use("/api/upload", uploadLimiter, uploadRoutes);
 app.use("/api/pets", petRoutes);
 app.use("/api/health", healthRoutes);
+
+// 医生端 API
+app.use("/api/doctor", doctorRoutes);
+
+// 机构端 API
+app.use("/api/institution", institutionRoutes);
 
 // 图片路由
 app.use(

@@ -106,16 +106,25 @@
   
     <!-- 操作按钮区域 -->
     <view class="actions-section">
-    <view class="btn btn-outline" bindtap="saveResult">
-      <image class="btn-icon" 
-             src="{{isSaved ? '/images/saved_icon.png' : '/images/save_icon.png'}}" 
-            
-             mode="aspectFit"></image>
-      <text>{{isSaved ? '已收藏' : '收藏结果'}}</text>
+    <view class="actions-row">
+      <view class="btn btn-primary btn-action" bindtap="bookOfflineReview">
+        <text>预约附近宠物医院复核</text>
+      </view>
+      <view class="btn btn-secondary btn-action" bindtap="sendToCareShop">
+        <text>发送给护理店获取建议</text>
+      </view>
     </view>
-    <view class="btn btn-primary" bindtap="startChat">
-      <image class="btn-icon" src="/images/chat_icon.png" mode="aspectFit"></image>
-      <text>智能问诊</text>
+    <view class="actions-row secondary-row">
+      <view class="btn btn-outline btn-small" bindtap="saveResult">
+        <image class="btn-icon"
+               src="{{isSaved ? '/images/saved_icon.png' : '/images/save_icon.png'}}"
+               mode="aspectFit"></image>
+        <text>{{isSaved ? '已收藏' : '收藏结果'}}</text>
+      </view>
+      <view class="btn btn-primary btn-small" bindtap="startChat">
+        <image class="btn-icon" src="/images/chat_icon.png" mode="aspectFit"></image>
+        <text>智能问诊</text>
+      </view>
     </view>
   </view>
 

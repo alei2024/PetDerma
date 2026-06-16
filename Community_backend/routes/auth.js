@@ -33,13 +33,39 @@ router.post("/register", register);
 // 手机号密码登录
 router.post("/phone-password-login", phonePasswordLogin);
 
-// 开发环境：快速获取测试token - 已禁用，请使用真实登录
-// router.get("/dev-token", async (req, res) => {
-//   return res.status(403).json({
-//     success: false,
-//     message: "测试token已禁用，请使用真实登录"
-//   });
-// });
+// 开发环境：快速获取测试token
+router.get("/dev-token", async (req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(403).json({ success: false, message: "生产环境禁用" });
+  }
+  try {
+    // 查找或创建测试用户
+    let user = await User.findOne({ phoneNumber: "13800138000" });
+    if (!user) {
+      user = new User({
+        phoneNumber: "13800138000",
+        password: "test123456",
+        nickName: "测试医生",
+        avatar: { url: "/images/user_default.png", source: "upload", key: "", wechatUrl: "" },
+      });
+      // 跳过后面的密码加密步骤。。。不对，password会自动加密
+      await user.save();
+      console.log("✅ 已创建测试用户: 13800138000 / test123456");
+    }
+    const token = jwt.sign(
+      { userId: user._id, phoneNumber: user.phoneNumber },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.json({
+      success: true,
+      data: { token, user: { id: user._id, nickName: user.nickName, phoneNumber: user.phoneNumber } },
+    });
+  } catch (error) {
+    console.error("dev-token error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // 刷新Token
 router.post("/refresh-token", authenticateToken, refreshToken);

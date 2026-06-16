@@ -1211,6 +1211,20 @@ Page({
     });
   },
 
+  // 跳转到医生工作台
+  navigateToDoctor: function () {
+    if (!this.data.isLoggedIn) {
+      wx.showToast({
+        title: "请先登录",
+        icon: "none",
+      });
+      return;
+    }
+    wx.navigateTo({
+      url: "/pages/doctor/doctor",
+    });
+  },
+
   // 跳转到知识页面
   navigateToKnowledge: function () {
     wx.navigateTo({
